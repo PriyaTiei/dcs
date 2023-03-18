@@ -75,7 +75,7 @@ export const DcsProvider = ({ children }) => {
 
     try {
       await axios
-        .post("http://localhost:5001/dcs/dcs-form", {
+        .post(`${process.env.REACT_APP_BACKEND_URL}/dcs/dcs-form`, {
           date: date,
           time: time,
           remarks: remarks,
