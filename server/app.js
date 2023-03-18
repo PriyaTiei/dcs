@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const dcsFormRoutes = require("./routes/dcs-form");
@@ -6,12 +7,12 @@ const app = express();
 mongoose.set("strictQuery", true);
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/dcs", {
+  .connect(process.env.MONGO_DB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => {
-    app.listen(5001);
+    app.listen(process.env.PORT);
     console.log("Succesfully Connected To DCS DB");
   })
   .catch((err) => console.log(err));
