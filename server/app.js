@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const dcsFormRoutes = require("./routes/dcs-form");
+const cors = require("cors");
 const app = express();
 
 mongoose.set("strictQuery", true);
@@ -26,6 +27,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.static("public"));
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
