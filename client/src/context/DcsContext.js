@@ -8,6 +8,8 @@ export const DcsProvider = ({ children }) => {
   const [partNo, setPartNo] = useState("");
   const [remarks, setRemarks] = useState("");
   const [defectType, setDefectType] = useState("");
+  const [engineCode, setEngineCode] = useState("");
+  const [checker, setChecker] = useState("");
 
   const handlePartNoChange = (event) => {
     setPartNo(event.target.value);
@@ -15,6 +17,13 @@ export const DcsProvider = ({ children }) => {
 
   const handleRemarksChange = (event) => {
     setRemarks(event.target.value);
+  };
+
+  const handleEngineCodeChange = (event) => {
+    setEngineCode(event.target.value);
+  };
+  const handleCheckerChange = (event) => {
+    setChecker(event.target.value);
   };
 
   const handleDefectTypeChange = (event, data) => {
@@ -36,8 +45,20 @@ export const DcsProvider = ({ children }) => {
   };
 
   //Date & Time
-  const [date] = useState(new Date().toISOString());
-  const [time] = useState(new Date().toISOString());
+  const [date] = useState(
+    new Date().toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "numeric",
+      year: "numeric"
+    })
+  );
+  const [time] = useState(
+    new Date().toLocaleDateString("en-IN", {
+      hours: "numeric",
+      minute: "2-digit",
+      hour12 : true 
+    }) 
+  );
 
   //Modal
   const [showModal, setShowModal] = useState(false);
@@ -97,6 +118,8 @@ export const DcsProvider = ({ children }) => {
     remarks,
     date,
     time,
+    checker,
+    engineCode,
     defectType,
     image,
     imagePreview,
@@ -104,6 +127,8 @@ export const DcsProvider = ({ children }) => {
     handlePartNoChange,
     handleRemarksChange,
     handleDefectTypeChange,
+    handleEngineCodeChange,
+    handleCheckerChange,
     handleResetform,
     handleSubmit,
     handleImageChange,

@@ -1,53 +1,76 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { Menu, Sidebar, Segment, Icon, Image } from "semantic-ui-react";
+import { Link } from "react-router-dom";
+import { Menu, Sidebar, Icon, Image, Container } from "semantic-ui-react";
 import logo from "../assets/logo.png";
+import { useSelector, useDispatch } from "react-redux";
+import { navBarSlice } from "../redux/slices/navbarSlice"; 
 
-export const AppSidebar = ({ children }) => {
-  const [activeItem, setActiveItem] = useState("home");
+export function AppSidebar({ children }) {
+  const { visible } = useSelector((state) => state.navBar);
+  const { activeItem } = useSelector((state) => state.navBar);
+  const dispatch = useDispatch();
 
-  const handleItemClick = (e, { name }) => setActiveItem(name);
+  const handleItemClick = (value) => {
+    dispatch(navBarSlice.actions.setActiveItem(value));
+  };
+
+  
 
   return (
     <Sidebar.Pushable style={{ height: "100vh" }}>
-      <Sidebar visible style={{ width: "220px" }}>
+      <Sidebar animation="push" visible={visible}>
         <Menu
           inverted
           vertical
           pointing
           style={{
             height: "inherit",
+            width: "254px",
+            
           }}
         >
-          <Menu.Item>
-            <Image src={logo} size={"small"} style={{ margin: "16px 0px" }} />
-          </Menu.Item>
-          <SidebarTile
-            title="Home"
-            value="home"
-            icon={"home"}
-            activeItem={activeItem}
-            handleItemClick={handleItemClick}
-            href="/"
-          />
+          
+            <Menu.Item>
+              <Image
+                src={logo}
+                centered
+                size={"small"}
+                style={{ margin: "16px 0px" }}
+              />
+            </Menu.Item>
+            <SidebarTile
+              title="Traceability"
+              value="traceability"
+              icon={"home"}
+              activeItem={activeItem}
+              handleItemClick={handleItemClick}
+              href="/"
+            />
+            <SidebarTile
+              title="Add Assy Checksheet"
+              value="add_assy_checksheet"
+              icon={"add"}
+              activeItem={activeItem}
+              handleItemClick={handleItemClick}
+              href="/add-form"
+            />
+            
+         
 
-          <SidebarTile
-            title="Add DCS Form"
-            value="add_dcs_form"
-            icon={"add"}
-            activeItem={activeItem}
-            handleItemClick={handleItemClick}
-            href="/add-form"
-          />
+          
         </Menu>
       </Sidebar>
 
-      <Sidebar.Pusher>
-        <Segment basic>{children}</Segment>
+      <Sidebar.Pusher
+        style={{
+          maxWidth: visible ? "83vw" : "100vw",
+          transition: "0.4s ease-in-out",
+        }}
+      >
+        <Container>{children}</Container>
       </Sidebar.Pusher>
     </Sidebar.Pushable>
   );
-};
+}
 
 const SidebarTile = ({
   title,
@@ -58,20 +81,19 @@ const SidebarTile = ({
   href,
 }) => {
   return (
-    <NavLink to={href}>
+    <Link to={href}>
       <Menu.Item
         style={{
-          "font-size": "13px",
+          fontSize: "13px",
         }}
         position="left"
         name={value}
         active={activeItem === value}
-        onClick={handleItemClick}
-        link={false}
+        onClick={() => handleItemClick(value)}
       >
         {title}
         <Icon name={icon} />
       </Menu.Item>
-    </NavLink>
+    </Link>
   );
 };

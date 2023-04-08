@@ -9,6 +9,7 @@ import {
   Button,
   Select,
   Modal,
+  Checkbox,
 } from "semantic-ui-react";
 import BarCodeScanner from "../modals/BarCodeModal";
 
@@ -18,6 +19,8 @@ export default function DefectForm() {
     remarks,
     date,
     time,
+    checker,
+    engineCode,
     defectType,
     image,
     imagePreview,
@@ -25,6 +28,9 @@ export default function DefectForm() {
     handlePartNoChange,
     handleRemarksChange,
     handleDefectTypeChange,
+    handleEngineCodeChange,
+    handleCheckerChange,
+    handleResetform,
     handleSubmit,
     handleImageChange,
     handleRemoveImage,
@@ -37,10 +43,12 @@ export default function DefectForm() {
     { value: "Defect B", text: "Defect B" },
   ];
 
+  
+
   return (
     <Container>
       <Segment>
-        <h2>Defect Control Form</h2>
+        <h2>Assembly Offline Treatment Sheet</h2>
         <Form onSubmit={handleSubmit}>
           <Form.Group widths="equal">
             <Form.Field
@@ -57,8 +65,8 @@ export default function DefectForm() {
             />
           </Form.Group>
           <Form.Group widths="equal">
-            <Form.Field>
-              <label>Part Number:</label>
+            <Form.Field required>
+              <label>Engine No. :</label>
               <div className="ui action input">
                 <Input
                   placeholder="Enter part no."
@@ -69,27 +77,56 @@ export default function DefectForm() {
                   className="ui icon button"
                   onClick={handleBarcodeButtonClick}
                 >
-                  <i className="barcode icon" />
+                  <i className="password icon" />
                 </button>
               </div>
             </Form.Field>
             <Form.Field
-              label={"Defect Type"}
-              value={defectType}
+              label={
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: "4px",
+                  }}
+                >
+                  <label >Defect Contents</label>
+                  <Checkbox toggle />
+                </div>
+              }
               control={Select}
+              value={defectType}
               options={options}
-              placeholder="Enter part no."
+              placeholder="Select Defect Content"
               onChange={handleDefectTypeChange}
+              required 
             />
           </Form.Group>
-
+          <Form.Group widths="equal">
+            <Form.Field
+             label="Engine Code :"
+             control={Input}
+             value={engineCode}
+             onChange={handleEngineCodeChange}
+             placeholder="Enter Code"
+             required 
+            />
+            <Form.Field
+             label="Checker :"
+             control={Input}
+             value={checker}
+             onChange={handleCheckerChange}
+             placeholder="Checker's Name"
+             required
+            />
+          </Form.Group>
           <Form.Field
-            label={"Remarks:"}
-            placeholder={"Enter Remarks"}
+            label={"Treatment Contents :"}
+            placeholder={"Enter Contents"}
             control={TextArea}
             value={remarks}
             onChange={handleRemarksChange}
-            style={{ minHeight: 100 }}
+            style={{ minHeight: 50 }}
           />
           <Form.Field>
             <label>Image :</label>
@@ -130,3 +167,5 @@ export default function DefectForm() {
     </Container>
   );
 }
+
+

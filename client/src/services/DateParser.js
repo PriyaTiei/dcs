@@ -1,4 +1,4 @@
-export function dateFormat(unformatedDate) {
+export function dateFormat(unformatedDate, unformatedTime) {
   const date = new Date(unformatedDate);
   console.log(date);
   console.log(date.toISOString());
