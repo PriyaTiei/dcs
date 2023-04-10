@@ -1,74 +1,98 @@
-const DefectForm = require("../models/dcs");
+const DCS = require('../models/dcs');
+ 
+exports.createDCS = async (req, res) => {
+  const {
+    date,
+    time,
+    engineNo,
+    engineCode,
+    defectContent,
+    remarks,
+    checker,
+    image,
+    pqcs
+  } = req.body;
 
-exports.createDefectForm = async (req, res) => {
   try {
-    const { date, time, partNo, remarks, defectType, image } = req.body;
-    const defectForm = new DefectForm({
+    const dcs = new DCS({
       date,
       time,
-      partNo,
+      engineNo,
+      engineCode,
+      defectContent,
       remarks,
-      defectType,
+      checker,
       image,
+      pqcs
     });
-    await defectForm.save();
-    res.status(201).json({ message: "Defect form created successfully" });
-  } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
+
+    await dcs.save();
+
+    res.status(201).json({ message: 'DCS created successfully', dcs });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to create DCS', error });
   }
 };
-
-exports.getDefectForms = async (req, res) => {
+ 
+exports.getAllDCS = async (req, res) => {
   try {
-    const defectForms = await DefectForm.find();
-    res.status(200).json({ defectForms });
-  } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
+    const dcs = await DCS.find().sort({ createdAt: -1 });
+
+    res.status(200).json(dcs);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to retrieve DCS documents', error });
   }
 };
+ 
+exports.getDCSById = async (req, res) => {
+  const { id } = req.params;
 
-exports.getDefectFormById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const defectForm = await DefectForm.findById(id);
-    if (!defectForm) {
-      return res.status(404).json({ error: "Defect form not found" });
+    const dcs = await DCS.findById(id);
+
+    if (!dcs) {
+      return res.status(404).json({ message: 'DCS not found' });
     }
-    res.status(200).json({ defectForm });
-  } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
+
+    res.status(200).json(dcs);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to retrieve DCS document', error });
   }
 };
+ 
+exports.updateDCSById = async (req, res) => {
+  const { id } = req.params;
 
-exports.updateDefectFormById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { date, time, partNo, remarks, image } = req.body;
-    const defectForm = await DefectForm.findByIdAndUpdate(id, {
-      date,
-      time,
-      partNo,
-      remarks,
-      image,
-    });
-    if (!defectForm) {
-      return res.status(404).json({ error: "Defect form not found" });
+    const dcs = await DCS.findByIdAndUpdate(id, req.body, { new: true });
+
+    if (!dcs) {
+      return res.status(404).json({ message: 'DCS not found' });
     }
-    res.status(200).json({ message: "Defect form updated successfully" });
-  } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
+
+    res.status(200).json({ message: 'DCS updated successfully', dcs });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to update DCS document', error });
   }
 };
+ 
+exports.deleteDCSById = async (req, res) => {
+  const { id } = req.params;
 
-exports.deleteDefectFormById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const defectForm = await DefectForm.findByIdAndDelete(id);
-    if (!defectForm) {
-      return res.status(404).json({ error: "Defect form not found" });
+    const dcs = await DCS.findByIdAndDelete(id);
+
+    if (!dcs) {
+      return res.status(404).json({ message: 'DCS not found' });
     }
-    res.status(200).json({ message: "Defect form deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ error: "Internal server error" });
+
+    res.status(200).json({ message: 'DCS deleted successfully', dcs });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to delete DCS document', error });
   }
 };

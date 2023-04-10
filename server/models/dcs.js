@@ -1,5 +1,27 @@
 const mongoose = require("mongoose");
 
+const pqcsSchema = new mongoose.Schema(
+  {
+    bolt: {
+      type: String,
+      required: true,
+    },
+    inspectionTorque: {
+      type: Number,
+      required: true,
+    },
+    measurements: {
+      type: [Number],
+      required: true,
+    },
+    confirmation: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
 const dcsSchema = new mongoose.Schema(
   {
     date: {
@@ -10,24 +32,33 @@ const dcsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    partNo: {
+    engineNo: {
       type: String,
       required: true,
     },
-    defectType: {
+    engineCode: {
+      type: String,
+      required: true,
+    },
+    defectContent: {
       type: String,
       required: true,
     },
     remarks: {
       type: String,
+      required: false,
+    },
+    checker: {
+      type: String,
       required: true,
     },
     image: {
       type: String,
-      required: true,
+      required: false,
     },
+    pqcs: [pqcsSchema],
   },
-  { collection: "dcs-forms" }
+  { collection: "dcs-forms", timestamps: true }
 );
 
 const DCS = mongoose.model("Dcs", dcsSchema);

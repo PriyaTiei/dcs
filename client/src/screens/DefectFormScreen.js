@@ -23,7 +23,7 @@ export const DefectFormScreen = () => {
         <Breadcrumb.Section active>Defect Form</Breadcrumb.Section>
       </Breadcrumb>
       <Grid  style={styles.grid}>
-        <Grid.Column width={12}> 
+        <Grid.Column width={8}> 
             <DefectForm /> 
         </Grid.Column>
         <Grid.Column width={4}> 

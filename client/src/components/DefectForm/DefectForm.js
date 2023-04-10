@@ -54,25 +54,22 @@ const handleDropPartChange = (event, data) => {
 };
 
 const handleImageChange = (event) => {
-  dcsSlice.actions.setImage(event.target.files[0]);
-  dcsSlice.actions.setImagePreview(URL.createObjectURL(event.target.files[0]));
-  console.log(event.target.files[0])
-  console.log(imagePreview)
-  console.log(image)
+  dispatch(dcsSlice.actions.setImage(event.target.files[0]))
+  dispatch(dcsSlice.actions.setImagePreview(URL.createObjectURL(event.target.files[0]))) 
 };
 
 const handleRemoveImage = (event) => {
-  dcsSlice.actions.setImage();
-  dcsSlice.actions.setImagePreview("");
+  dispatch(dcsSlice.actions.setImage())
+  dispatch(dcsSlice.actions.setImagePreview(""))
 };
 
 const handleBarcodeButtonClick = (e) => {
   e.preventDefault();
-  dcsSlice.actions.setShowModal(true);
+  dispatch(dcsSlice.actions.setShowModal(true))
 };
 
 const handleModalClose = () => {
-  dcsSlice.actions.setShowModal(false);
+  dispatch(dcsSlice.actions.setShowModal(false))
 };
 
 const handleSubmit = async (event) => {

@@ -20,6 +20,7 @@ const initialState = {
   checker: '',
   engineCode: '',
   defectType: '',
+  partfallen : null,
   image: null,
   imagePreview: '',
   showModal: false,
