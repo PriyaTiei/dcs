@@ -1,6 +1,7 @@
 const DCS = require('../models/dcs');
- 
-exports.createDCS = async (req, res) => {
+
+const createDCS = async (req, res) => {
+  console.log('create called')
   const {
     date,
     time,
@@ -10,7 +11,10 @@ exports.createDCS = async (req, res) => {
     remarks,
     checker,
     image,
-    pqcs
+    pqcs,
+    fallenPart,
+    stnOccured,
+    stnDetected
   } = req.body;
 
   try {
@@ -23,7 +27,10 @@ exports.createDCS = async (req, res) => {
       remarks,
       checker,
       image,
-      pqcs
+      pqcs,
+      fallenPart,
+      stnOccured,
+      stnDetected
     });
 
     await dcs.save();
@@ -35,7 +42,7 @@ exports.createDCS = async (req, res) => {
   }
 };
  
-exports.getAllDCS = async (req, res) => {
+const getAllDCS = async (req, res) => {
   try {
     const dcs = await DCS.find().sort({ createdAt: -1 });
 
@@ -96,3 +103,5 @@ exports.deleteDCSById = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete DCS document', error });
   }
 };
+
+module.exports = { createDCS, getAllDCS }

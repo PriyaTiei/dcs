@@ -23,6 +23,7 @@ const upload = multer({
 }).single("image");
 
 const uploadImage = (req, res) => {
+  console.log('Image Called')
   upload(req, res, (err) => {
     if (err) {
       return res.status(400).json({ message: err.message });

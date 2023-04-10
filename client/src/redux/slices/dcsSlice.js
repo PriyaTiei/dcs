@@ -2,38 +2,40 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-
-
 const initialState = {
-  partNo: '',
-  remarks: '',
-  date: new Date().toLocaleDateString('en-IN', {
-    day: 'numeric',
-    month: 'numeric',
-    year: 'numeric',
+  partNo: "",
+  remarks: "",
+  date: new Date().toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
   }),
-  time: new Date().toLocaleTimeString('en-IN', {
-    hour: 'numeric',
-  minute: 'numeric',
-  hour12: true
+  time: new Date().toLocaleTimeString("en-IN", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
   }),
-  checker: '',
-  engineCode: '',
-  defectType: '',
-  partfallen : null,
+  checker: "",
+  engineCode: "",
+  defectType: "",
+  fallenPart: null,
   image: null,
-  imagePreview: '',
+  imagePreview: "",
+  stnOccured: "",
+  stnDetected: "",
+  pqcsList: [],
   showModal: false,
   dropPart: false,
 };
 
 export const addDcsFormData = createAsyncThunk(
   "dcs/addDcsFormData",
-  async (formData, thunkAPI) => {
+  async (formData, thunkAPI) => { 
+    console.log(formData.image)
     const imageData = new FormData();
     imageData.append("image", formData.image);
     const imagePath = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}dcs/dcs-forms/upload-image`,
+      `${process.env.REACT_APP_BACKEND_URL}/dcs/dcs-form/upload-image`,
       imageData,
       {
         headers: {
@@ -41,7 +43,6 @@ export const addDcsFormData = createAsyncThunk(
         },
       }
     );
-
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/dcs/dcs-form`,
@@ -49,12 +50,22 @@ export const addDcsFormData = createAsyncThunk(
           date: formData.date,
           time: formData.time,
           remarks: formData.remarks,
-          partNo: formData.partNo,
-          defectType: formData.defectType,
+          fallenPart: formData.fallenPart,
+          engineNo: formData.partNo,
+          defectContent: formData.defectType,
+          engineCode: formData.engineCode,
+          stnDetected: formData.stnDetected,
+          stnOccured: formData.stnOccured,
+          pqcsList: formData.pqcsList,
+          checker: formData.checker,
           image: imagePath.data["imagePath"],
         }
       );
-      toast.success("Successful !");
+      if(response.status === 200) {
+        toast.success("Successful !");
+      } else {
+        console.log(response)
+      }
       return response.data;
     } catch (error) {
       console.error(error);
@@ -82,11 +93,19 @@ export const dcsSlice = createSlice({
     setChecker: (state, action) => {
       state.checker = action.payload;
     },
+    setFallenPart: (state, action) => {
+      state.fallenPart = action.payload;
+    },
     setEngineCode: (state, action) => {
       state.engineCode = action.payload;
     },
     setDefectType: (state, action) => {
       state.defectType = action.payload;
+      if (state.defectType === "Fallen Part") {
+        state.dropPart = true;
+      } else {
+        state.dropPart = false;
+      }
     },
     setImage: (state, action) => {
       state.image = action.payload;
@@ -94,21 +113,37 @@ export const dcsSlice = createSlice({
     setImagePreview: (state, action) => {
       state.imagePreview = action.payload;
     },
+    setStnDetected: (state, action) => {
+      state.stnDetected = action.payload;
+    },
+    setStnOccured: (state, action) => {
+      state.stnOccured = action.payload;
+    },
     setShowModal: (state, action) => {
       state.showModal = action.payload;
     },
-    setDropPart: (state, action) => {
-      state.dropPart = action.payload;
+    addPqcsItem: (state, action) => {
+      state.pqcsList.push(action.payload);
     },
+    removePqcsItem: (state, action) => {
+      const index = state.pqcsList.findIndex((i) => i === action.payload);
+      state.pqcsList.splice(index, 1);
+    },
+
     resetForm: (state) => {
       state.partNo = "";
       state.remarks = "";
       state.defectType = "";
       state.image = null;
       state.imagePreview = "";
-    }
-  }
-
+      state.checker = "";
+      state.engineCode = "";
+      state.fallenPart = null;
+      state.stnOccured = "";
+      state.stnDetected = "";
+      state.pqcsList = [];
+    },
+  },
 });
 
 export const {
@@ -122,8 +157,8 @@ export const {
   setImage,
   setImagePreview,
   setShowModal,
-  setDropPart,
-  resetForm
+  setFallenPart,
+  resetForm,
 } = dcsSlice.actions;
 
 export default dcsSlice.reducer;

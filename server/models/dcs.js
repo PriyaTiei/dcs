@@ -15,7 +15,7 @@ const pqcsSchema = new mongoose.Schema(
       required: true,
     },
     confirmation: {
-      type: Boolean,
+      type: String,
       required: true,
     },
   },
@@ -25,7 +25,7 @@ const pqcsSchema = new mongoose.Schema(
 const dcsSchema = new mongoose.Schema(
   {
     date: {
-      type: Date,
+      type: String,
       required: true,
     },
     time: {
@@ -55,6 +55,19 @@ const dcsSchema = new mongoose.Schema(
     image: {
       type: String,
       required: false,
+    },
+    fallenPart: {
+      type: String,
+      required: false, 
+      default : null
+    },
+    stnOccured: {
+      type: String,
+      required: true, 
+    },
+    stnDetected: {
+      type: String,
+      required: true, 
     },
     pqcs: [pqcsSchema],
   },

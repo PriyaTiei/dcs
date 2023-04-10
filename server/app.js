@@ -14,7 +14,7 @@ mongoose
   })
   .then(() => {
     app.listen(process.env.PORT);
-    console.log("Succesfully Connected To DCS DB");
+    console.log(`Succesfully Connected To DCS DB at Port : ${process.env.PORT}`);
   })
   .catch((err) => console.log(err));
 app.use((req, res, next) => {

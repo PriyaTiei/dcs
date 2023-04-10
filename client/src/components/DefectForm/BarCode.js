@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
+import {  
+    Button,
+    Modal
+  } from "semantic-ui-react";
 import Quagga from "@ericblade/quagga2";
 
-const BarCodeScanner = ({ onDetected, onClose }) => {
+const BarCodeScanner = ({ onDetected, onClose, open }) => {
   const videoRef = useRef(null);
   const [scannerIsRunning, setScannerIsRunning] = useState(false);
 
@@ -51,6 +55,9 @@ const BarCodeScanner = ({ onDetected, onClose }) => {
   };
 
   return (
+
+    <Modal open={open} onClose={onClose}>
+    <Modal.Content>
     <div>
       {scannerIsRunning && (
         <div className="scanner-container">
@@ -64,6 +71,12 @@ const BarCodeScanner = ({ onDetected, onClose }) => {
         </div>
       )}
     </div>
+    </Modal.Content>
+    <Modal.Actions>
+      <Button onClick={onClose}>Cancel</Button>
+    </Modal.Actions>
+  </Modal>
+    
   );
 };
 

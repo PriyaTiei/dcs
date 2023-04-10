@@ -5,6 +5,6 @@ const { uploadImage } = require("../controllers/image");
 
 router.post("/dcs-form", createDCS);
 router.get("/dcs-forms", getAllDCS);
-router.post("/dcs-forms/upload-image", uploadImage);
+router.post("/dcs-form/upload-image", uploadImage);
 
 module.exports = router;

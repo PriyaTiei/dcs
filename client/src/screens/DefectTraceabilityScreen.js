@@ -16,13 +16,15 @@ export default function DefectTraceabilityScreen() {
 
   useEffect(() => {
     async function fetchData() {
+      console.log(defectForms)
       const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}dcs/dcs-forms`
+        `${process.env.REACT_APP_BACKEND_URL}/dcs/dcs-forms`
       );
-      setDefectForms(response.data.defectForms);
+      console.log(response);
+      setDefectForms(response.data);
     }
     fetchData();
-  }, []);
+  }, [defectForms]);
 
   const handleDateSelect = (date) => {
     setSelectedDate(date);
@@ -38,8 +40,11 @@ export default function DefectTraceabilityScreen() {
     <div>
       <Header as="h2">Defect Forms</Header>
       <Form>
-        <Form.Group widths="equal">
-          <Form.Field>
+        <div style={{
+          display : "flex",
+     
+        }}>
+          <Form.Field width={"2"} style={{ marginRight: "20px" }}>
             <label>Filter by date:</label>
             <DatePicker
               selected={selectedDate}
@@ -47,9 +52,10 @@ export default function DefectTraceabilityScreen() {
               dateFormat="yyyy-MM-dd"
               isClearable={true}
               placeholderText="Select date"
+              
             />
           </Form.Field>
-          <Form.Field>
+          <Form.Field  width={"2"}>
             <label>Search by Engine Number:</label>
             <Input
               icon="search"
@@ -58,7 +64,7 @@ export default function DefectTraceabilityScreen() {
               value={searchTerm}
             />
           </Form.Field>
-        </Form.Group>
+        </div>
       </Form>
       <Table celled>
         <Table.Header>
@@ -73,15 +79,20 @@ export default function DefectTraceabilityScreen() {
             <Table.HeaderCell>Actions</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
-        {/* <Table.Body>
-    {filteredForms.map((defectForm) => (
+        <Table.Body>
+    {filteredForms.map((defectForm, index) => (
       <Table.Row key={defectForm._id}>
+        <Table.Cell>{index + 1 }</Table.Cell> 
         <Table.Cell>{dateFormat(defectForm.date)}</Table.Cell> 
-        <Table.Cell>{defectForm.partNo}</Table.Cell>
-        <Table.Cell>{defectForm.defectType}</Table.Cell>
+        <Table.Cell>{defectForm.engineNo}</Table.Cell>
+        <Table.Cell>{defectForm.engineCode}</Table.Cell>
+        <Table.Cell>{defectForm.bolt}</Table.Cell>
+        <Table.Cell>{defectForm.checker}</Table.Cell>
+        <Table.Cell>{defectForm.defectContent}</Table.Cell>
+        <Table.Cell>{''}</Table.Cell>
       </Table.Row>
     ))}
-  </Table.Body> */}
+  </Table.Body>
       </Table>
     </div>
   );

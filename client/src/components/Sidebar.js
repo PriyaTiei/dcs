@@ -13,8 +13,10 @@ export function AppSidebar({ children }) {
     dispatch(navBarSlice.actions.setActiveItem(value));
   };
 
+  
+
   return (
-    <Sidebar.Pushable style={{ height: "100vh" }}>
+    <Sidebar.Pushable style={{   height : "100vh" }}>
       <Sidebar animation="push" visible={visible}>
         <Menu
           inverted
@@ -22,7 +24,7 @@ export function AppSidebar({ children }) {
           pointing
           style={{
             height: "inherit",
-            width: "254px",
+            width: "254px", 
           }}
         >
           <Menu.Item>
