@@ -2,6 +2,30 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import axios from "axios";
 
+
+
+const initialState = {
+  partNo: '',
+  remarks: '',
+  date: new Date().toLocaleDateString('en-IN', {
+    day: 'numeric',
+    month: 'numeric',
+    year: 'numeric',
+  }),
+  time: new Date().toLocaleTimeString('en-IN', {
+    hour: 'numeric',
+  minute: 'numeric',
+  hour12: true
+  }),
+  checker: '',
+  engineCode: '',
+  defectType: '',
+  image: null,
+  imagePreview: '',
+  showModal: false,
+  dropPart: false,
+};
+
 export const addDcsFormData = createAsyncThunk(
   "dcs/addDcsFormData",
   async (formData, thunkAPI) => {
@@ -40,22 +64,25 @@ export const addDcsFormData = createAsyncThunk(
 
 export const dcsSlice = createSlice({
   name: "dcs",
-  initialState: {
-    partNo: "",
-    remarks: "",
-    defectType: "",
-    image: null,
-    imagePreview: null,
-    showModal: false,
-    loading: false,
-    error: null,
-  },
+  initialState: initialState,
   reducers: {
     setPartNo: (state, action) => {
       state.partNo = action.payload;
     },
     setRemarks: (state, action) => {
       state.remarks = action.payload;
+    },
+    setDate: (state, action) => {
+      state.date = action.payload;
+    },
+    setTime: (state, action) => {
+      state.time = action.payload;
+    },
+    setChecker: (state, action) => {
+      state.checker = action.payload;
+    },
+    setEngineCode: (state, action) => {
+      state.engineCode = action.payload;
     },
     setDefectType: (state, action) => {
       state.defectType = action.payload;
@@ -69,38 +96,33 @@ export const dcsSlice = createSlice({
     setShowModal: (state, action) => {
       state.showModal = action.payload;
     },
+    setDropPart: (state, action) => {
+      state.dropPart = action.payload;
+    },
     resetForm: (state) => {
       state.partNo = "";
       state.remarks = "";
       state.defectType = "";
       state.image = null;
-      state.imagePreview = null;
-    },
-  },
-  extraReducers: {
-    [addDcsFormData.pending]: (state) => {
-      state.loading = true;
-      state.error = null;
-    },
-    [addDcsFormData.fulfilled]: (state) => {
-      state.loading = false;
-      state.error = null;
-    },
-    [addDcsFormData.rejected]: (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    },
-  },
+      state.imagePreview = "";
+    }
+  }
+
 });
 
 export const {
   setPartNo,
   setRemarks,
+  setDate,
+  setTime,
+  setChecker,
+  setEngineCode,
   setDefectType,
   setImage,
   setImagePreview,
   setShowModal,
-  resetForm,
+  setDropPart,
+  resetForm
 } = dcsSlice.actions;
 
 export default dcsSlice.reducer;

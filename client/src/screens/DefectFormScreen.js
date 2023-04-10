@@ -1,7 +1,7 @@
 import React from "react";
-import { Grid, Breadcrumb } from "semantic-ui-react";
+import { Grid, Breadcrumb  } from "semantic-ui-react";
 import DefectForm from "../components/DefectForm/DefectForm"; 
-import { DcsProvider } from "../context/DcsContext";
+import DefectPQCS from "../components/DefectForm/DefectPQCS";
 
 const styles = {
   breadcrumb: {
@@ -22,13 +22,14 @@ export const DefectFormScreen = () => {
         <Breadcrumb.Divider icon="right angle" />
         <Breadcrumb.Section active>Defect Form</Breadcrumb.Section>
       </Breadcrumb>
-      <Grid style={styles.grid}>
-        <Grid.Column width={12}>
-          <DcsProvider>
-            <DefectForm />
-          </DcsProvider>
+      <Grid  style={styles.grid}>
+        <Grid.Column width={12}> 
+            <DefectForm /> 
         </Grid.Column>
-        
+        <Grid.Column width={4}> 
+            <DefectPQCS /> 
+        </Grid.Column>
+       
       </Grid>
     </>
   );

@@ -1,7 +1,6 @@
-import { useContext } from "react";
-import { DcsContext } from "../../context/DcsContext";
-import {
-  Container,
+import { useSelector, useDispatch } from "react-redux";
+import { dcsSlice , addDcsFormData } from "../../redux/slices/dcsSlice";
+import { 
   Segment,
   Form,
   Input,
@@ -10,43 +9,106 @@ import {
   Select,
   Modal,
   Checkbox,
+  FormField
 } from "semantic-ui-react";
 import BarCodeScanner from "../modals/BarCodeModal";
+import { toast } from 'react-toastify'
 
 export default function DefectForm() {
-  const {
-    partNo,
-    remarks,
-    date,
-    time,
-    checker,
-    engineCode,
-    defectType,
-    image,
-    imagePreview,
-    showModal,
-    handlePartNoChange,
-    handleRemarksChange,
-    handleDefectTypeChange,
-    handleEngineCodeChange,
-    handleCheckerChange,
-    handleResetform,
-    handleSubmit,
-    handleImageChange,
-    handleRemoveImage,
-    handleBarcodeButtonClick,
-    handleModalClose,
-  } = useContext(DcsContext);
+  const partNo = useSelector((state) => state.dcs.partNo);
+  const remarks = useSelector((state) => state.dcs.remarks);
+  const date = useSelector((state) => state.dcs.date);
+  const time = useSelector((state) => state.dcs.time);
+  const checker = useSelector((state) => state.dcs.checker);
+  const engineCode = useSelector((state) => state.dcs.engineCode);
+  const defectType = useSelector((state) => state.dcs.defectType);
+  const image = useSelector((state) => state.dcs.image);
+  const imagePreview = useSelector((state) => state.dcs.imagePreview);
+  const showModal = useSelector((state) => state.dcs.showModal);
+  const dropPart = useSelector((state) => state.dcs.dropPart);
+
+  const dispatch = useDispatch();
+
+  const handlePartNoChange = (event) => {
+    dispatch(dcsSlice.actions.setPartNo(event.target.value));
+};
+
+const handleRemarksChange = (event) => {
+    dispatch(dcsSlice.actions.setRemarks(event.target.value));
+};
+
+const handleEngineCodeChange = (event) => {
+    dispatch(dcsSlice.actions.setEngineCode(event.target.value));
+};
+
+const handleCheckerChange = (event) => {
+    dispatch(dcsSlice.actions.setChecker(event.target.value));
+};
+
+const handleDefectTypeChange = (event, data) => {
+    dispatch(dcsSlice.actions.setDefectType(data.value));
+};
+
+const handleDropPartChange = (event, data) => {
+    dispatch(dcsSlice.actions.setDropPart(data.checked)); 
+};
+
+const handleImageChange = (event) => {
+  dcsSlice.actions.setImage(event.target.files[0]);
+  dcsSlice.actions.setImagePreview(URL.createObjectURL(event.target.files[0]));
+  console.log(event.target.files[0])
+  console.log(imagePreview)
+  console.log(image)
+};
+
+const handleRemoveImage = (event) => {
+  dcsSlice.actions.setImage();
+  dcsSlice.actions.setImagePreview("");
+};
+
+const handleBarcodeButtonClick = (e) => {
+  e.preventDefault();
+  dcsSlice.actions.setShowModal(true);
+};
+
+const handleModalClose = () => {
+  dcsSlice.actions.setShowModal(false);
+};
+
+const handleSubmit = async (event) => {
+  event.preventDefault();
+
+  try {
+    await dispatch(addDcsFormData({
+      date,
+      time,
+      remarks,
+      partNo,
+      defectType,
+      engineCode,
+      image
+    }));
+
+    toast.success("Successful !");
+    handleResetform();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+
+const handleResetform = () => {
+    dispatch(dcsSlice.actions.resetForm());
+};
 
   const options = [
     { value: "Defect A", text: "Defect A" },
     { value: "Defect B", text: "Defect B" },
-  ];
-
+  ]; 
   
 
   return (
-    <Container>
+  
       <Segment>
         <h2>Assembly Offline Treatment Sheet</h2>
         <Form onSubmit={handleSubmit}>
@@ -91,7 +153,7 @@ export default function DefectForm() {
                   }}
                 >
                   <label >Defect Contents</label>
-                  <Checkbox toggle />
+                  <Checkbox onChange={handleDropPartChange} checked={dropPart} toggle />
                 </div>
               }
               control={Select}
@@ -102,6 +164,14 @@ export default function DefectForm() {
               required 
             />
           </Form.Group>
+          {dropPart && <Form.Group widths="equal">
+          <FormField/>
+            <Form.Field 
+            label="Engine Code :"
+            control={Input} 
+            placeholder=""/>
+               
+            </Form.Group>}
           <Form.Group widths="equal">
             <Form.Field
              label="Engine Code :"
@@ -164,7 +234,7 @@ export default function DefectForm() {
           </Modal.Actions>
         </Modal>
       </Segment>
-    </Container>
+ 
   );
 }
 

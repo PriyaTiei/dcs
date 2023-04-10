@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Menu, Sidebar, Icon, Image, Container } from "semantic-ui-react";
+import { Menu, Sidebar, Icon, Image  } from "semantic-ui-react";
 import logo from "../assets/logo.png";
 import { useSelector, useDispatch } from "react-redux";
 import { navBarSlice } from "../redux/slices/navbarSlice"; 
@@ -62,11 +62,17 @@ export function AppSidebar({ children }) {
 
       <Sidebar.Pusher
         style={{
-          maxWidth: visible ? "83vw" : "100vw",
+          maxWidth: visible ? "86.3vw" : "100vw",
           transition: "0.4s ease-in-out",
         }}
       >
-        <Container>{children}</Container>
+        <div style={
+          {
+            paddingLeft : 40,
+            paddingRight : 60
+          }
+        }>{children} </div>
+         
       </Sidebar.Pusher>
     </Sidebar.Pushable>
   );
