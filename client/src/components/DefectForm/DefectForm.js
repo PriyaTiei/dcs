@@ -8,8 +8,7 @@ import {
   Select,
   FormField,
 } from "semantic-ui-react";
-import BarCodeScanner from "../DefectForm/BarCode";
-import { toast } from "react-toastify";
+import BarCodeScanner from "../DefectForm/BarCode"; 
 
 export default function DefectForm() {
   const partNo = useSelector((state) => state.dcs.partNo);
@@ -20,13 +19,20 @@ export default function DefectForm() {
   const engineCode = useSelector((state) => state.dcs.engineCode);
   const defectType = useSelector((state) => state.dcs.defectType);
   const image = useSelector((state) => state.dcs.image);
-  const imagePreview = useSelector((state) => state.dcs.imagePreview);
   const showModal = useSelector((state) => state.dcs.showModal);
   const dropPart = useSelector((state) => state.dcs.dropPart);
-  const fallenPart = useSelector((state) => state.dcs.fallenPart);
-  const stnOccured = useSelector((state) => state.dcs.stnOccured);
-  const stnDetected = useSelector((state) => state.dcs.stnDetected);
+  const fallenPart = useSelector((state) => state.dcs.fallenPart); 
   const pqcsList = useSelector((state) => state.dcs.pqcsList);
+  const stnOccured = useSelector(state => state.dcs.stnOccured);
+  const stnDetected = useSelector(state => state.dcs.stnDetected);
+
+  const handleStnOccuredChange = (e) => {
+    dispatch(dcsSlice.actions.setStnOccured(e.target.value))
+  }
+
+  const handleStnDetectedChange = (e) => {
+    dispatch(dcsSlice.actions.setStnDetected(e.target.value))
+  }
 
   const dispatch = useDispatch();
 
@@ -54,19 +60,7 @@ export default function DefectForm() {
     dispatch(dcsSlice.actions.setFallenPart(event.target.value));
   };
 
-  const handleImageChange = (event) => {
-    dispatch(dcsSlice.actions.setImage(event.target.files[0]));
-    dispatch(
-      dcsSlice.actions.setImagePreview(
-        URL.createObjectURL(event.target.files[0])
-      )
-    );
-  };
-
-  const handleRemoveImage = (event) => {
-    dispatch(dcsSlice.actions.setImage());
-    dispatch(dcsSlice.actions.setImagePreview(""));
-  };
+ 
 
   const handleBarcodeButtonClick = (e) => {
     e.preventDefault();
@@ -79,11 +73,10 @@ export default function DefectForm() {
 
   const handleBarCodeDetected = (code) => {
     console.log("Barcode detected: ", code);
-    
   };
 
   const handleSubmit = async (event) => {
-    console.log('Called') 
+    console.log("Called");
     try {
       dispatch(
         addDcsFormData({
@@ -101,15 +94,10 @@ export default function DefectForm() {
           image,
         })
       );
-
-     
-       
     } catch (error) {
       console.error(error);
     }
   };
-
- 
 
   const options = [
     { value: "Defect A", text: "Defect A" },
@@ -136,6 +124,22 @@ export default function DefectForm() {
             type="sticky"
           />
         </div>
+        <Form.Field> 
+          <Form.Group widths="equal">
+            <Form.Input
+              label="Station Occurred"
+              value={stnOccured}
+              onChange={handleStnOccuredChange}
+              required 
+            />
+            <Form.Input
+            required
+              label="Station Detected"
+              value={stnDetected}
+              onChange={handleStnDetectedChange}
+            />
+          </Form.Group>
+        </Form.Field>
 
         <Form.Group widths="equal">
           <Form.Field required>
@@ -202,28 +206,7 @@ export default function DefectForm() {
           onChange={handleRemarksChange}
           style={{ height: 50 }}
         />
-        <Form.Field>
-          <label>Image :</label>
-          <div className="ui action input">
-            <Input
-              type="file"
-              onChange={handleImageChange}
-              accept="image/*"
-              capture="camera"
-            />
-            {image && (
-              <button onClick={handleRemoveImage}>
-                <i className="ui icon remove" />
-              </button>
-            )}
-          </div>
-        </Form.Field>
-
-        {image && (
-          <div>
-            <img src={imagePreview} alt={""} height={200} />
-          </div>
-        )}
+       
 
         <Button className="ui button fluid black" type="submit">
           Submit

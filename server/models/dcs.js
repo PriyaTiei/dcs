@@ -71,7 +71,7 @@ const dcsSchema = new mongoose.Schema(
     },
     pqcs: [pqcsSchema],
   },
-  { collection: "dcs-forms", timestamps: true }
+  { collection: "forms", timestamps: true }
 );
 
 const DCS = mongoose.model("Dcs", dcsSchema);

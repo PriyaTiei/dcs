@@ -30,11 +30,12 @@ const initialState = {
 
 export const addDcsFormData = createAsyncThunk(
   "dcs/addDcsFormData",
-  async (formData, thunkAPI) => { 
-    console.log(formData.image)
-    const imageData = new FormData();
+  async (formData, thunkAPI) => {
+    let imagePath = null;  
+    if(formData.image) {
+      const imageData = new FormData();
     imageData.append("image", formData.image);
-    const imagePath = await axios.post(
+    const imageP = await axios.post(
       `${process.env.REACT_APP_BACKEND_URL}/dcs/dcs-form/upload-image`,
       imageData,
       {
@@ -43,6 +44,8 @@ export const addDcsFormData = createAsyncThunk(
         },
       }
     );
+    imagePath = imageP;
+    }
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/dcs/dcs-form`,
@@ -56,13 +59,14 @@ export const addDcsFormData = createAsyncThunk(
           engineCode: formData.engineCode,
           stnDetected: formData.stnDetected,
           stnOccured: formData.stnOccured,
-          pqcsList: formData.pqcsList,
+          pqcs: formData.pqcsList,
           checker: formData.checker,
-          image: imagePath.data["imagePath"],
+          image: imagePath  != null ? imagePath.data["imagePath"] : null,
         }
       );
-      if(response.status === 200) {
+      if(response.status === 201) {
         toast.success("Successful !");
+        dcsSlice.actions.resetForm();
       } else {
         console.log(response)
       }

@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
-import { Table, Input, Button } from "semantic-ui-react";
+import { Form, Input, Button } from "semantic-ui-react";
 import PQCSForm from "./PQCSForm";
 import { useState } from "react";
 import { dcsSlice } from "../../redux/slices/dcsSlice";
@@ -8,16 +8,22 @@ export default function DefectPQCS() {
 
   const dispatch = useDispatch();
 
-  const stnOccured = useSelector(state => state.dcs.stnOccured);
-  const stnDetected = useSelector(state => state.dcs.stnDetected);
+  const image = useSelector((state) => state.dcs.image);
+  const imagePreview = useSelector((state) => state.dcs.imagePreview);
 
-  const handleStnOccuredChange = (e) => {
-    dispatch(dcsSlice.actions.setStnOccured(e.target.value))
-  }
+  const handleImageChange = (event) => {
+    dispatch(dcsSlice.actions.setImage(event.target.files[0]));
+    dispatch(
+      dcsSlice.actions.setImagePreview(
+        URL.createObjectURL(event.target.files[0])
+      )
+    );
+  };
 
-  const handleStnDetectedChange = (e) => {
-    dispatch(dcsSlice.actions.setStnDetected(e.target.value))
-  }
+  const handleRemoveImage = (event) => {
+    dispatch(dcsSlice.actions.setImage());
+    dispatch(dcsSlice.actions.setImagePreview(""));
+  };
 
   const [pqcsModal, setPqcsModal] = useState(false);
 
@@ -28,30 +34,28 @@ export default function DefectPQCS() {
         onOpen={() => setPqcsModal(true)}
         open={pqcsModal}
       />
-      <Table celled>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell textAlign="center" colSpan={2}>
-              Station
-            </Table.HeaderCell>
-          </Table.Row>
-          <Table.Row>
-            <Table.HeaderCell textAlign="center">Occured</Table.HeaderCell>
-            <Table.HeaderCell textAlign="center">Detected</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
+       <Form.Field>
+          <label>Image :</label>
+          <div className="ui action input">
+            <Input
+              type="file"
+              onChange={handleImageChange}
+              accept="image/*"
+              capture="camera"
+            />
+            {image && (
+              <button onClick={handleRemoveImage}>
+                <i className="ui icon remove" />
+              </button>
+            )}
+          </div>
+        </Form.Field>
 
-        <Table.Body>
-          <Table.Row>
-            <Table.Cell>
-              <Input value ={stnOccured} onChange={handleStnOccuredChange}/>
-            </Table.Cell>
-            <Table.Cell>
-              <Input value={stnDetected} onChange={handleStnDetectedChange}/>
-            </Table.Cell>
-          </Table.Row>
-        </Table.Body>
-      </Table>
+        {image && (
+          <div>
+            <img src={imagePreview} alt={""} height={200} />
+          </div>
+        )}
       <Button
         onClick={() => setPqcsModal(true)}
         className="ui button fluid blue"

@@ -1,22 +1,23 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Header, Form, Table, Input } from "semantic-ui-react";
+import { Header, Form, Table, Input, Button, Icon } from "semantic-ui-react";
 import { dateFormat } from "../services/DateParser";
 import DatePicker from "react-datepicker";
+import ReportModal from "../components/DefectForm/ReportModal"
 
 export default function DefectTraceabilityScreen() {
   const [defectForms, setDefectForms] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [reportModal, setReportModal] = useState(false);
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
   useEffect(() => {
     async function fetchData() {
-      console.log(defectForms)
+      console.log(defectForms);
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/dcs/dcs-forms`
       );
@@ -40,10 +41,11 @@ export default function DefectTraceabilityScreen() {
     <div>
       <Header as="h2">Defect Forms</Header>
       <Form>
-        <div style={{
-          display : "flex",
-     
-        }}>
+        <div
+          style={{
+            display: "flex",
+          }}
+        >
           <Form.Field width={"2"} style={{ marginRight: "20px" }}>
             <label>Filter by date:</label>
             <DatePicker
@@ -52,10 +54,9 @@ export default function DefectTraceabilityScreen() {
               dateFormat="yyyy-MM-dd"
               isClearable={true}
               placeholderText="Select date"
-              
             />
           </Form.Field>
-          <Form.Field  width={"2"}>
+          <Form.Field width={"2"}>
             <label>Search by Engine Number:</label>
             <Input
               icon="search"
@@ -73,26 +74,31 @@ export default function DefectTraceabilityScreen() {
             <Table.HeaderCell>Date & Time</Table.HeaderCell>
             <Table.HeaderCell>Engine Number</Table.HeaderCell>
             <Table.HeaderCell>Engine Code</Table.HeaderCell>
-            <Table.HeaderCell>Bolt</Table.HeaderCell>
             <Table.HeaderCell>Checker</Table.HeaderCell>
             <Table.HeaderCell>Defect Content</Table.HeaderCell>
             <Table.HeaderCell>Actions</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
-    {filteredForms.map((defectForm, index) => (
-      <Table.Row key={defectForm._id}>
-        <Table.Cell>{index + 1 }</Table.Cell> 
-        <Table.Cell>{dateFormat(defectForm.date)}</Table.Cell> 
-        <Table.Cell>{defectForm.engineNo}</Table.Cell>
-        <Table.Cell>{defectForm.engineCode}</Table.Cell>
-        <Table.Cell>{defectForm.bolt}</Table.Cell>
-        <Table.Cell>{defectForm.checker}</Table.Cell>
-        <Table.Cell>{defectForm.defectContent}</Table.Cell>
-        <Table.Cell>{''}</Table.Cell>
-      </Table.Row>
-    ))}
-  </Table.Body>
+          {filteredForms.map((defectForm, index) => (<>
+            <Table.Row key={defectForm._id}>
+              <Table.Cell>{index + 1}</Table.Cell>
+              <Table.Cell>{dateFormat(defectForm.date)}</Table.Cell>
+              <Table.Cell>{defectForm.engineNo}</Table.Cell>
+              <Table.Cell>{defectForm.engineCode}</Table.Cell>
+              <Table.Cell>{defectForm.checker}</Table.Cell>
+              <Table.Cell>{defectForm.defectContent}</Table.Cell>
+              <Table.Cell>
+                <Button onClick={() => setReportModal(true)} icon>
+                  <Icon name="warning sign" />
+                </Button>
+              </Table.Cell>
+            </Table.Row>
+            < ReportModal open={reportModal} onClose={() => setReportModal(false)} onOpen={() => setReportModal(true)} defectForm={defectForm}/> 
+            </>
+          ))}
+          
+        </Table.Body>
       </Table>
     </div>
   );
