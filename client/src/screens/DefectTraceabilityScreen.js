@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Header, Form, Table, Input, Button, Icon } from "semantic-ui-react";
-import { dateFormat } from "../services/DateParser";
+import moment from 'moment';
+import { Header, Form, Table, Input, Button, Icon } from "semantic-ui-react"; 
 import DatePicker from "react-datepicker";
 import ReportModal from "../components/DefectForm/ReportModal"
 
@@ -31,11 +31,30 @@ export default function DefectTraceabilityScreen() {
     setSelectedDate(date);
   };
 
-  const filteredForms = selectedDate
-    ? defectForms.filter(
-        (defectForm) => defectForm.date === selectedDate.toISOString()
-      )
-    : defectForms;
+  const filteredForms = defectForms.filter((defectForm) => {
+    const date = new Date(defectForm.date);
+    const engineNo = defectForm.engineNo.toLowerCase();
+  
+ 
+    if (selectedDate && !isSameDay(date, selectedDate)) {
+      return false;
+    }
+  
+  
+    if (searchTerm && !engineNo.includes(searchTerm.toLowerCase())) {
+      return false;
+    }
+  
+    return true;
+  });
+
+  function isSameDay(date1, date2) {
+    return (
+      date1.getDate() === date2.getDate() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getFullYear() === date2.getFullYear()
+    );
+  }
 
   return (
     <div>
@@ -83,7 +102,7 @@ export default function DefectTraceabilityScreen() {
           {filteredForms.map((defectForm, index) => (<>
             <Table.Row key={defectForm._id}>
               <Table.Cell>{index + 1}</Table.Cell>
-              <Table.Cell>{dateFormat(defectForm.date)}</Table.Cell>
+              <Table.Cell>{moment(defectForm.date, "DD/MM/YYYY").format("YYYY-MM-DD")}</Table.Cell>
               <Table.Cell>{defectForm.engineNo}</Table.Cell>
               <Table.Cell>{defectForm.engineCode}</Table.Cell>
               <Table.Cell>{defectForm.checker}</Table.Cell>
