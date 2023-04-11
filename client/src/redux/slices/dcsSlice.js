@@ -66,10 +66,8 @@ export const addDcsFormData = createAsyncThunk(
       );
       if(response.status === 201) {
         toast.success("Successful !");
-        dcsSlice.actions.resetForm();
-      } else {
-        console.log(response)
-      }
+        thunkAPI.dispatch(resetForm());
+      }  
       return response.data;
     } catch (error) {
       console.error(error);

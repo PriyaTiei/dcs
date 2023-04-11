@@ -43,7 +43,7 @@ export default function PQCSForm({ onOpen, onClose, onSave, open }) {
     >
       <Modal.Header>Process Quality Confirmation Sheet</Modal.Header>
       <Modal.Content>
-        <Table celled textAlign="center">
+        <Table textAlign="center">
           <Table.Header>
             <Table.Row>
               <Table.HeaderCell rowSpan={2} colSpan={1}>

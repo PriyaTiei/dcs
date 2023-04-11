@@ -2,6 +2,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Table, Button, Icon } from "semantic-ui-react";
 import { dcsSlice } from "../../redux/slices/dcsSlice";
+import PQCSForm from "./PQCSForm";
+import { useState } from "react";
 
 export default function PQCSTable() {
   const dispatch = useDispatch(); 
@@ -12,9 +14,25 @@ export default function PQCSTable() {
     dispatch(dcsSlice.actions.removePqcsItem(i))
   }
 
+  const [pqcsModal, setPqcsModal] = useState(false);
+
   return (
-    <Table celled textAlign="center">
+    <>
+    <PQCSForm
+        onClose={() => setPqcsModal(false)}
+        onOpen={() => setPqcsModal(true)}
+        open={pqcsModal}
+      />
+    <Table onClick={() => setPqcsModal(true)} celled textAlign="center">
       <Table.Header>
+        <Table.Row>
+          <Table.HeaderCell colSpan={12} rowSpan={1}><Button
+        onClick={() => setPqcsModal(true)}
+        className="ui button fluid basic"
+      >
+        Process Quality Confirmation Sheet
+      </Button></Table.HeaderCell>
+        </Table.Row>
         <Table.Row>
           <Table.HeaderCell rowSpan={2} colSpan={1}>
             Bolt
@@ -61,5 +79,6 @@ export default function PQCSTable() {
         })}
       </Table.Body>
     </Table>
+    </>
   );
 }

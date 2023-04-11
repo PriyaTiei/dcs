@@ -1,8 +1,8 @@
 import React from "react";
 import { Grid, Breadcrumb, Segment  } from "semantic-ui-react";
-import DefectForm from "../components/DefectForm/DefectForm"; 
-import DefectPQCS from "../components/DefectForm/DefectPQCS";
+import DefectForm from "../components/DefectForm/DefectForm";  
 import PQCSTable from "../components/DefectForm/PQCSTable";
+import DefectImage from "../components/DefectForm/DefectImage";
 
 const styles = {
   breadcrumb: {
@@ -30,7 +30,7 @@ export const DefectFormScreen = () => {
             <DefectForm /> 
         </Grid.Column>
         <Grid.Column width={4}> 
-            <DefectPQCS /> 
+            <DefectImage /> 
             <PQCSTable /> 
         </Grid.Column>          
       </Grid>

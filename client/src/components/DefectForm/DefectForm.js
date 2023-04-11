@@ -177,6 +177,7 @@ export default function DefectForm() {
               value={fallenPart}
               onChange={handleFallenPartChange}
               placeholder=""
+              required
             />
           </Form.Group>
         )}

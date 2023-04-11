@@ -1,10 +1,8 @@
 import { useSelector, useDispatch } from "react-redux";
-import { Form, Input, Button } from "semantic-ui-react";
-import PQCSForm from "./PQCSForm";
-import { useState } from "react";
+import { Form, Input  } from "semantic-ui-react";
 import { dcsSlice } from "../../redux/slices/dcsSlice";
 
-export default function DefectPQCS() {
+export default function DefectImage() {
 
   const dispatch = useDispatch();
 
@@ -25,15 +23,11 @@ export default function DefectPQCS() {
     dispatch(dcsSlice.actions.setImagePreview(""));
   };
 
-  const [pqcsModal, setPqcsModal] = useState(false);
+  
 
   return (
     <>
-      <PQCSForm
-        onClose={() => setPqcsModal(false)}
-        onOpen={() => setPqcsModal(true)}
-        open={pqcsModal}
-      />
+      
        <Form.Field>
           <label>Image :</label>
           <div className="ui action input">
@@ -56,12 +50,7 @@ export default function DefectPQCS() {
             <img src={imagePreview} alt={""} height={200} />
           </div>
         )}
-      <Button
-        onClick={() => setPqcsModal(true)}
-        className="ui button fluid blue"
-      >
-        Process Quality Confirmation Sheet
-      </Button>
+      
     </>
   );
 }
