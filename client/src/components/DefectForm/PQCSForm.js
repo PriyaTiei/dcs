@@ -3,7 +3,7 @@ import { Modal, Table, Button, Input } from "semantic-ui-react";
 import { pqcsSlice } from "../../redux/slices/pqcsSlice";
 import { dcsSlice } from "../../redux/slices/dcsSlice";
 
-export default function PQCSForm({ onOpen, onClose,   open }) {
+export default function PQCSForm({ onOpen, onClose, onSave, open }) {
   const dispatch = useDispatch();
 
   const bolt = useSelector((state) => state.pqcs.bolt);

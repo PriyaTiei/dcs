@@ -9,10 +9,7 @@ const store = configureStore({
     navBar: navBarReducer,
     pqcs : pqcsReducer
   },
-  middleware: getDefaultMiddleware =>
-  getDefaultMiddleware({
-    serializableCheck: false,
-  }),
+   
 });
 
 export default store;

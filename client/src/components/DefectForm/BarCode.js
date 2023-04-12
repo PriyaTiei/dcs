@@ -1,55 +1,16 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState,  useRef } from "react";
 import {  
     Button,
     Modal
-  } from "semantic-ui-react";
-import Quagga from "@ericblade/quagga2";
+  } from "semantic-ui-react"; 
 
-const BarCodeScanner = ({ onDetected, onClose, open }) => {
+const BarCodeScanner = ({  onClose, open }) => {
   const videoRef = useRef(null);
   const [scannerIsRunning, setScannerIsRunning] = useState(false);
 
-  useEffect(() => {
-    Quagga.init(
-      {
-        inputStream: {
-          name: "Live",
-          type: "LiveStream",
-          target: videoRef.current,
-          constraints: {
-            facingMode: "environment",
-          },
-        },
-        decoder: {
-          readers: ["ean_reader"],
-        },
-      },
-      (err) => {
-        if (err) {
-          console.log(err);
-          return;
-        }
-        Quagga.start();
-        setScannerIsRunning(true);
-      }
-    );
+ 
 
-    Quagga.onDetected((data) => {
-      if (onDetected) {
-        onDetected(data.codeResult.code);
-        Quagga.stop();
-        setScannerIsRunning(false);
-      }
-    });
-
-    return () => {
-      Quagga.offDetected();
-      Quagga.stop();
-    };
-  }, [onDetected]);
-
-  const handleStopScanner = () => {
-    Quagga.stop();
+  const handleStopScanner = () => { 
     setScannerIsRunning(false);
     onClose();
   };

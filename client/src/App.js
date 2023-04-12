@@ -12,7 +12,7 @@ export default function App() {
       <AppSidebar>
           <ContentWrapper>
             <Routes>
-              <Route path="/" element={<DefectTraceabilityScreen />} />
+              <Route   path="/" element={<DefectTraceabilityScreen />} />
               <Route path="/add-form" element={<DefectFormScreen />} /> 
             </Routes>
           </ContentWrapper>

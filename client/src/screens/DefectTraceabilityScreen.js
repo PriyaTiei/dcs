@@ -36,21 +36,23 @@ export default function DefectTraceabilityScreen() {
       setDefectForms(response.data);
     }
     fetchData();
-  } );
+  } , []);
 
   const handleDateSelect = (date) => {
     setSelectedDate(date);
   };
 
   const filteredForms = defectForms.filter((defectForm) => {
-    const date = new Date(defectForm.date);
-    const engineNo = defectForm.engineNo.toLowerCase()
-
+    const [day, month, year] = defectForm.date.split("/");
+    const date = new Date(`${year}/${month}/${day}`);
+    
  
     if (selectedDate && !isSameDay(date, selectedDate)) {
+      console.log(selectedDate);
+      console.log(date)
       return false;
     }
-  
+    const engineNo = defectForm.engineNo.toLowerCase() 
     if (searchTerm && !engineNo.includes(searchTerm.toLowerCase())) {
       return false;
     }
@@ -133,7 +135,7 @@ export default function DefectTraceabilityScreen() {
         </Table.Body>
       </Table>
       <ReportModal
-  open={selectedDefectFormIndex !== null}
+  open={reportModal}
   defectForm={filteredForms[selectedDefectFormIndex]}
   onClose={handleModalClose}
 />
