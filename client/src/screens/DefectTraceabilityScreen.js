@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import moment from 'moment';
-import { Header, Form, Table, Input, Button, Icon } from "semantic-ui-react"; 
+import moment from "moment";
+import { Header, Form, Table, Input, Button, Icon } from "semantic-ui-react";
 import DatePicker from "react-datepicker";
-import ReportModal from "../components/DefectForm/ReportModal"
+import ReportModal from "../components/DefectForm/ReportModal";
 
 export default function DefectTraceabilityScreen() {
   const [defectForms, setDefectForms] = useState([]);
@@ -11,21 +11,32 @@ export default function DefectTraceabilityScreen() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [reportModal, setReportModal] = useState(false);
+
+  const [selectedDefectFormIndex, setSelectedDefectFormIndex] = useState(null);
+
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
+  const handleModalOpen = (index) => {
+    setSelectedDefectFormIndex(index);
+    setReportModal(true);
+  };
+
+  const handleModalClose = () => {
+    setSelectedDefectFormIndex(null);
+    setReportModal(false);
+  };
+
   useEffect(() => {
     async function fetchData() {
-      console.log(defectForms);
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/dcs/dcs-forms`
       );
-      console.log(response);
       setDefectForms(response.data);
     }
     fetchData();
-  }, [defectForms]);
+  } );
 
   const handleDateSelect = (date) => {
     setSelectedDate(date);
@@ -33,18 +44,17 @@ export default function DefectTraceabilityScreen() {
 
   const filteredForms = defectForms.filter((defectForm) => {
     const date = new Date(defectForm.date);
-    const engineNo = defectForm.engineNo.toLowerCase();
-  
+    const engineNo = defectForm.engineNo.toLowerCase()
+
  
     if (selectedDate && !isSameDay(date, selectedDate)) {
       return false;
     }
   
-  
     if (searchTerm && !engineNo.includes(searchTerm.toLowerCase())) {
       return false;
     }
-  
+
     return true;
   });
 
@@ -58,7 +68,8 @@ export default function DefectTraceabilityScreen() {
 
   return (
     <div>
-      <Header as="h2">Defect Forms</Header>
+     
+      <Header as="h2">Traceability Forms</Header>
       <Form>
         <div
           style={{
@@ -95,30 +106,37 @@ export default function DefectTraceabilityScreen() {
             <Table.HeaderCell>Engine Code</Table.HeaderCell>
             <Table.HeaderCell>Checker</Table.HeaderCell>
             <Table.HeaderCell>Defect Content</Table.HeaderCell>
-            <Table.HeaderCell>Actions</Table.HeaderCell>
+            <Table.HeaderCell>Detailed Report</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {filteredForms.map((defectForm, index) => (<>
-            <Table.Row key={defectForm._id}>
-              <Table.Cell>{index + 1}</Table.Cell>
-              <Table.Cell>{moment(defectForm.date, "DD/MM/YYYY").format("YYYY-MM-DD")}</Table.Cell>
-              <Table.Cell>{defectForm.engineNo}</Table.Cell>
-              <Table.Cell>{defectForm.engineCode}</Table.Cell>
-              <Table.Cell>{defectForm.checker}</Table.Cell>
-              <Table.Cell>{defectForm.defectContent}</Table.Cell>
-              <Table.Cell>
-                <Button onClick={() => setReportModal(true)} icon>
-                  <Icon name="warning sign" />
-                </Button>
-              </Table.Cell>
-            </Table.Row>
-            < ReportModal open={reportModal} onClose={() => setReportModal(false)} onOpen={() => setReportModal(true)} defectForm={defectForm}/> 
+          {filteredForms.map((defectForm, index) => (
+            <>
+              <Table.Row key={defectForm._id}>
+                <Table.Cell>{index + 1}</Table.Cell>
+                <Table.Cell>
+                  {moment(defectForm.date, "DD/MM/YYYY").format("YYYY-MM-DD")}
+                </Table.Cell>
+                <Table.Cell>{defectForm.engineNo}</Table.Cell>
+                <Table.Cell>{defectForm.engineCode}</Table.Cell>
+                <Table.Cell>{defectForm.checker}</Table.Cell>
+                <Table.Cell>{defectForm.defectContent}</Table.Cell>
+                <Table.Cell>
+                  <Button onClick={() => handleModalOpen(index)} icon>
+                    <Icon name="warning sign" />
+                  </Button>
+                </Table.Cell>
+              </Table.Row>
+               
             </>
           ))}
-          
         </Table.Body>
       </Table>
+      <ReportModal
+  open={selectedDefectFormIndex !== null}
+  defectForm={filteredForms[selectedDefectFormIndex]}
+  onClose={handleModalClose}
+/>
     </div>
   );
 }

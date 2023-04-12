@@ -66,7 +66,7 @@ export function AppSidebar({ children }) {
             paddingRight: 60,
           }}
         >
-          {children}{" "}
+          {children} 
         </div>
       </Sidebar.Pusher>
     </Sidebar.Pushable>
@@ -86,6 +86,7 @@ const SidebarTile = ({ title, value, activeItem, handleItemClick, icon, href }) 
       name={value}
       active={activeItem === value}
       onClick={() => handleItemClick(value)}
+      key={value}
     >
       {title}
       <Icon name={icon} />

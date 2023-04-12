@@ -12,7 +12,7 @@ export default function ReportModal({ defectForm, open, onClose, onOpen }) {
   return (
     <Modal open={open} onOpen={onOpen} onClose={onClose}>
       <Modal.Header>Defect Report</Modal.Header>
-      <Modal.Content>
+     { defectForm && <Modal.Content>
         <Segment>
           <Grid columns={3} stackable>
             <Grid.Column width={4}>
@@ -92,7 +92,7 @@ export default function ReportModal({ defectForm, open, onClose, onOpen }) {
             </Table.Body>
           </Table>
         </Segment>
-      </Modal.Content>
+      </Modal.Content>}
     </Modal>
   );
 }
