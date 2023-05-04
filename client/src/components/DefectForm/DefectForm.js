@@ -8,7 +8,7 @@ import {
   Select,
   FormField,
 } from "semantic-ui-react";
-import BarCodeScanner from "../DefectForm/BarCode"; 
+import BarCodeScanner from "../DefectForm/BarCode";
 
 export default function DefectForm() {
   const partNo = useSelector((state) => state.dcs.partNo);
@@ -21,18 +21,18 @@ export default function DefectForm() {
   const image = useSelector((state) => state.dcs.image);
   const showModal = useSelector((state) => state.dcs.showModal);
   const dropPart = useSelector((state) => state.dcs.dropPart);
-  const fallenPart = useSelector((state) => state.dcs.fallenPart); 
+  const fallenPart = useSelector((state) => state.dcs.fallenPart);
   const pqcsList = useSelector((state) => state.dcs.pqcsList);
-  const stnOccured = useSelector(state => state.dcs.stnOccured);
-  const stnDetected = useSelector(state => state.dcs.stnDetected);
+  const stnOccured = useSelector((state) => state.dcs.stnOccured);
+  const stnDetected = useSelector((state) => state.dcs.stnDetected);
 
   const handleStnOccuredChange = (e) => {
-    dispatch(dcsSlice.actions.setStnOccured(e.target.value))
-  }
+    dispatch(dcsSlice.actions.setStnOccured(e.target.value));
+  };
 
   const handleStnDetectedChange = (e) => {
-    dispatch(dcsSlice.actions.setStnDetected(e.target.value))
-  }
+    dispatch(dcsSlice.actions.setStnDetected(e.target.value));
+  };
 
   const dispatch = useDispatch();
 
@@ -59,8 +59,6 @@ export default function DefectForm() {
   const handleFallenPartChange = (event) => {
     dispatch(dcsSlice.actions.setFallenPart(event.target.value));
   };
-
- 
 
   const handleBarcodeButtonClick = (e) => {
     e.preventDefault();
@@ -100,8 +98,17 @@ export default function DefectForm() {
   };
 
   const options = [
-    { value: "Defect A", text: "Defect A" },
-    { value: "Defect B", text: "Defect B" },
+    { value: "Bolt Cross Thread", text: "Bolt Cross Thread" },
+    { value: "Bolt Under Torque", text: "Bolt Under Torque" },
+    { value: "Bolt Over Torque", text: "Bolt Over Torque" },
+    { value: "Nut Cross Thread", text: "Nut Cross Thread" },
+    { value: "Nut Over Torque", text: "Nut Over Torque" },
+    { value: "Nut Under Torque", text: "Nut Under Torque" },
+    { value: "Position Error", text: "Position Error" },
+    { value: "Not Tightened", text: "Not Tightened" },
+    { value: "Wrong Paint Mark", text: "Wrong Paint Mark" },
+    { value: "Wrong Part Assembly", text: "Wrong Part Assembly" },
+    { value: "Part Missing", text: "Part Missing" },
     { value: "Fallen Part", text: "Fallen Part" },
   ];
 
@@ -124,16 +131,16 @@ export default function DefectForm() {
             type="sticky"
           />
         </div>
-        <Form.Field> 
+        <Form.Field>
           <Form.Group widths="equal">
             <Form.Input
               label="Station Occurred"
               value={stnOccured}
               onChange={handleStnOccuredChange}
-              required 
+              required
             />
             <Form.Input
-            required
+              required
               label="Station Detected"
               value={stnDetected}
               onChange={handleStnDetectedChange}
@@ -207,7 +214,6 @@ export default function DefectForm() {
           onChange={handleRemarksChange}
           style={{ height: 50 }}
         />
-       
 
         <Button className="ui button fluid black" type="submit">
           Submit

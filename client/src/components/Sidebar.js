@@ -3,6 +3,7 @@ import { Menu, Sidebar, Icon, Image } from "semantic-ui-react";
 import logo from "../assets/logo.png";
 import { useSelector, useDispatch } from "react-redux";
 import { navBarSlice } from "../redux/slices/navbarSlice";
+import {getChangePoints} from "../redux/slices/changepoints/changePointActions"
 
 export function AppSidebar({ children }) {
   const { visible } = useSelector((state) => state.navBar);
@@ -10,8 +11,16 @@ export function AppSidebar({ children }) {
   const dispatch = useDispatch();
 
   const handleItemClick = (value) => {
+    
     dispatch(navBarSlice.actions.setActiveItem(value));
+    
   };
+  const handleChagePoints = (value) => {
+    dispatch(getChangePoints())  
+    
+    
+  };
+
 
   
 
@@ -46,10 +55,18 @@ export function AppSidebar({ children }) {
           <SidebarTile
             title="Add Assy Checksheet"
             value="add_assy_checksheet"
-            icon={"add"}
+            icon={"add"}   
             activeItem={activeItem}
-            handleItemClick={handleItemClick}
+            handleItemClick={handleItemClick}       
+           
             href="/add-form"
+          />
+          <SidebarTile
+            title="Change Point Management"
+            value="Change_Point_Management"
+            icon={"add"}
+            handleItemClick={handleChagePoints }   
+            href="/changePoints"
           />
         </Menu>
       </Sidebar>

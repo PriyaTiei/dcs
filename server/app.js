@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const dcsFormRoutes = require("./routes/dcs-form");
 const cors = require("cors");
 const app = express();
+const changePoint = require("./routes/changepoint");
+const { error } = require("./middleware/error");
 
 mongoose.set("strictQuery", true);
 
@@ -32,3 +34,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use("/dcs", dcsFormRoutes);
+app.use("/changePoint",changePoint )
+
+app.use(error)
