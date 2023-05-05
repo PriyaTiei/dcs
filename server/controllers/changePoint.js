@@ -1,6 +1,6 @@
 const { catchAsyncError } = require("../middleware/catchAsyncError");
 const ChangePoint = require("../models/changepoint");
-const ErrorHandler = require("../utils/errorHanler.js");
+const ErrorHandler = require("../utils/errorHandler.js");
 
 exports.createChangePoint = catchAsyncError(async (req, res, next) => {
   const changePoint = await ChangePoint.create(req.body);
