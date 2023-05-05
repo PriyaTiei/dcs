@@ -81,7 +81,8 @@ function ChangePointEntryForm({setRefresh, refresh}) {
     })
     .catch(err=>{
       toast.error(err.message)
-      console.log("Error : ", err)
+      toast.error(JSON.stringify(err.response.data.message))
+      console.log("Error validation : ", err)
     })
   };
 
