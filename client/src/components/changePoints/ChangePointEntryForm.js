@@ -19,7 +19,8 @@ function ChangePointEntryForm({setRefresh, refresh}) {
   
 
   const changeEntryDate = (date) => {
-    setEntryDate(date);
+    console.log(date.target.value);
+    setEntryDate(date.toString());
   };
   const changeM4 = (e) => {
     setM4(e.target.value);
@@ -93,12 +94,11 @@ function ChangePointEntryForm({setRefresh, refresh}) {
           <div className="border border-dark ">Date</div>
           <ReactDatePicker
             className="w-100 text-center"
-            selected={entryDate}
-            dateFormat="dd-MMM-yyyy"
+            dateFormat="MM/dd/yyyy h:mm aa"
             onChange={changeEntryDate}
           />
-
-          {/* <input className="w-100" type="text" onChange={changeDate}/>            */}
+l
+          {/* <input className="w-100" type="date" onChange={changeEntryDate}/>            */}
         </div>
 
         <div className="col-1 bg-secondary text-center text-light">
