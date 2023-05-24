@@ -34,7 +34,7 @@ function ChangePoints() {
 
   useEffect(() => {
     setFilteredData(changePoints)
-    for (var key in filtered.keys()) {
+    for (var key in filtered) {
       console.log(key);
       var value = filtered[key];
       if (value) {
