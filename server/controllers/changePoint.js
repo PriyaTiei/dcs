@@ -30,7 +30,6 @@ exports.updateChangePoint = catchAsyncError(async (req, res, next) => {
     .json({ success: true, message: "update succesfully", result });
 });
 
-
 exports.deleteChangePoint = catchAsyncError(async (req, res, next) => {
   const changePoint = await ChangePoint.findById(req.params.id);
 
