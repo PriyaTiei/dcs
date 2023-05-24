@@ -22,8 +22,6 @@ function ChangePoints() {
     counteraction: ""
   })
 
-  console.log(filtered);
-
   const [filteredData, setFilteredData] = useState([])
 
   const dispatch = useDispatch()
@@ -34,21 +32,19 @@ function ChangePoints() {
   const changePointsState = useSelector(state => state.changePoints)
   const { changePoints } = changePointsState
 
-  console.log(changePoints);
-
   useEffect(() => {
     setFilteredData(changePoints)
-    for (var key in filtered) {
+    for (var key in filtered.keys()) {
+      console.log(key);
       var value = filtered[key];
       if (value) {
         if(key=="entryDate"){
           setFilteredData(changePoints.filter(data => {
-            console.log(value);
             // return data[key].split(" ").slice(0, 4).join(" ") == value.split(" ").slice(0, 4).join(" ")
           }))
         }else{
           setFilteredData(changePoints.filter(data => {
-            return data[key].toLowerCase().startsWith(value.toLowerCase())
+            return data[key].toLowerCase().includes(value)
           }))
         }
       }

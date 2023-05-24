@@ -4,7 +4,7 @@ import axios from "axios";
 import {toast} from "react-toastify"
 
 function ChangePointEntryForm({setRefresh, refresh}) {
-  const [entryDate, setEntryDate] = useState(new Date());
+  const [entryDate, setEntryDate] = useState();
   const [m4, setM4] = useState("Man");
   const [line, setLine] = useState("");
   const [station, setStation] = useState("");
@@ -19,8 +19,7 @@ function ChangePointEntryForm({setRefresh, refresh}) {
   
 
   const changeEntryDate = (date) => {
-    console.log(date.target.value);
-    setEntryDate(date.toString());
+    setEntryDate(date.toLocaleDateString());
   };
   const changeM4 = (e) => {
     setM4(e.target.value);
@@ -94,7 +93,9 @@ function ChangePointEntryForm({setRefresh, refresh}) {
           <div className="border border-dark ">Date</div>
           <ReactDatePicker
             className="w-100 text-center"
-            dateFormat="MM/dd/yyyy h:mm aa"
+            // selected={new Date()}
+dateFormat="dd/MM/yyyy"
+            value={entryDate}
             onChange={changeEntryDate}
           />
 l
