@@ -1,9 +1,50 @@
+import { Axios } from "../../../config/Axios";
 import {
   CHANGEPOINT_FETCH,
   CHANGEPOINT_SUCCESS,
   CHANGEPOINT_FAIL,
+  CHANGEPOINT_PAGINATION_FETCH,
+  CHANGEPOINT_PAGINATION_SUCCESS,
+  CHANGEPOINT_PAGINATION_FAIL,
+  CHANGEPOINT_PAGINATION_CHANGE,
+  CHANGEPOINT_DOCSPERPAGE_CHANGE,
 } from "./changePointTypes";
-import axios from "axios"
+
+export const changePointPaginationFetch = () => {
+  return {
+    type: CHANGEPOINT_PAGINATION_FETCH,
+  };
+};
+
+//pass payload as data <Array>
+export const changePointPaginationSuccess = (payload) => {
+  return {
+    type: CHANGEPOINT_PAGINATION_SUCCESS,
+    payload: payload,
+  };
+};
+
+export const changePointPaginationChange = (payload) => {
+  return {
+    type: CHANGEPOINT_PAGINATION_CHANGE,
+    payload: payload,
+  };
+};
+
+export const changePointDocsPerPagenChange = (payload) => {
+  return {
+    type: CHANGEPOINT_DOCSPERPAGE_CHANGE,
+    payload: payload,
+  };
+};
+
+//pass error as error message <String>
+export const changePointPaginationFail = (error) => {
+  return {
+    type: CHANGEPOINT_PAGINATION_FAIL,
+    error: error,
+  };
+};
 
 export const changePointFetch = () => {
   return {
@@ -27,12 +68,31 @@ export const changePointFail = (error) => {
   };
 };
 
-export const getChangePoints = () => {
+export const changePointsDocsPerPage = (val) => {
+  return (dispatch) => {
+    dispatch(changePointDocsPerPagenChange(val))
+  };
+};
+
+export const changePointsPagination = (currentPage) => {
+  return (dispatch) => {
+    dispatch(changePointPaginationChange(currentPage))
+  };
+};
+
+export const getChangePoints = (filtered,currentPage,docsPerPage) => {
   return (dispatch) => {
     dispatch(changePointFetch());
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/changePoint/getAllChangePoints`)
+    Axios.get(`/changePoint/getAllChangePoints`,{
+      params:{
+        filtered:filtered,
+        currentPage:currentPage,
+        docsPerPage: docsPerPage
+      }
+    })
     .then(result=>{
-      dispatch(changePointSuccess(result.data.changePoints))
+      dispatch(changePointPaginationSuccess(result.data.totalCount))
+      dispatch(changePointSuccess(result.data.headCheckList))
     })
     .catch(err=>{
       dispatch(changePointFail(err.message))

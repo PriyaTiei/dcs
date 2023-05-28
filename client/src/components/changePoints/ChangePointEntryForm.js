@@ -3,7 +3,7 @@ import ReactDatePicker from "react-datepicker";
 import axios from "axios";
 import {toast} from "react-toastify"
 
-function ChangePointEntryForm({setRefresh, refresh}) {
+function ChangePointEntryForm({setRefresh}) {
   const [entryDate, setEntryDate] = useState();
   const [m4, setM4] = useState("Man");
   const [line, setLine] = useState("");
@@ -17,7 +17,6 @@ function ChangePointEntryForm({setRefresh, refresh}) {
   const [responsibility, setResponsibility] = useState("");
   const [countermeasure, setCountermeasure] = useState("");
   
-
   const changeEntryDate = (date) => {
     setEntryDate(date.toLocaleDateString());
   };
@@ -72,11 +71,14 @@ function ChangePointEntryForm({setRefresh, refresh}) {
       responsibility,
       countermeasure,
     };
+    if(result == "NG" && next=="" && responsibility == "" & countermeasure === ""){
+      return
+    }
     axios.post(`${process.env.REACT_APP_BACKEND_URL}/changePoint/add`,formData)
     .then(result=>{
       console.log("Data posted successfully")
       toast.success("save successfully")
-      setRefresh(!refresh)
+      setRefresh(refresh=>!refresh)
    
     })
     .catch(err=>{
@@ -93,10 +95,9 @@ function ChangePointEntryForm({setRefresh, refresh}) {
           <div className="border border-dark ">Date</div>
           <ReactDatePicker
             className="w-100 text-center"
-            // selected={new Date()}
-dateFormat="dd/MM/yyyy"
             value={entryDate}
             onChange={changeEntryDate}
+            placeholderText="Date"
           />
 l
           {/* <input className="w-100" type="date" onChange={changeEntryDate}/>            */}

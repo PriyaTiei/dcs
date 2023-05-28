@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from "react-redux"
-import { getChangePoints } from "../../redux/slices/changepoints/changePointActions"
+import { changePointsDocsPerPage, changePointsPagination, getChangePoints, getChangePointsPagination } from "../../redux/slices/changepoints/changePointActions"
 import ChangePointEntryForm from './ChangePointEntryForm'
 import Headings from "./Headings"
 import Rows from './Rows'
+import { Pagination, Select } from 'semantic-ui-react'
 
 function ChangePoints() {
 
   const [refresh, setRefresh] = useState(true)
   const [filtered, setfiltered] = useState({
-    entryDate: "",
+    startDate: "",
+    endDate: "",
     mmmm: "",
     station: "",
     point: "",
@@ -22,36 +24,30 @@ function ChangePoints() {
     counteraction: ""
   })
 
-  const [filteredData, setFilteredData] = useState([])
-
   const dispatch = useDispatch()
-  useEffect(() => {
-    dispatch(getChangePoints())
-  }, [refresh])
+
+  console.log(filtered);
+
+  // useEffect(() => {
+  //   dispatch(getChangePointsPagination())
+  // }, [])
 
   const changePointsState = useSelector(state => state.changePoints)
-  const { changePoints } = changePointsState
+  const { changePoints, changePointPagination } = changePointsState
 
   useEffect(() => {
-    setFilteredData(changePoints)
-    for (var key in filtered) {
-      console.log(key);
-      var value = filtered[key];
-      if (value) {
-        if(key=="entryDate"){
-          setFilteredData(changePoints.filter(data => {
-            // return data[key].split(" ").slice(0, 4).join(" ") == value.split(" ").slice(0, 4).join(" ")
-          }))
-        }else{
-          setFilteredData(changePoints.filter(data => {
-            return data[key].toLowerCase().includes(value)
-          }))
-        }
-      }
-    }
-  }, [filtered,changePoints])
+    dispatch(changePointsPagination(1))
+  }, [refresh, filtered])
 
-  const data = filteredData.length == 0 ? null : filteredData.map(element => {
+  useEffect(() => {
+    dispatch(getChangePoints(filtered, changePointPagination.currentPage, changePointPagination.docsPerPage))
+  }, [refresh, filtered, changePointPagination.currentPage, changePointPagination.docsPerPage])
+
+  const changeDocsPerPage = (val) => {
+    dispatch(changePointsDocsPerPage(val))
+  }
+
+  const data = changePoints.length == 0 ? null : changePoints.map(element => {
     return (
       <div key={element._id}>
         <Rows element={element} />
@@ -63,25 +59,42 @@ function ChangePoints() {
     <div >
 
       <h1>Change Point Monitoring Sheet</h1>
-      <ChangePointEntryForm setRefresh={setRefresh} refresh={refresh} />
+      <ChangePointEntryForm setRefresh={setRefresh} />
       <hr />
-      <button type="submit" className="btn btn-primary mt-2" onClick={()=>{
-        setfiltered({
-          entryDate: "",
-          mmmm: "",
-          station: "",
-          point: "",
-          reason: "",
-          action: "",
-          traceability: "",
-          result: "",
-          nextAction: "",
-          responsibility: "",
-          counteraction: ""
-        })
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        gap: 10
       }}>
-        Reset Filters
-      </button>
+        <button type="submit" className="btn btn-primary" onClick={() => {
+          setfiltered({
+            startDate: "",
+            endDate: "",
+            mmmm: "",
+            station: "",
+            point: "",
+            reason: "",
+            action: "",
+            traceability: "",
+            result: "",
+            nextAction: "",
+            responsibility: "",
+            counteraction: ""
+          })
+        }}>
+          Reset Filters
+        </button>
+        <Select value={changePointPagination.docsPerPage} onChange={(e, { value }) => changeDocsPerPage(value)} options={[
+          { key: '2 docs/page', value: 2, text: '2 docs/page' },
+          { key: '10 docs/page', value: 10, text: '10 docs/page' },
+          { key: '100 docs/page', value: 100, text: '100 docs/page' },
+          { key: '200 docs/page', value: 200, text: '200 docs/page' },
+        ]} />
+      <Pagination onPageChange={(e, a) => dispatch(changePointsPagination(a.activePage))} activePage={changePointPagination.currentPage} defaultActivePage={changePointPagination.currentPage} totalPages={changePointPagination.totalPages} />
+
+      </div>
+
       <Headings filtered={filtered} setfiltered={setfiltered} />
       {data}
 

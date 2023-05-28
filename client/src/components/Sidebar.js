@@ -17,12 +17,7 @@ export function AppSidebar({ children }) {
   };
   const handleChagePoints = (value) => {
     dispatch(getChangePoints())  
-    
-    
   };
-
-
-  
 
   return (
     <Sidebar.Pushable style={{   height : "100vh" }}>
