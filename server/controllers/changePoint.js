@@ -69,7 +69,6 @@ exports.getChangePoint = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getAllChangePoints= async(req, res, next)=>{
-
   const headObject = new ApiFeatureHead(ChangePoint, req.query.filtered)
   .filter()
   .pagination(req.query.currentPage,req.query.docsPerPage);

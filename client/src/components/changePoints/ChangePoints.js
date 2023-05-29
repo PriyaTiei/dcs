@@ -26,8 +26,6 @@ function ChangePoints() {
 
   const dispatch = useDispatch()
 
-  console.log(filtered);
-
   // useEffect(() => {
   //   dispatch(getChangePointsPagination())
   // }, [])
@@ -91,7 +89,7 @@ function ChangePoints() {
           { key: '100 docs/page', value: 100, text: '100 docs/page' },
           { key: '200 docs/page', value: 200, text: '200 docs/page' },
         ]} />
-      <Pagination onPageChange={(e, a) => dispatch(changePointsPagination(a.activePage))} activePage={changePointPagination.currentPage} defaultActivePage={changePointPagination.currentPage} totalPages={changePointPagination.totalPages} />
+      <Pagination onPageChange={(e, a) => dispatch(changePointsPagination(a.activePage))} activePage={changePointPagination.currentPage} totalPages={changePointPagination.totalPages} />
 
       </div>
 

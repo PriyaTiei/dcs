@@ -1,4 +1,3 @@
-import moment from "moment";
 import React, { useEffect, useState } from "react";
 import ReactDatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css'

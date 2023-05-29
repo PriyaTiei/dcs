@@ -20,7 +20,7 @@ export function AppSidebar({ children }) {
   };
 
   return (
-    <Sidebar.Pushable style={{   height : "100vh" }}>
+    <Sidebar.Pushable style={{   minHeight : "100vh" }}>
       <Sidebar animation="push" visible={visible}>
         <Menu
           inverted

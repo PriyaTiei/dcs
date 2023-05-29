@@ -1,9 +1,5 @@
-const getRegex = (val) => (
-  {
-    $regex: val,
-    $options: "i",
-  }
-)
+const { getStartDate, getEndDate } = require("./getISODate");
+const { getRegex } = require("./getRegex");
 
 class ApiFeatureHead {
     constructor(query, queryStr) {
@@ -16,19 +12,20 @@ class ApiFeatureHead {
     }
     filter() {
       let newQueryStr = { ...this.queryStr };
+      // console.log(newQueryStr);
+// console.log(getStartDate(newQueryStr.startDate));
+      // if (newQueryStr.startDate != "") {
+      //   newQueryStr["entryDate"] = {
+      //     $gte:new Date(getStartDate(newQueryStr.startDate)),
+      //   }
+      // }
 
-      if (newQueryStr.startDate != "") {
-        newQueryStr["entryDate"] = {
-          $gte:new Date(newQueryStr.startDate),
-        }
-      }
-
-      if (newQueryStr.endDate != "") {
-        newQueryStr["entryDate"] = {
-          ...newQueryStr.entryDate,
-          $lte:new Date(newQueryStr.endDate),
-        }
-      }
+      // if (newQueryStr.endDate != "") {
+      //   newQueryStr["entryDate"] = {
+      //     ...newQueryStr.entryDate,
+      //     $lte:new Date(getEndDate(newQueryStr.endDate)),
+      //   }
+      // }
 
       const removeItems = ["startDate","endDate"];
       removeItems.forEach((item) => delete newQueryStr[item]);
@@ -38,6 +35,8 @@ class ApiFeatureHead {
         if(key!="entryDate")
         newQueryStr[key] = getRegex(newQueryStr[key])
       }
+
+      console.log(newQueryStr);
 
       this.query = this.query.find(newQueryStr);
 
