@@ -48,6 +48,13 @@ export function AppSidebar({ children }) {
             href="/"
           />
           <SidebarTile
+            title="Supplier Part Details"
+            value="supplierPartDetails"
+            icon={"add"}            
+            handleItemClick={handleItemClick}
+            href="/supplierPartDeatils"
+          />
+          <SidebarTile
             title="Add Assy Checksheet"
             value="add_assy_checksheet"
             icon={"add"}   

@@ -53,3 +53,38 @@
  .yesHighlight {
     background-color: lightcoral ;
  }
+
+ .selection{
+   width:20vw
+ }
+
+ .res1 {
+   width:40vw
+}
+
+.res1 div {   
+   width:10vw;
+   border: 1px solid grey;    
+   
+}
+
+.res2 {
+   width:40vw;
+   margin-top: 16px;
+}
+
+.res2 div {   
+   width:8vw;
+   border: 1px solid grey;    
+   
+   
+}
+
+.deta {
+   width:90vw
+}
+.deta div {   
+   width:10vw;
+   border: 1px solid grey;    
+   
+}
