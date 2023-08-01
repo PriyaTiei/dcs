@@ -63,6 +63,13 @@ export function AppSidebar({ children }) {
             handleItemClick={handleChagePoints }   
             href="/changePoints"
           />
+          <SidebarTile
+            title="TraceabilityForm"
+            value="traceabilityForm"
+            icon={"add"}            
+            handleItemClick={handleItemClick}
+            href="/traceability"
+          />
         </Menu>
       </Sidebar>
 

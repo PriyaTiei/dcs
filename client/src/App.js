@@ -5,6 +5,7 @@ import DefectTraceabilityScreen from "./screens/DefectTraceabilityScreen";
 import { AppSidebar } from "./components/Sidebar";
 import ContentWrapper from './components/ContentWrapper'
 import ChangePoints from "./components/changePoints/ChangePoints";
+import EngNo from "./components/engno/EngNo";
 
 export default function App() {
   return (
@@ -13,9 +14,12 @@ export default function App() {
       <AppSidebar>
           <ContentWrapper>
             <Routes>
-              <Route   path="/" element={<DefectTraceabilityScreen />} />
+              <Route path="/" element={<EngNo />} />
+              <Route   path="/traceability" element={<DefectTraceabilityScreen />} />
               <Route path="/add-form" element={<DefectFormScreen />} /> 
               <Route path="/changePoints" element={<ChangePoints />} />
+           
+              
             </Routes>
           </ContentWrapper>
         </AppSidebar> 

@@ -14,7 +14,9 @@ export default function Navbar() {
     <Menu fixed="top">
       <Menu.Item onClick={handleMenuClick}>
         <Icon name={visible ? "close" : "bars"} size="large" />
+        
       </Menu.Item>
+      <h1 className="mx-auto">Engine Traceability</h1>
     </Menu>
   );
 }

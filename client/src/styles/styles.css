@@ -3,3 +3,53 @@
     padding: 0px;
     box-sizing: border-box;
 }
+
+
+/* shipping table */
+.ship {
+   width:10vw
+}
+
+.hist {
+    width:10vw
+ }
+
+ .histValue {
+    width:18vw
+ }
+
+ .pros {
+    width:30vw
+ }
+
+ .pros div {
+   
+    width:9vw;
+    background-color: lightgreen;
+ }
+
+
+ .prosMach {
+    width:30vw
+ }
+
+ .prosMach div {
+   
+    width:6vw;
+    background-color: lightgreen;
+ }
+
+ 
+ .chan {
+    width:60vw
+ }
+
+ .chan div {   
+    width:10vw;
+    border: 1px solid grey;    
+    
+ }
+
+ .yesHighlight {
+    background-color: lightcoral ;
+ }
