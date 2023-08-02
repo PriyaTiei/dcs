@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import ChangePointValue from "./changePointValue.js";
 // import Select from "react-select"
 import Select from "react-select";
+import axios from "axios";
 
 function EngNo() {
   const [engineNo, setEngineNo] = useState("");
+  const [oracleData, setOracleData] = useState("");
   const [part, setPart] = useState("");
   const [supplierPart, setSupplierPart] = useState("");
   const hDate = new Date(Date.now()).toUTCString();
@@ -23,7 +25,16 @@ function EngNo() {
     { value: "piston", label: "Piston" },
   ];
 
+  const getOracleData = () => {
+    axios
+      .get(`${process.env.REACT_APP_BACKEND_URL}/oracle/test/${engineNo}`)
+      .then((result) => {
+        console.log(result.data);
+        setOracleData(result.data)
 
+      })
+      .catch((err) => console.log(err));
+  };
   return (
     <div>
       {/* search engine no */}
@@ -37,7 +48,9 @@ function EngNo() {
             onChange={(e) => setEngineNo(e.target.value)}
             className="form-control w-25"
           ></input>
-          <button className="btn btn-primary">Search</button>
+          <button className="btn btn-primary" onClick={getOracleData}>
+            Search
+          </button>
         </div>
       </div>
 
@@ -373,20 +386,15 @@ function EngNo() {
               <div className="p-2 border histValue">{hDate}</div>
             </div>
             <div className="d-flex gap-0">
-              <div className="p-2 border hist">Invoice No.
-</div>
+              <div className="p-2 border hist">Invoice No.</div>
               <div className="p-2 border histValue">{hDate}</div>
             </div>
             <div className="d-flex gap-0">
               <div className="p-2 border hist">Feed time</div>
               <div className="p-2 border histValue">{hDate}</div>
             </div>
-            
           </div>
-         
         </div>
-
-       
       </fieldset>
     </div>
   );

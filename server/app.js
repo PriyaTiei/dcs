@@ -6,6 +6,12 @@ const cors = require("cors");
 const app = express();
 const changePoint = require("./routes/changepoint");
 const { error } = require("./middleware/error");
+const oracleRouter = require("./routes/oracleDDRoutes")
+
+
+
+
+
 
 mongoose.set("strictQuery", true);
 
@@ -19,7 +25,10 @@ mongoose
     console.log(`Succesfully Connected To DCS DB at Port : ${process.env.PORT}`);
   })
   .catch((err) => console.log(err));
-app.use((req, res, next) => {
+
+
+  
+  app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -28,6 +37,8 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
+
+
 app.use(express.static("public"));
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -35,5 +46,6 @@ app.use(express.json());
 
 app.use("/dcs", dcsFormRoutes);
 app.use("/changePoint",changePoint )
+app.use("/oracle", oracleRouter)
 
 app.use(error)
