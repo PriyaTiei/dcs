@@ -88,3 +88,24 @@
    border: 1px solid grey;    
    
 }
+
+.deta2 {
+   width:90vw
+}
+.deta2 div {   
+   width:6vw;
+   border: 1px solid grey;    
+   
+}
+
+.rang {
+   width:20vw;
+   margin-top: 16px;
+}
+
+.rang div {   
+   width:8vw;
+   border: 1px solid grey;    
+   
+   
+}
