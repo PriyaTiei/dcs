@@ -7,8 +7,8 @@ const oracleDBConnection = async () => {
   var connection;
   try {
     connection = await oracledb.getConnection({
-      user: process.env.USER,
-      password: process.env.USER,
+      user: process.env.ORACLE_USER,
+      password: process.env.ORACLE_USER,
       connectionString: process.env.ORACLEDB_URL,
     });
     console.log("Oracle connection successful");
