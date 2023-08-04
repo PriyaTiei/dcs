@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   activeItem: "dashboard",
-  visible: true,
+  visible: false,
 };
 
 export const navBarSlice = createSlice({

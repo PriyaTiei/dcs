@@ -1,10 +1,10 @@
 import React from "react";
 
-function DetailsTableHeading1({serial, dateTime, wj, wjLeak, oh, ohLeak, camCase,camCaseLeak, egr,egrLeak, engineNo, engineStatus, customer}) {
+function DetailsTableHeading1({serialNo, dateTime, wj, wjLeak, oh, ohLeak, camCase,camCaseLeak, egr,egrLeak, engineNo, engineStatus, customer}) {
   return (
     <>
        <div className="d-flex flex-wrap gap-0 deta2 ">
-          <div className="text-center font-weight-bold">{serial}</div>
+          <div className="text-center font-weight-bold" style={{width:"10vw"}}>{serialNo}</div>
           <div className="text-center font-weight-bold">{dateTime}</div>
           <div className="text-center font-weight-bold">{wj}	</div>
           <div className="text-center font-weight-bold">{wjLeak}	</div>

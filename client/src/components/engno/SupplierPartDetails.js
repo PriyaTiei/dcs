@@ -10,6 +10,18 @@ import { a } from "./dummy";
 import { b } from "./dummy2.js";
 
 function SupplierPartDetails() {
+  // formating date
+  function getCurrentDateInYYYYMMDD() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }
+
+  const formattedDate = getCurrentDateInYYYYMMDD();
+
   const [engineNo, setEngineNo] = useState("");
   const [part, setPart] = useState("");
   const [section, setSection] = useState([]);
@@ -17,6 +29,9 @@ function SupplierPartDetails() {
   const [subSectionOptions2, setSubSectionOptions2] = useState();
   const [supplierPart, setSupplierPart] = useState("");
   const [range, setRange] = useState("oneDay");
+  const [selectedDate, setSelectedDate] = useState(formattedDate);
+  const [fromDate, setFromDate] = useState(formattedDate);
+  const [toDate, setToDate] = useState(formattedDate);
 
   const hDate = new Date(Date.now()).toUTCString();
 
@@ -85,7 +100,7 @@ function SupplierPartDetails() {
 
   const valuesTable2 = values2.map((item) => (
     <DetailsTableValue2
-      serailNo={item.serialNo}
+      serialNo={item.serialNo}
       dateTime={item.dateTime}
       wj={item.wj}
       wjLeak={item.wjLeak}
@@ -104,6 +119,21 @@ function SupplierPartDetails() {
   // handle radio button
   const radioHandler = (e) => {
     setRange(e.target.value);
+  };
+
+  const dateHandler = (e) => {
+    setSelectedDate(e.target.value);
+    console.log(e.target.value);
+  };
+
+  const toDateHandler = (e) => {
+    setToDate(e.target.value);
+    console.log(e.target.value);
+  };
+
+  const fromDateHandler = (e) => {
+    setFromDate(e.target.value);
+    console.log(e.target.value);
   };
 
   return (
@@ -204,7 +234,12 @@ function SupplierPartDetails() {
                   3611242302288624
                 </div>
                 <div className="text-center font-weight-bold bg-warning">
-                  28-02-2023
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    className="bg-warning"
+                    onChange={dateHandler}
+                  />
                 </div>
                 <div className="text-center font-weight-bold">12:28</div>
               </div>
@@ -225,19 +260,49 @@ function SupplierPartDetails() {
           {range === "dateRange" && (
             <div className="mt-3">
               <div className="h5">Select Date Range</div>
-              <div className="d-flex flex-wrap gap-1 rang ">
-                <div className="text-center font-weight-bold">From Date</div>
+              <div className="d-flex flex-wrap gap-3">
+                <div className="d-flex flex-column align-items-start">
+                  <div className="text-center font-weight-bold  ">From Date:</div>
+                  <input
+                    type="date"
+                    value={fromDate}
+                    className="bg-warning"
+                    onChange={fromDateHandler}
+                  />
+                </div>
 
+                <div className="d-flex flex-column align-items-start">
                 <div className="text-center font-weight-bold">To Date</div>
 
-                <div className="text-center font-weight-bold bg-warning">
-                  28-02-2023
+                <input
+                  type="date"
+                  value={toDate}
+                  className="bg-warning"
+                  onChange={toDateHandler}
+                />
                 </div>
-                <div className="text-center font-weight-bold bg-warning">
-                  28-02-2023
-                </div>
+                <button className="btn btn-primary align-self-end ">Search</button>
               </div>
+
+              
             </div>
+
+            // <div className="mt-3">
+            //   <div className="h5">Select Date Range</div>
+            //   <div className="d-flex flex-wrap gap-2 rang ">
+            //     <div className="text-center font-weight-bold ">From Date</div>
+
+            //     <div className="text-center font-weight-bold mx-4">To Date</div>
+
+            //     {/* <div className="text-center font-weight-bold bg-warning"> */}
+            //     <input type="date" value={fromDate} className="bg-warning" onChange={fromDateHandler}/>
+            //     {/* </div> */}
+            //     {/* <div className="text-center font-weight-bold bg-warning mx-4"> */}
+            //     <input type="date" value={toDate} className="bg-warning" onChange={toDateHandler}/>
+            //     {/* </div> */}
+            //     <button className="btn btn-primary block">Search</button>
+            //   </div>
+            // </div>
           )}
         </div>
         {range === "oneDay" && (
