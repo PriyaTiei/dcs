@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChangePointValue from "./changePointValue.js";
 // import Select from "react-select"
 import Select from "react-select";
 import axios from "axios";
+import DateTable from "./DateTable.js";
+import moment from "moment";
 
 function EngNo() {
   const [engineNo, setEngineNo] = useState("");
@@ -10,6 +12,7 @@ function EngNo() {
   const [part, setPart] = useState("");
   const [supplierPart, setSupplierPart] = useState("");
   const hDate = new Date(Date.now()).toUTCString();
+  const [shippingRow, setShippingRow] = useState(null);
 
   const detail1 = "details";
 
@@ -25,16 +28,71 @@ function EngNo() {
     { value: "piston", label: "Piston" },
   ];
 
+  const getColumn = (arr, a, b, c) => {
+    const selectedColumn = arr.map((item) => [item[a], item[b], item[c]]);
+    console.log(typeof arr[0][c], "dateFormat");
+    return selectedColumn;
+  };
+
+  const machinedParts = ["Block S / N", "Crank S / N", "Head S / N"];
+
   const getOracleData = () => {
     axios
-      .get(`${process.env.REACT_APP_BACKEND_URL}/oracle/test/${engineNo}`)
+      .get(`${process.env.REACT_APP_BACKEND_URL}/oracle/engineNo/${engineNo}`)
       .then((result) => {
         console.log(result.data);
-        setOracleData(result.data)
+        setOracleData(result.data);
 
+        // console.log(result.data);
+      })
+      .catch((err) => console.log(err));
+
+    axios
+      .get(`${process.env.REACT_APP_BACKEND_URL}/oracle/date/${engineNo}`)
+      .then((result) => {
+        console.log(result.data.data, "my data");
+        const dateRow = result.data.data.filter((item) => item[1] === "200");
+
+        console.log(dateRow[0], "Date row");
+        setShippingRow(dateRow[0]);
       })
       .catch((err) => console.log(err));
   };
+  const getPartData = async (partNo) => {
+    console.log("part nos are", partNo);
+    await axios
+      .get(`${process.env.REACT_APP_BACKEND_URL}/oracle/partNo/${partNo}`)
+      .then((result) => {
+        console.log(result.data);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  useEffect(() => {
+    if (oracleData) {
+      const selectedColumns = getColumn(oracleData.data, 17, 1, 21);
+
+      console.log(selectedColumns);
+      // only keeping 3c parts
+      const c3 = selectedColumns.filter((item) => {
+        return (
+          item[0] === machinedParts[0] ||
+          item[0] === machinedParts[1] ||
+          item[0] === machinedParts[2]
+        );
+      });
+      console.log(c3);
+      c3.forEach((item) => {
+        getPartData(item[1]);
+      });
+    }
+  }, [oracleData]);
+
+  const history = oracleData?.data?.map((item) =>
+    item[17] != "EGNO" ? (
+      <DateTable key={item[0]} title={item[17]} date={item[21]} />
+    ) : null
+  );
   return (
     <div>
       {/* search engine no */}
@@ -65,26 +123,24 @@ function EngNo() {
           {/* Engine History */}
           <div>
             <div className="h5">Engine history</div>
+
             <div className="d-flex gap-0">
-              <div className="p-2 border hist">Shipment time</div>
-              <div className="p-2 border histValue">{hDate}</div>
+              <div className="p-2 border hist h6 text-center bg-light">EVENT</div>
+              <div className="p-2 border histValue h6  text-center bg-light">
+                DATE & TIME
+              </div>
             </div>
+
             <div className="d-flex gap-0">
-              <div className="p-2 border hist">MTB time</div>
-              <div className="p-2 border histValue">{hDate}</div>
+              <div className="p-2 border hist  ">SHIPMENT</div>
+              <div className="p-2 border histValue ">
+                {moment(shippingRow ? shippingRow[3] : null).format(
+                  "YYYY-MM-DD HH:mm:ss"
+                )}
+              </div>
             </div>
-            <div className="d-flex gap-0">
-              <div className="p-2 border hist">Leak test time</div>
-              <div className="p-2 border histValue">{hDate}</div>
-            </div>
-            <div className="d-flex gap-0">
-              <div className="p-2 border hist">Block sub time</div>
-              <div className="p-2 border histValue">{hDate}</div>
-            </div>
-            <div className="d-flex gap-0">
-              <div className="p-2 border hist">Piston sub time</div>
-              <div className="p-2 border histValue">{hDate}</div>
-            </div>
+
+            {history}
           </div>
 
           {/* Shipping Detail */}
