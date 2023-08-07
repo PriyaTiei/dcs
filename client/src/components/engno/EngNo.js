@@ -93,6 +93,28 @@ function EngNo() {
       <DateTable key={item[0]} title={item[17]} date={item[21]} />
     ) : null
   );
+
+  const fullHistory =     oracleData ? <>
+    <div className="d-flex gap-0">
+      <div className="p-2 border hist  ">SHIPMENT</div>
+      <div className="p-2 border histValue ">
+        {moment(shippingRow ? shippingRow[3] : null).format(
+          "YYYY-MM-DD HH:mm:ss"
+        )}
+      </div>
+    </div>
+    <div className="d-flex gap-0">
+      <div className="p-2 border hist  ">MTB</div>
+      <div className="p-2 border histValue ">
+        {/* {moment(shippingRow ? shippingRow[3] : null).format(
+          "YYYY-MM-DD HH:mm:ss"
+        )} */}
+        Under progress
+      </div>
+    </div>
+
+    {history}
+    </>     :null 
   return (
     <div>
       {/* search engine no */}
@@ -130,17 +152,7 @@ function EngNo() {
                 DATE & TIME
               </div>
             </div>
-
-            <div className="d-flex gap-0">
-              <div className="p-2 border hist  ">SHIPMENT</div>
-              <div className="p-2 border histValue ">
-                {moment(shippingRow ? shippingRow[3] : null).format(
-                  "YYYY-MM-DD HH:mm:ss"
-                )}
-              </div>
-            </div>
-
-            {history}
+            {fullHistory}
           </div>
 
           {/* Shipping Detail */}
