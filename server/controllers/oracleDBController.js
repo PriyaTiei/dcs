@@ -87,3 +87,27 @@ exports.getDateData = catchAsyncError(async (req, res, next) => {
   const allColumnNames = result.metaData.map((item) => item.name);
   res.status(200).json({ coloumns: allColumnNames, data: result.rows, message:"for date" });
 });
+exports.getDateRangeData = catchAsyncError(async (req, res, next) => {
+  const fromDate = req.params.fromDate;
+  const toDate = req.params.toDate;
+
+  const con = await oracleDBConnection();
+
+  const result = await con.execute(
+    // `select * from todoitem`,
+    "select * from KTTMSYS.T_MCHNSTJHO WHERE EGNO BETWEEN :value1 AND :value2",
+    [fromDate, toDate],
+    {
+      // maxRows: 2
+    }
+  );
+
+  if (result.rows.length == 0) {
+    console.log("Engine not found");
+    return new ErrorHandler("Engine no. do not exist", 401);
+  }
+  console.table(Object.keys(result));
+  const allColumnNames = result.metaData.map((item) => item.name);
+  res.status(200).json({ coloumns: allColumnNames, data: result.rows, message:"for dateRange" });
+});
+

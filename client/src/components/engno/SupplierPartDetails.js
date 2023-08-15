@@ -8,6 +8,15 @@ import DetailsTableValue1 from "./DetailsTableValue1";
 import DetailsTableValue2 from "./DetailsTableValue2";
 import { a } from "./dummy";
 import { b } from "./dummy2.js";
+import ProcessData from "./ProcessData";
+import ResultProcess from "./ResultProcess";
+import SubOptions from "./SubOptions";
+import { processNo } from "./processNo";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setSectionRedux,
+  setSubSectionRedux,
+} from "../../redux/slices/egNo/egNoActions";
 
 function SupplierPartDetails() {
   // formating date
@@ -22,14 +31,17 @@ function SupplierPartDetails() {
 
   const formattedDate = getCurrentDateInYYYYMMDD();
 
+  const dispatch = useDispatch();
   const [engineNo, setEngineNo] = useState("");
   const [part, setPart] = useState("");
-  const [section, setSection] = useState([]);
-  const [subSection, setSubSection] = useState([]);
-  const [subSectionOptions2, setSubSectionOptions2] = useState();
+  const [section, setSection] = useState("Assembly");
+  const [subSection, setSubSection] = useState("Shipment");
+  const [subSectionOptions2, setSubSectionOptions2] = useState([
+    { value: "Shipment", label: "Shipment" },
+  ]);
   const [supplierPart, setSupplierPart] = useState("");
   const [range, setRange] = useState("oneDay");
-  const [selectedDate, setSelectedDate] = useState(formattedDate);
+
   const [fromDate, setFromDate] = useState(formattedDate);
   const [toDate, setToDate] = useState(formattedDate);
 
@@ -37,18 +49,55 @@ function SupplierPartDetails() {
 
   const detail1 = "details";
 
-  const sectionData = [
-    { section: "Shipment", subSection: ["Dispatch"] },
-    { section: "Assembly", subSection: ["subAssy", "Mk1", "Mk2"] },
-    {
-      section: "Machining",
-      subSection: ["Cylinder Block", "Cylinder Head", "Cam housing"],
-    },
-    {
-      section: "Supplier part",
-      subSection: ["Cylinder Block", "Cylinder Head", "Cam housing"],
-    },
+  const assemblyProcess = [
+    "Shipment",
+    "FTB",
+    "MTB",
+    "Oil/water leak",
+    "Fuel Leak",
+    "CHS",
+    "BS",
+    "PS",
+    "SPS",
+    "MK line",
   ];
+
+  const sectionData = processNo;
+
+  // const sectionData = [
+  //   {
+  //     section: "Assembly",
+  //     subSection: [
+  //       "Shipment",
+  //       "FTB",
+  //       "MTB",
+  //       "Oil/water leak",
+  //       "Fuel Leak",
+  //       "CHS",
+  //       "BS",
+  //       "PS",
+  //       "SPS",
+  //       "MK line",
+  //     5],
+  //   },
+  //   {
+  //     section: "Machining",
+  //     subSection: ["Cylinder Block", "Cylinder Head", "Crank Shaft"],
+  //   },
+  //   {
+  //     section: "Supplier part",
+  //     subSection: [
+  //       "Cylinder Block",
+  //       "Cylinder Head",
+  //       "Crank Shaft",
+  //       "Connecting rod",
+  //       "Crank Case",
+  //       "Cam housing",
+  //       "Port Injector",
+  //       "Pully Crank Shaft",
+  //     ],
+  //   },
+  // ];
 
   const sectionOptions = sectionData.map((item) => {
     return { value: item.section, label: item.section };
@@ -73,17 +122,21 @@ function SupplierPartDetails() {
     itemSelected = sectionData?.filter((item) => item.section == section);
 
     subSectionOptions1 = itemSelected[0]?.subSection?.map((item) => {
-      return { value: item, label: item };
+      return { value: item.name, label: item.name };
     });
     setSubSectionOptions2(subSectionOptions1);
-    console.log(subSectionOptions2);
   }, [section]);
+
+  // useEffect(() => {
+
+  // }, [subSectionOptions2]);
 
   // Generate details for table1
   const values1 = a;
 
   const valuesTable = values1.map((item) => (
     <DetailsTableValue1
+      key={item.headNo}
       headNo={item.headNo}
       oilLeak={item.oilLeak}
       wj={item.wj}
@@ -121,11 +174,6 @@ function SupplierPartDetails() {
     setRange(e.target.value);
   };
 
-  const dateHandler = (e) => {
-    setSelectedDate(e.target.value);
-    console.log(e.target.value);
-  };
-
   const toDateHandler = (e) => {
     setToDate(e.target.value);
     console.log(e.target.value);
@@ -135,25 +183,63 @@ function SupplierPartDetails() {
     setFromDate(e.target.value);
     console.log(e.target.value);
   };
+  // *************
+  // form -C
 
+  const defaultSection = sectionData[0].section;
+  const defaultSubSection = sectionData[0].subSection[0].name;
+
+  const [selectedSection, setSelectedSection] = useState(defaultSection);
+  const [selectedSubSection, setSelectedSubSection] =
+    useState(defaultSubSection);
+
+  const [indexI, setIndexI] = useState(0); // Initialize with 0
+  const [indexJ, setIndexJ] = useState(0); // Initialize with 0
+
+  const handleSectionChange = (selected, index) => {
+    setSelectedSection(selected);
+    dispatch(setSectionRedux(selected));
+    setIndexI(index);
+    const section = sectionData.find((item) => item.section === selected);
+    if (section) {
+      setSelectedSubSection(section.subSection[0].name);
+      setIndexJ(0);
+    }
+  };
+
+  const handleSubSectionChange = (selected, index) => {
+    setSelectedSubSection(selected);
+    dispatch(setSubSectionRedux(selected));
+
+    setIndexJ(index);
+  };
+
+  const getSubSections = () => {
+    const section = sectionData.find(
+      (item) => item.section === selectedSection
+    );
+    return section
+      ? section.subSection.map((sub, index) => ({
+          value: sub.name,
+          label: sub.name,
+          index,
+        }))
+      : [];
+  };
   return (
     <div>
       {/* search engine no */}
-      <div>
-        <div className="d-flex justify-content-between">
-          <div>
-            <div>Engine Number</div>
-            <div className="d-flex gap-3">
-              <input
-                type="text"
-                placeholder="Please enter engine no."
-                value={engineNo}
-                onChange={(e) => setEngineNo(e.target.value)}
-                className="form-control "
-              ></input>
-              <button className="btn btn-primary">Search</button>
-            </div>
-          </div>
+
+      <fieldset className="border p-3 mt-3 ">
+        <legend
+          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-success"
+          style={{ fontSize: "16px" }}
+        >
+          Detail Traceability
+        </legend>
+
+        <div className="d-flex justify-content-end ">
+          {/*Radio button  */}
 
           <form onChange={radioHandler} className="form-group gap-3">
             <div className="d-flex gap-3">
@@ -169,15 +255,7 @@ function SupplierPartDetails() {
             </div>
           </form>
         </div>
-      </div>
 
-      <fieldset className="border p-3 mt-3 ">
-        <legend
-          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-success"
-          style={{ fontSize: "16px" }}
-        >
-          Detail Traceability
-        </legend>
         <div className="d-flex gap-3 mt-0">
           {/* Part selection */}
 
@@ -185,76 +263,37 @@ function SupplierPartDetails() {
             <div className="h5">Part Name</div>
             <div className="d-flex gap-3 selection">
               <Select
-                options={sectionOptions}
-                defaultValue={sectionOptions[0]}
-                onChange={(e) => setSection(e.value)}
+                options={sectionData.map((item, index) => ({
+                  value: item.section,
+                  label: item.section,
+                  index,
+                }))}
+                value={{ value: selectedSection, label: selectedSection }}
+                onChange={(option) =>
+                  handleSectionChange(option.value, option.index)
+                }
+                placeholder="Select Section"
               />
+
               <Select
-                options={subSectionOptions2}
-                // defaultValue={subSectionOptions2[0]}
-                onChange={(e) => setSubSection(e.value)}
+                options={getSubSections()}
+                value={{ value: selectedSubSection, label: selectedSubSection }}
+                onChange={(option) =>
+                  handleSubSectionChange(option.value, option.index)
+                }
+                placeholder="Select SubSection"
+                isDisabled={!selectedSection}
               />
             </div>
           </div>
 
-          {/* Process data [Machining]  */}
-          <div>
-            <div className="h5">Process data [Machining]</div>
-            <div className="d-flex flex-wrap gap-1 prosMach ">
-              <div className="p-2 border ">OP05</div>
-              <div className="p-2 border ">OP50</div>
-              <div className="p-2 border ">OP55</div>
-              <div className="p-2 border ">OP80</div>
-              <div className="p-2 border ">OP120</div>
-              <div className="p-2 border ">OP140A</div>
-              <div className="p-2 border ">OP180A</div>
-              <div className="p-2 border ">OP180B</div>
-              <div className="p-2 border ">OP200</div>
-              <div className="p-2 border ">OP240</div>
-              <div className="p-2 border ">OP270</div>
-              <div className="p-2 border ">OP300</div>
-              <div className="p-2 border ">OP310(Oil leak)</div>
-              <div className="p-2 border ">FVC</div>
-            </div>
-          </div>
+          {/* Process data [Machining or Maching]  */}
+          <ProcessData
+            processNo={sectionData[indexI]["subSection"][indexJ]["processNo"]}
+          />
 
           {/*Results */}
-          {range === "oneDay" && (
-            <div className="mt-3">
-              <div className="h5">Results</div>
-              <div className="d-flex flex-wrap gap-1 res1 ">
-                <div className="text-center font-weight-bold">Part No.</div>
-
-                <div className="text-center font-weight-bold">
-                  Leak test Date
-                </div>
-
-                <div className="text-center font-weight-bold">Time</div>
-                <div className="text-center font-weight-bold">
-                  3611242302288624
-                </div>
-                <div className="text-center font-weight-bold bg-warning">
-                  <input
-                    type="date"
-                    value={selectedDate}
-                    className="bg-warning"
-                    onChange={dateHandler}
-                  />
-                </div>
-                <div className="text-center font-weight-bold">12:28</div>
-              </div>
-              <div className="d-flex flex-wrap gap-1 res2 ">
-                <div className="text-center font-weight-bold">Oil Leak(15)</div>
-                <div className="text-center font-weight-bold">W/J leak(8)</div>
-                <div className="text-center font-weight-bold">C/C(40)</div>
-                <div className="text-center font-weight-bold">EGR(4)</div>
-                <div className="text-center font-weight-bold">5.42</div>
-                <div className="text-center font-weight-bold">7.98</div>
-                <div className="text-center font-weight-bold">10.5</div>
-                <div className="text-center font-weight-bold">0.598</div>
-              </div>
-            </div>
-          )}
+          <ResultProcess />
 
           {/* This is for Date Range */}
           {range === "dateRange" && (
@@ -262,7 +301,9 @@ function SupplierPartDetails() {
               <div className="h5">Select Date Range</div>
               <div className="d-flex flex-wrap gap-3">
                 <div className="d-flex flex-column align-items-start">
-                  <div className="text-center font-weight-bold  ">From Date:</div>
+                  <div className="text-center font-weight-bold  ">
+                    From Date:
+                  </div>
                   <input
                     type="date"
                     value={fromDate}
@@ -272,19 +313,19 @@ function SupplierPartDetails() {
                 </div>
 
                 <div className="d-flex flex-column align-items-start">
-                <div className="text-center font-weight-bold">To Date</div>
+                  <div className="text-center font-weight-bold">To Date</div>
 
-                <input
-                  type="date"
-                  value={toDate}
-                  className="bg-warning"
-                  onChange={toDateHandler}
-                />
+                  <input
+                    type="date"
+                    value={toDate}
+                    className="bg-warning"
+                    onChange={toDateHandler}
+                  />
                 </div>
-                <button className="btn btn-primary align-self-end ">Search</button>
+                <button className="btn btn-primary align-self-end ">
+                  Search
+                </button>
               </div>
-
-              
             </div>
 
             // <div className="mt-3">
