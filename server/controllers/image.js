@@ -43,7 +43,7 @@ const storage2 = multer.diskStorage({
     cb(null, "public/reworkImages/");
   },
   filename: function (req, file, cb) {
-    let engineNo= req.body.engineNo
+    let engineNo = req.body.engineNo;
     console.log(req.body.engineNo);
     const ext = path.extname(file.originalname);
     const name = path.basename(file.originalname, ext);
@@ -55,9 +55,39 @@ const storage2 = multer.diskStorage({
     const m = dt.getMinutes();
     const s = dt.getSeconds();
     const ms = dt.getMilliseconds();
+    req.body.imageName =
+      engineNo +
+      "_" +
+      y +
+      "_" +
+      mn +
+      "_" +
+      d +
+      "_" +
+      h +
+      "_" +
+      m +
+      "_" +
+      s +
+      ms +
+      ext;
     cb(
       null,
-      engineNo + "_" + y + "_" + mn + "_" + d+ "_"  + h + "_" + m + "_" + s + ms + ext
+      engineNo +
+        "_" +
+        y +
+        "_" +
+        mn +
+        "_" +
+        d +
+        "_" +
+        h +
+        "_" +
+        m +
+        "_" +
+        s +
+        ms +
+        ext
     );
   },
 });
@@ -72,9 +102,9 @@ const upload2 = multer({
   // },
 }).single("image");
 
-const uploadImage2 = (req, res) => {
+const uploadImage2 = (req, res, next) => {
   console.log("Image2 from phone Called");
-  console.log(req.body); //here it is not pasing req.body
+  console.log(req.body); //here it is not passing req.body
   upload2(req, res, (err) => {
     if (err) {
       return res.status(400).json({ message: err.message });
@@ -83,8 +113,22 @@ const uploadImage2 = (req, res) => {
       return res.status(400).json({ message: "No file uploaded!" });
     }
     const imagePath = "reworkImages/" + req.file.filename;
-    res.json({ imagePath });
+    // res.json({ imagePath });
+    next();
   });
 };
 
-module.exports = { uploadImage, uploadImage2 };
+const getImage = (req, res) => {
+  const imageName = req.params.imageName;
+  const imagePath = path.join(
+    __dirname,
+    "../",
+    "public",
+    "reworkImages",
+    imageName
+  );
+  console.log(imagePath);
+  res.sendfile(imagePath);
+};
+
+module.exports = { uploadImage, uploadImage2, getImage };
