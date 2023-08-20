@@ -55,7 +55,8 @@ const storage2 = multer.diskStorage({
     const m = dt.getMinutes();
     const s = dt.getSeconds();
     const ms = dt.getMilliseconds();
-    req.body.imageName =
+
+    const imageName =
       engineNo +
       "_" +
       y +
@@ -69,26 +70,17 @@ const storage2 = multer.diskStorage({
       m +
       "_" +
       s +
+      "_" +
       ms +
+      "_" +
+      Math.floor(Math.random() * 1e5) +
       ext;
-    cb(
-      null,
-      engineNo +
-        "_" +
-        y +
-        "_" +
-        mn +
-        "_" +
-        d +
-        "_" +
-        h +
-        "_" +
-        m +
-        "_" +
-        s +
-        ms +
-        ext
-    );
+    if (!req.body.imagesNameList) {
+      req.body.imagesNameList = [];
+    }
+    req.body.imagesNameList.push(imageName);
+
+    cb(null, imageName);
   },
 });
 
@@ -101,7 +93,17 @@ const upload2 = multer({
   //   cb(null, true);
   // },
 }).single("image");
+const uploadMultiple = multer({
+  storage: storage2,
+  // fileFilter: function (req, file, cb) {
+  //   if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+  //     return cb(new Error("Only image files are allowed!"));
+  //   }
+  //   cb(null, true);
+  // },
+}).array("images");
 
+//handle single image
 const uploadImage2 = (req, res, next) => {
   console.log("Image2 from phone Called");
   console.log(req.body); //here it is not passing req.body
@@ -110,7 +112,7 @@ const uploadImage2 = (req, res, next) => {
       return res.status(400).json({ message: err.message });
     }
     if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded!" });
+      return res.status(400).json({ message: "No file uploaded! single" });
     }
     const imagePath = "reworkImages/" + req.file.filename;
     // res.json({ imagePath });
@@ -118,6 +120,37 @@ const uploadImage2 = (req, res, next) => {
   });
 };
 
+// handle multiple images
+const uploadImageMultiple = (req, res, next) => {
+  console.log("Multiple images handler called from phone Called");
+  //here it is not passing req.body
+
+  uploadMultiple(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({ message: err.message });
+    }
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: "No file uploaded! multi" });
+    }
+
+// **********
+
+// if (err) {
+//   return res.status(400).json({ message: err.message });
+// }
+// if (!req.files || req.files.length === 0) {
+//   return res.status(400).json({ message: "No file uploaded! multi" });
+// }
+
+
+    // ********/
+    const imagePath = "reworkImages/" + req.files[0].filename;
+    res.json({ imagePath });
+    next();
+  });
+};
+
+// get image
 const getImage = (req, res) => {
   const imageName = req.params.imageName;
   const imagePath = path.join(
@@ -131,4 +164,4 @@ const getImage = (req, res) => {
   res.sendfile(imagePath);
 };
 
-module.exports = { uploadImage, uploadImage2, getImage };
+module.exports = { uploadImage, uploadImage2, uploadImageMultiple, getImage };

@@ -123,15 +123,39 @@ const storeImageFileName = catchAsyncError(async (req, res, next) => {
   res.status(202).json({ message: "successfully stored rework engine number" });
 });
 
-const reworkNumber = catchAsyncError(async (req, res,next) => {
+const storeImageFileNameMultiple = catchAsyncError(async (req, res, next) => {
+  const engineNo = req.body.engineNo;
+  const imagesNameList = req.body.imagesNameList;
+
+  console.log(engineNo, "engineNO");
+  console.log(imagesNameList, "imagesNameList in controller");
+  imagesNameList.forEach(async (element) => {
+    const reworkNumber = await ReworkNumber.create({
+      engineNo,
+      imageName: element,
+    });
+    if (!reworkNumber) {
+      return next(new ErrorHandler("could not add rework engine number", 500));
+    }
+  });
+  res.status(202).json({ message: "successfully stored rework engine number" });
+});
+
+const reworkNumber = catchAsyncError(async (req, res, next) => {
   const engineNo = req.params.engineNo;
   console.log(engineNo);
   const result = await ReworkNumber.find({ engineNo });
   if (result.length == 0) {
-    console.log("not found")
+    console.log("not found");
     return next(new ErrorHandler("No image with this number", 404));
   }
   res.status(200).json({ result });
 });
 
-module.exports = { createDCS, getAllDCS, storeImageFileName, reworkNumber };
+module.exports = {
+  createDCS,
+  getAllDCS,
+  storeImageFileName,
+  storeImageFileNameMultiple,
+  reworkNumber,
+};
