@@ -133,14 +133,14 @@ const uploadImageMultiple = (req, res, next) => {
       return res.status(400).json({ message: "No file uploaded! multi" });
     }
 
-// **********
+    // **********
 
-// if (err) {
-//   return res.status(400).json({ message: err.message });
-// }
-// if (!req.files || req.files.length === 0) {
-//   return res.status(400).json({ message: "No file uploaded! multi" });
-// }
+    // if (err) {
+    //   return res.status(400).json({ message: err.message });
+    // }
+    // if (!req.files || req.files.length === 0) {
+    //   return res.status(400).json({ message: "No file uploaded! multi" });
+    // }
 
 
     // ********/

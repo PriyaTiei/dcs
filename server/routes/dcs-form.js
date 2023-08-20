@@ -5,14 +5,13 @@ const {
   getAllDCS,
   storeImageFileName,
   reworkNumber,
-  storeImageFileNameMultiple
+  storeImageFileNameMultiple,
 } = require("../controllers/dcs-form");
 const {
   uploadImage,
   uploadImage2,
   uploadImageMultiple,
   getImage,
-  
 } = require("../controllers/image");
 
 router.post("/dcs-form", createDCS);
