@@ -10,6 +10,12 @@ const reworkNumberSchema = new mongoose.Schema(
       type: String,
       required: [true, "please Input ImageName - imageName"],
     },
+    checkedBy: {
+      type: String,
+    },
+    commonRemarks: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

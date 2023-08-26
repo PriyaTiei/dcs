@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import ChangePointValue from "./changePointValue.js";
+import ChangePointValue from "./ReuasableChangePointValues.js";
 // import Select from "react-select"
 import Select from "react-select";
 import axios from "axios";
-import DateTable from "./DateTable.js";
+import DateTable from "./ReusableEngineHistoryValues.js";
 import moment from "moment";
 import ShippingDetails from "./ShippingDetails.js";
 import ChangePointAssembly from "./ChangePointAssembly.js";
@@ -20,6 +20,8 @@ function EngNo() {
   const [part, setPart] = useState("");
   const [supplierPart, setSupplierPart] = useState("");
   const hDate = new Date(Date.now()).toUTCString();
+
+  const [leakData, setLeakData] = useState();
 
   const dispatch = useDispatch();
 
@@ -40,14 +42,20 @@ function EngNo() {
   const oracleData = useSelector((state) => state.engine.engineData);
   const shippingRow = useSelector((state) => state.engine.shippingData);
 
-
   const getColumn = (arr, a, b, c) => {
     const selectedColumn = arr.map((item) => [item[a], item[b], item[c]]);
 
     return selectedColumn;
   };
 
-  const machinedParts = ["Block S / N", "Crank S / N", "Head S / N"];
+  const setHeadLeakValues = (data) => {
+    let leakDataInt = data.filter((item) => data[5] == "H5_OP310");
+
+    setLeakData(leakDataInt);
+  };
+
+  const machinedParts = ["Head S / N"];
+  // const machinedParts = ["Block S / N", "Crank S / N", "Head S / N"];
 
   const getOracleData = () => {
     dispatch(getEngineData(engineNo));
@@ -58,6 +66,10 @@ function EngNo() {
     await axios
       .get(`${process.env.REACT_APP_BACKEND_URL}/oracle/partNo/${partNo}`)
       .then((result) => {
+        console.log("data from Oracle server initial");
+        // Store leak values
+        setHeadLeakValues(result.data);
+
         console.log(result.data);
       })
       .catch((err) => console.log(err));
@@ -117,6 +129,7 @@ function EngNo() {
       {/* search engine no */}
       <div>
         <div>Engine Number</div>
+
         <div className="d-flex gap-3">
           <input
             type="text"
@@ -128,6 +141,7 @@ function EngNo() {
           <button className="btn btn-primary" onClick={getOracleData}>
             Search
           </button>
+          <div>{leakData}</div>
         </div>
       </div>
 

@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 
 // import Select from "react-select"
 import Select from "react-select";
-import DetailsTableHeading1 from "./DetailsTableHeading1";
-import DetailsTableHeading2 from "./DetailsTableHeading2";
-import DetailsTableValue1 from "./DetailsTableValue1";
-import DetailsTableValue2 from "./DetailsTableValue2";
-import { a } from "./dummy";
-import { b } from "./dummy2.js";
+import DetailsTableHeading1 from "./MachiningHeadLeakHeading";
+import DetailsTableHeading2 from "./AssemblyLeakHeading";
+import DetailsTableValue1 from "./ReuasbleMachiningHeadLeakValues";
+import DetailsTableValue2 from "./ReusabeAssemblyLeakValues";
+import { a } from "./dummyHeadLeak";
+import { b } from "./dummyAssemblyLeak.js";
 import ProcessData from "./ProcessData";
 import ResultProcess from "./ResultProcess";
 import SubOptions from "./SubOptions";

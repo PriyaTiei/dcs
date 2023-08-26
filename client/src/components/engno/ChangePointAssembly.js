@@ -1,5 +1,5 @@
 import React from "react";
-import ChangePointValue from "./changePointValue.js";
+import ChangePointValue from "./ReuasableChangePointValues.js";
 
 function ChangePointAssembly() {
   return (

@@ -77,6 +77,13 @@ export function AppSidebar({ children }) {
             handleItemClick={handleItemClick}
             href="/traceability"
           />
+           <SidebarTile
+            title="Rework Images"
+            value="rework_images"
+            icon={"search"}            
+            handleItemClick={handleItemClick}
+            href="/searchReworkImages"
+          />
         </Menu>
       </Sidebar>
 
