@@ -8,7 +8,33 @@ export const processNo = [
       { name: "Oil/water leak", processNo: [1, 2] },
       { name: "Fuel Leak", processNo: [1, 2] },
       { name: "CHS", processNo: [1, 2] },
-      { name: "BS", processNo: [{label:'OPBS-1',value:'OPBS-1'}, {label:'OPBS-1',value:'OPBS-1'}, {label:'OPBS-1',value:'OPBS-1'}, {label:'OPBS-2',value:'OPBS-2'}, {label:'OPBS-2',value:'OPBS-2'}, {label:'OPBS-2',value:'OPBS-2'}, {label:'OPBS-2',value:'OPBS-2'}, {label:'OPBS-3',value:'OPBS-3'}, {label:'OPBS-3',value:'OPBS-3'}, {label:'OPBS-3',value:'OPBS-3'}, {label:'OPBS-3',value:'OPBS-3'}, {label:'OPBS-4',value:'OPBS-4'}, {label:'OPBS-4',value:'OPBS-4'}, {label:'OPBS-4',value:'OPBS-4'}, {label:'OPBS-4',value:'OPBS-4'}, {label:'OPBS-5',value:'OPBS-5'}, {label:'OPBS-5',value:'OPBS-5'}, {label:'OPBS-5',value:'OPBS-5'}, {label:'OPBS-5',value:'OPBS-5'}, {label:'OPBS-5',value:'OPBS-5'}, {label:'OPBS-5',value:'OPBS-5'}, {label:'OPBS-6',value:'OPBS-6'}] },
+      {
+        name: "BS",
+        processNo: [
+          { label: "OPBS-1", value: "OPBS-1" },
+          { label: "OPBS-1", value: "OPBS-1" },
+          { label: "OPBS-1", value: "OPBS-1" },
+          { label: "OPBS-2", value: "OPBS-2" },
+          { label: "OPBS-2", value: "OPBS-2" },
+          { label: "OPBS-2", value: "OPBS-2" },
+          { label: "OPBS-2", value: "OPBS-2" },
+          { label: "OPBS-3", value: "OPBS-3" },
+          { label: "OPBS-3", value: "OPBS-3" },
+          { label: "OPBS-3", value: "OPBS-3" },
+          { label: "OPBS-3", value: "OPBS-3" },
+          { label: "OPBS-4", value: "OPBS-4" },
+          { label: "OPBS-4", value: "OPBS-4" },
+          { label: "OPBS-4", value: "OPBS-4" },
+          { label: "OPBS-4", value: "OPBS-4" },
+          { label: "OPBS-5", value: "OPBS-5" },
+          { label: "OPBS-5", value: "OPBS-5" },
+          { label: "OPBS-5", value: "OPBS-5" },
+          { label: "OPBS-5", value: "OPBS-5" },
+          { label: "OPBS-5", value: "OPBS-5" },
+          { label: "OPBS-5", value: "OPBS-5" },
+          { label: "OPBS-6", value: "OPBS-6" },
+        ],
+      },
       { name: "PS", processNo: [1, 2] },
       { name: "SPS", processNo: [1, 2] },
       { name: "MK line", processNo: [1, 2] },
@@ -18,7 +44,7 @@ export const processNo = [
     section: "Machining",
     subSection: [
       {
-        name: "Block Cylinder ",
+        name: "Block Cylinder",
         processNo: [
           { label: "OP5", value: "OP5" },
           { label: "OP150", value: "OP150" },
@@ -44,9 +70,8 @@ export const processNo = [
         ],
       },
       {
-        name: "Head Cylinder ",
+        name: "Head Cylinder",
         processNo: [
-          { label: "OP", value: "OP" },
           { label: "OP05", value: "OP05" },
           { label: "OP10", value: "OP10" },
           { label: "OP20", value: "OP20" },
@@ -68,10 +93,11 @@ export const processNo = [
           { label: "OP210", value: "OP210" },
           { label: "OP220", value: "OP220" },
           { label: "OP230", value: "OP230" },
+          { label: "OP310", value: "OP310" },
         ],
       },
       {
-        name: "Crank Shaft ",
+        name: "Crank Shaft",
         processNo: [
           { label: "OP02", value: "OP02" },
           { label: "OP05", value: "OP05" },

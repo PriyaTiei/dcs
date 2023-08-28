@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 
 // import Select from "react-select"
 import Select from "react-select";
-import DetailsTableHeading1 from "./MachiningHeadLeakHeading";
-import DetailsTableHeading2 from "./AssemblyLeakHeading";
+import MachiningHeadLeakHeading from "./MachiningHeadLeakHeading";
+import AssemblyLeakHeading from "./AssemblyLeakHeading";
 import DetailsTableValue1 from "./ReuasbleMachiningHeadLeakValues";
 import DetailsTableValue2 from "./ReusabeAssemblyLeakValues";
 import { a } from "./dummyHeadLeak";
 import { b } from "./dummyAssemblyLeak.js";
-import ProcessData from "./ProcessData";
-import ResultProcess from "./ResultProcess";
+import ProcessNumbers from "./ProcessNumbers";
+import ResultProcess from "./ProcessResults";
 import SubOptions from "./SubOptions";
 import { processNo } from "./processNo";
 import { useSelector, useDispatch } from "react-redux";
@@ -17,8 +17,9 @@ import {
   setSectionRedux,
   setSubSectionRedux,
 } from "../../redux/slices/egNo/egNoActions";
+import ReusablePartNo from "./ReusablePartNo";
 
-function SupplierPartDetails() {
+function DeatialTraceability() {
   // formating date
   function getCurrentDateInYYYYMMDD() {
     const today = new Date();
@@ -118,6 +119,8 @@ function SupplierPartDetails() {
     { value: "piston", label: "Piston" },
   ];
 
+  const initialSubSection = {};
+
   useEffect(() => {
     itemSelected = sectionData?.filter((item) => item.section == section);
 
@@ -199,6 +202,7 @@ function SupplierPartDetails() {
   const handleSectionChange = (selected, index) => {
     setSelectedSection(selected);
     dispatch(setSectionRedux(selected));
+    dispatch(setSubSectionRedux(processNo[index].subSection[0].name));
     setIndexI(index);
     const section = sectionData.find((item) => item.section === selected);
     if (section) {
@@ -238,7 +242,7 @@ function SupplierPartDetails() {
           Detail Traceability
         </legend>
 
-        <div className="d-flex justify-content-end ">
+        <div className="d-flex justify-content-center ">
           {/*Radio button  */}
 
           <form onChange={radioHandler} className="form-group gap-3">
@@ -288,11 +292,12 @@ function SupplierPartDetails() {
           </div>
 
           {/* Process data [Machining or Maching]  */}
-          <ProcessData
+          <ProcessNumbers
             processNo={sectionData[indexI]["subSection"][indexJ]["processNo"]}
           />
 
           {/*Results */}
+          <ReusablePartNo />
           <ResultProcess />
 
           {/* This is for Date Range */}
@@ -323,7 +328,7 @@ function SupplierPartDetails() {
                   />
                 </div>
                 <button className="btn btn-primary align-self-end ">
-                  Search
+                  Search1
                 </button>
               </div>
             </div>
@@ -348,13 +353,13 @@ function SupplierPartDetails() {
         </div>
         {range === "oneDay" && (
           <div>
-            <DetailsTableHeading1 />
+            <MachiningHeadLeakHeading />
             {valuesTable}
           </div>
         )}
         {range === "dateRange" && (
           <div>
-            <DetailsTableHeading2 />
+            <AssemblyLeakHeading />
             {valuesTable2}
           </div>
         )}
@@ -363,4 +368,4 @@ function SupplierPartDetails() {
   );
 }
 
-export default SupplierPartDetails;
+export default DeatialTraceability;

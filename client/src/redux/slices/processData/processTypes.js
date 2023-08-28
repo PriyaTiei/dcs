@@ -1,0 +1,6 @@
+export const PROCESS_FETCH = "PROCESS_FETCH";
+export const PROCESS_SUCCESS = "PROCESS_SUCCESS";
+export const PROCESS_FAILURE = "PROCESS_FAILURE ";
+export const SET_PROCESS_NO = "SET_PROCESS_NO";
+
+

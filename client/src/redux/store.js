@@ -4,6 +4,7 @@ import navBarReducer from "./slices/navbarSlice";
 import pqcsReducer from "./slices/pqcsSlice";
 import changePointReducer from "./slices/changepoints/changePointReducer";
 import engineReducer from "./slices/egNo/egNoReducer";
+import processReducer from "./slices/processData/processReducer";
 const store = configureStore({
   reducer: {
     dcs: dcsReducer,
@@ -11,6 +12,7 @@ const store = configureStore({
     pqcs: pqcsReducer,
     changePoints: changePointReducer,
     engine: engineReducer,
+    process: processReducer,
   },
 });
 

@@ -6,7 +6,7 @@ import { AppSidebar } from "./components/Sidebar";
 import ContentWrapper from "./components/ContentWrapper";
 import ChangePoints from "./components/changePoints/ChangePoints";
 import MainPage from "./components/engno/MainPage";
-import SupplierPartDeatils from "./components/engno/SupplierPartDetails.js";
+import SupplierPartDeatils from "./components/engno/DetailTraceability.js";
 import SearchReworkImages from "./components/reworkImage/SearchReworkImages";
 
 export default function App() {

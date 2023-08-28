@@ -7,7 +7,7 @@ import DateTable from "./ReusableEngineHistoryValues.js";
 import moment from "moment";
 import ShippingDetails from "./ShippingDetails.js";
 import ChangePointAssembly from "./ChangePointAssembly.js";
-import SupplierPartDetails from "./SupplierPartDetails.js";
+import DetailTraceability from "./DetailTraceability.js";
 import ChangePointMachining from "./ChangePointMachining.js";
 import RawMaterialDetails from "./RawMaterialDetails.js";
 import PartHistory from "./RMHistory.js";
@@ -49,13 +49,13 @@ function EngNo() {
   };
 
   const setHeadLeakValues = (data) => {
-    let leakDataInt = data.filter((item) => data[5] == "H5_OP310");
+    let leakDataInt = data?.filter((item) => data[5] == "H5_OP310");
 
     setLeakData(leakDataInt);
   };
 
-  const machinedParts = ["Head S / N"];
-  // const machinedParts = ["Block S / N", "Crank S / N", "Head S / N"];
+  // const machinedParts = ["Head S / N"];
+  const machinedParts = ["Block S / N", "Crank S / N", "Head S / N"];
 
   const getOracleData = () => {
     dispatch(getEngineData(engineNo));
@@ -76,7 +76,7 @@ function EngNo() {
   };
 
   useEffect(() => {
-    if (oracleData.data) {
+    if (oracleData?.data) {
       const selectedColumns = getColumn(oracleData?.data, 17, 1, 21);
 
       console.log(selectedColumns);
@@ -126,7 +126,7 @@ function EngNo() {
   ) : null;
   return (
     <div>
-      {/* search engine no */}
+      {/*************** * search engine no */}
       <div>
         <div>Engine Number</div>
 
@@ -144,7 +144,7 @@ function EngNo() {
           <div>{leakData}</div>
         </div>
       </div>
-
+      {/* *****************Assembly fieldset */}
       <fieldset className="border p-3 mt-3 ">
         <legend
           className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-primary"
@@ -177,7 +177,7 @@ function EngNo() {
           <ChangePointAssembly />
         </div>
       </fieldset>
-
+      {/* ************Machining Field set */}
       <fieldset className="border p-3 mt-3 ">
         <legend
           className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-success"
@@ -187,19 +187,19 @@ function EngNo() {
         </legend>
         {/* Change point information for Machining */}
         <ChangePointMachining />
-
-        <div className="d-flex gap-3 mt-0">
-          {/* Supplier details */}
-          <SupplierPartDetails />
-
-          {/* Part selection */}
-
-          {/* RM Detail */}
-
-          {/* Part History */}
-        </div>
       </fieldset>
+      {/* ****************Detail Traceability */}
+      <div className="d-flex gap-3 mt-0">
+        {/* Supplier details */}
+        <DetailTraceability />
 
+        {/* Part selection */}
+
+        {/* RM Detail */}
+
+        {/* Part History */}
+      </div>
+      {/* ***************** Supplier Field set */}
       <fieldset className="border p-3 mt-3 ">
         <legend
           className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-success"
