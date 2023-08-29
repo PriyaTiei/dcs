@@ -3,13 +3,35 @@ import {
   PROCESS_SUCCESS,
   PROCESS_FAILURE,
   SET_PROCESS_NO,
+  PROCESS_ONE_DAY_FETCH,
+  PROCESS_ONE_DAY_SUCCESS,
+  PROCESS_ONE_DAY_FAILURE,
+  PROCESS_RANGE_FETCH,
+  PROCESS_RANGE_SUCCESS,
+  PROCESS_RANGE_FAILURE,
+  SET_FROM_DATE,
+  SET_TO_DATE,
 } from "./processTypes";
+
+var tempFromDate = new Date(Date.now());
+tempFromDate.setHours(0);
+tempFromDate.setMinutes(0);
+tempFromDate.setSeconds(1);
+
+var tempToDate = new Date(Date.now());
+tempToDate.setHours(23);
+tempToDate.setMinutes(59);
+tempToDate.setSeconds(59);
 
 const initialStateProcess = {
   processNo: "",
   loading: false,
   data: [],
   error: "",
+  dataOneDay: [],
+  dataRange: [],
+  fromDate: tempFromDate,
+  toDate: tempToDate,
 };
 
 const processReducer = (state = initialStateProcess, action) => {
@@ -38,6 +60,55 @@ const processReducer = (state = initialStateProcess, action) => {
         data: [],
         error: action.error,
       };
+    case PROCESS_ONE_DAY_FETCH:
+      return {
+        ...state,
+        loading: true,
+      };
+    case PROCESS_ONE_DAY_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        dataOneDay: action.payload,
+        error: "",
+      };
+    case PROCESS_ONE_DAY_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        dataOneDay: [],
+        error: action.error,
+      };
+    case PROCESS_RANGE_FETCH:
+      return {
+        ...state,
+        loading: true,
+      };
+    case PROCESS_RANGE_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        dataRange: action.payload,
+        error: "",
+      };
+    case PROCESS_RANGE_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        dataRange: [],
+        error: action.error,
+      };
+      case SET_FROM_DATE:
+        return {
+          ...state,         
+          fromDate: action.payload,        
+        };
+        case SET_TO_DATE:
+          return {
+            ...state,         
+            toDate: action.payload,        
+          };
+      
     default:
       return state;
   }

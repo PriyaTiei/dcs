@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import moment from "moment"
+import moment from "moment";
+import {
+  getProcessOneDayDetails,
+  setFromDate,
+  setToDate,
+} from "../../redux/slices/processData/processActions";
 
 function ResultProcess() {
+  const dispatch = useDispatch();
   const data = useSelector((state) => state.engine.engineData.data);
   const section = useSelector((state) => state.engine.section);
   const subSection = useSelector((state) => state.engine.subSection);
@@ -59,29 +65,61 @@ function ResultProcess() {
 
   ///**********Return based on process No */
 
-  useEffect(() => {}, [processNo]);
+  useEffect(() => {
+    if (processNoFiltered == undefined || processNoFiltered.length == 0) {
+    } else {
+      var tempFromDate = new Date(processNoFiltered[0][8]);
+      tempFromDate.setHours(0);
+      tempFromDate.setMinutes(0);
+      tempFromDate.setSeconds(1);
+
+      var tempToDate = new Date(processNoFiltered[0][8]);
+      tempToDate.setHours(23);
+      tempToDate.setMinutes(59);
+      tempToDate.setSeconds(59);
+
+      dispatch(setFromDate(tempFromDate));
+      dispatch(setToDate(tempToDate));
+      dispatch(
+        getProcessOneDayDetails(
+          processNoFiltered[0][5],
+          tempFromDate,
+          tempToDate
+        )
+      );
+    }
+  }, [section, subSection, processNo]);
+  // used to set dates in redux , it is called from div element to get the work done
+  var setdates = (processNoFiltered) => {};
 
   // ******** check conditions ********
-  if ( subSection === "Block Cylinder") {
+  if (subSection === "Block Cylinder") {
     switch (processNo) {
       case "OP5":
         processNoFiltered = processNoList?.filter(
           (elements) => elements[5] === "B1_ENGRAVED"
         );
-        console.log("why undefined :");
-        console.log(processNoFiltered);
+
         display =
           processNoFiltered == undefined ||
           processNoFiltered.length == 0 ? null : (
             <div className="d-flex flex-column dt1">
+              {setdates(processNoFiltered)}
               <div className="d-flex ">
-                <div className="dt1f1">Name</div> <div className="dt1f2">{processNoFiltered[0][5]}</div>
+                <div className="dt1f1">Name</div>{" "}
+                <div className="dt1f2">{processNoFiltered[0][5]}</div>
               </div>
               <div className="d-flex ">
-                <div className="dt1f1">Sl No.</div> <div className="dt1f2">{processNoFiltered[0][1]}</div>
+                <div className="dt1f1">Sl No.</div>{" "}
+                <div className="dt1f2">{processNoFiltered[0][1].slice(16)}</div>
               </div>
               <div className="d-flex ">
-                <div className="dt1f1">Date</div> <div className="dt1f2">{moment(processNoFiltered[0][8]).format("DD-MM-YYYY HH:mm:ss")}</div>
+                <div className="dt1f1">Date</div>{" "}
+                <div className="dt1f2">
+                  {moment(processNoFiltered[0][8]).format(
+                    "DD-MM-YYYY HH:mm:ss"
+                  )}
+                </div>
               </div>
             </div>
           );
@@ -90,20 +128,48 @@ function ResultProcess() {
         processNoFiltered = processNoList?.filter(
           (elements) => elements[5] === "B3_OP190"
         );
-        console.log("why undefined :");
-        console.log(processNoFiltered);
+
         display =
           processNoFiltered == undefined ||
           processNoFiltered.length == 0 ? null : (
             <div className="d-flex flex-column">
+              {setdates(processNoFiltered)}
               <div className="d-flex ">
-                <div className="dt1f1">name</div> <div className="dt1f2">{processNoFiltered[0][5]}</div>
+                <div className="dt1f1">name</div>{" "}
+                <div className="dt1f2">{processNoFiltered[0][5]}</div>
               </div>
               <div className="d-flex ">
-                <div className="dt1f1">Data</div> <div className="dt1f2">{processNoFiltered[0][1]}</div>
+                <div className="dt1f1">Data</div>{" "}
+                <div className="dt1f2">{processNoFiltered[0][1]}</div>
               </div>
               <div className="d-flex">
-                <div className="dt1f1">Date</div> <div className="dt1f2">{processNoFiltered[0][8]}</div>
+                <div className="dt1f1">Date</div>{" "}
+                <div className="dt1f2">{processNoFiltered[0][8]}</div>
+              </div>
+            </div>
+          );
+        break;
+      case "OP195AB":
+        processNoFiltered = processNoList?.filter(
+          (elements) => elements[5] === "B3_OP190"
+        );
+
+        display =
+          processNoFiltered == undefined ||
+          processNoFiltered.length == 0 ? null : (
+            <div className="d-flex flex-column">
+              {setdates(processNoFiltered)}
+              <div className="d-flex ">
+                <div className="dt1f1">name</div>{" "}
+                <div className="dt1f2">{processNoFiltered[0][5]}</div>
+              </div>
+              <div className="d-flex ">
+                <div className="dt1f1">Data</div>{" "}
+                <div className="dt1f2">{processNoFiltered[0][1]}</div>
+              </div>
+              <div className="d-flex">
+                <div className="dt1f1">Date</div>{" "}
+                <div className="dt1f2">{processNoFiltered[0][8]}</div>
               </div>
             </div>
           );
@@ -112,19 +178,18 @@ function ResultProcess() {
         display = null;
         break;
     }
-  } else if ( subSection === "Head Cylinder") {
+  } else if (subSection === "Head Cylinder") {
     switch (processNo) {
-  
       case "OP50":
         processNoFiltered = processNoList?.filter(
           (elements) => elements[5] === "H2_OP050"
         );
-        console.log("why undefined :");
-        console.log(processNoFiltered);
+
         display =
           processNoFiltered == undefined ||
           processNoFiltered.length == 0 ? null : (
             <div className="d-flex flex-column">
+              {setdates(processNoFiltered)}
               <div className="d-flex gap-2">
                 <div>name</div> <div>{processNoFiltered[0][5]}</div>
               </div>
@@ -137,67 +202,66 @@ function ResultProcess() {
             </div>
           );
         break;
-        case "OP55":
-          processNoFiltered = processNoList?.filter(
-            (elements) => elements[5] === "H3_OP055"
-          );
-          console.log("why undefined :");
-          console.log(processNoFiltered);
-          display =
-            processNoFiltered == undefined ||
-            processNoFiltered.length == 0 ? null : (
-              <div className="d-flex flex-column">
-                <div className="d-flex gap-2">
-                  <div>name</div> <div>{processNoFiltered[0][5]}</div>
-                </div>
-                <div className="d-flex gap-2">
-                  <div>Data</div> <div>{processNoFiltered[0][1]}</div>
-                </div>
-                <div className="d-flex gap-2">
-                  <div>Date</div> <div>{processNoFiltered[0][8]}</div>
-                </div>
-              </div>
-            );
-          break;
-        case "OP310":
-          processNoFiltered = processNoList?.filter(
-            (elements) => elements[5] === "H5_OP310"
-          );
-          console.log("why undefined :");
-          console.log(processNoFiltered);
-          display =
-            processNoFiltered == undefined ||
-            processNoFiltered.length == 0 ? null : (
-              <div className="d-flex flex-column">
-                <div className="d-flex gap-2">
-                  <div>name</div> <div>{processNoFiltered[0][5]}</div>
-                </div>
-                <div className="d-flex gap-2">
-                  <div>Data</div> <div>{processNoFiltered[0][1]}</div>
-                </div>
-                <div className="d-flex gap-2">
-                  <div>Date</div> <div>{processNoFiltered[0][8]}</div>
-                </div>
-              </div>
-            );
-          break;
-      default:
-        display = null;
-        break;
-    }
-  }else if (subSection === "Crank Shaft") {
-    switch (processNo) {
-  
-      case "OP150 & 170":
+      case "OP55":
         processNoFiltered = processNoList?.filter(
-          (elements) => elements[5] === "C3_OP150_170"
+          (elements) => elements[5] === "H3_OP055"
         );
-        console.log("why undefined :");
-        console.log(processNoFiltered);
+
         display =
           processNoFiltered == undefined ||
           processNoFiltered.length == 0 ? null : (
             <div className="d-flex flex-column">
+              {setdates(processNoFiltered)}
+              <div className="d-flex gap-2">
+                <div>name</div> <div>{processNoFiltered[0][5]}</div>
+              </div>
+              <div className="d-flex gap-2">
+                <div>Data</div> <div>{processNoFiltered[0][1]}</div>
+              </div>
+              <div className="d-flex gap-2">
+                <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+              </div>
+            </div>
+          );
+        break;
+      case "OP310":
+        processNoFiltered = processNoList?.filter(
+          (elements) => elements[5] === "H5_OP310"
+        );
+
+        display =
+          processNoFiltered == undefined ||
+          processNoFiltered.length == 0 ? null : (
+            <div className="d-flex flex-column">
+              {setdates(processNoFiltered)}
+              <div className="d-flex gap-2">
+                <div>name</div> <div>{processNoFiltered[0][5]}</div>
+              </div>
+              <div className="d-flex gap-2">
+                <div>Data</div> <div>{processNoFiltered[0][1]}</div>
+              </div>
+              <div className="d-flex gap-2">
+                <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+              </div>
+            </div>
+          );
+        break;
+      default:
+        display = null;
+        break;
+    }
+  } else if (subSection === "Crank Shaft") {
+    switch (processNo) {
+      case "OP150 & 170":
+        processNoFiltered = processNoList?.filter(
+          (elements) => elements[5] === "C3_OP150_170"
+        );
+
+        display =
+          processNoFiltered == undefined ||
+          processNoFiltered.length == 0 ? null : (
+            <div className="d-flex flex-column">
+              {setdates(processNoFiltered)}
               <div className="d-flex gap-2 ">
                 <div>name</div> <div>{processNoFiltered[0][5]}</div>
               </div>
@@ -210,63 +274,59 @@ function ResultProcess() {
             </div>
           );
         break;
-        case "OP220":
-          processNoFiltered = processNoList?.filter(
-            (elements) => elements[5] === "C4_OP220"
-          );
-          console.log("why undefined :");
-          console.log(processNoFiltered);
-          display =
-            processNoFiltered == undefined ||
-            processNoFiltered.length == 0 ? null : (
-              <div className="d-flex flex-column">
-                <div className="d-flex gap-2">
-                  <div>name</div> <div>{processNoFiltered[0][5]}</div>
-                </div>
-                <div className="d-flex gap-2">
-                  <div>Data</div> <div>{processNoFiltered[0][1]}</div>
-                </div>
-                <div className="d-flex gap-2">
-                  <div>Date</div> <div>{processNoFiltered[0][8]}</div>
-                </div>
+      case "OP220":
+        processNoFiltered = processNoList?.filter(
+          (elements) => elements[5] === "C4_OP220"
+        );
+
+        display =
+          processNoFiltered == undefined ||
+          processNoFiltered.length == 0 ? null : (
+            <div className="d-flex flex-column">
+              {setdates(processNoFiltered)}
+              <div className="d-flex gap-2">
+                <div>name</div> <div>{processNoFiltered[0][5]}</div>
               </div>
-            );
-          break;
-        case "OP310":
-          processNoFiltered = processNoList?.filter(
-            (elements) => elements[5] === "H5_OP310"
-          );
-          console.log("why undefined :");
-          console.log(processNoFiltered);
-          display =
-            processNoFiltered == undefined ||
-            processNoFiltered.length == 0 ? null : (
-              <div className="d-flex flex-column">
-                <div className="d-flex gap-2">
-                  <div>name</div> <div>{processNoFiltered[0][5]}</div>
-                </div>
-                <div className="d-flex gap-2">
-                  <div>Data</div> <div>{processNoFiltered[0][1]}</div>
-                </div>
-                <div className="d-flex gap-2">
-                  <div>Date</div> <div>{processNoFiltered[0][8]}</div>
-                </div>
+              <div className="d-flex gap-2">
+                <div>Data</div> <div>{processNoFiltered[0][1]}</div>
               </div>
-            );
-          break;
+              <div className="d-flex gap-2">
+                <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+              </div>
+            </div>
+          );
+        break;
+      case "OP310":
+        processNoFiltered = processNoList?.filter(
+          (elements) => elements[5] === "H5_OP310"
+        );
+
+        display =
+          processNoFiltered == undefined ||
+          processNoFiltered.length == 0 ? null : (
+            <div className="d-flex flex-column">
+              {setdates(processNoFiltered)}
+              <div className="d-flex gap-2">
+                <div>name</div> <div>{processNoFiltered[0][5]}</div>
+              </div>
+              <div className="d-flex gap-2">
+                <div>Data</div> <div>{processNoFiltered[0][1]}</div>
+              </div>
+              <div className="d-flex gap-2">
+                <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+              </div>
+            </div>
+          );
+        break;
       default:
         display = null;
         break;
     }
   }
 
-
   // H5_OP310
   // H2_OP050
   // H3_OP055
-
-
-
 
   // C3_OP150_170
   return (

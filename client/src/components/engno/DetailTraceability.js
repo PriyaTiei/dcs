@@ -2,22 +2,24 @@ import React, { useState, useEffect } from "react";
 
 // import Select from "react-select"
 import Select from "react-select";
-import MachiningHeadLeakHeading from "./MachiningHeadLeakHeading";
-import AssemblyLeakHeading from "./AssemblyLeakHeading";
-import DetailsTableValue1 from "./ReuasbleMachiningHeadLeakValues";
-import DetailsTableValue2 from "./ReusabeAssemblyLeakValues";
+import MachiningHeadLeakHeading from "./processDetails/MachiningHeadLeakHeading";
+import AssemblyLeakHeading from "./processDetails/AssemblyLeakHeading";
+import DetailsTableValue1 from "./processDetails/ReuasbleMachiningHeadLeakValues";
+import DetailsTableValue2 from "./processDetails/ReusabeAssemblyLeakValues";
 import { a } from "./dummyHeadLeak";
 import { b } from "./dummyAssemblyLeak.js";
 import ProcessNumbers from "./ProcessNumbers";
 import ResultProcess from "./ProcessResults";
 import SubOptions from "./SubOptions";
-import { processNo } from "./processNo";
+import { processNoData } from "./processNoData";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setSectionRedux,
   setSubSectionRedux,
 } from "../../redux/slices/egNo/egNoActions";
 import ReusablePartNo from "./ReusablePartNo";
+import Heading_B_OP05 from "./processDetails/Heading_B_OP05"
+import Reusable_B_OP05 from "./processDetails/Reusable_B_OP05";
 
 function DeatialTraceability() {
   // formating date
@@ -33,10 +35,17 @@ function DeatialTraceability() {
   const formattedDate = getCurrentDateInYYYYMMDD();
 
   const dispatch = useDispatch();
+
+  const section = useSelector((state) => state.engine.section);
+  const subSection = useSelector((state) => state.engine.subSection);
+  const processNo = useSelector((state) => state.process.processNo);
+  const dataOneDay = useSelector((state) => state.process.dataOneDay);
+
   const [engineNo, setEngineNo] = useState("");
   const [part, setPart] = useState("");
-  const [section, setSection] = useState("Assembly");
-  const [subSection, setSubSection] = useState("Shipment");
+  const [sectionIni, setSection] = useState("Assembly");
+  // const [subSection, setSubSection] = useState("Shipment");
+
   const [subSectionOptions2, setSubSectionOptions2] = useState([
     { value: "Shipment", label: "Shipment" },
   ]);
@@ -45,6 +54,8 @@ function DeatialTraceability() {
 
   const [fromDate, setFromDate] = useState(formattedDate);
   const [toDate, setToDate] = useState(formattedDate);
+  const [fromDateValue, setFromDateValue] = useState();
+  const [toDateValue, setToDateValue] = useState();
 
   const hDate = new Date(Date.now()).toUTCString();
 
@@ -63,42 +74,7 @@ function DeatialTraceability() {
     "MK line",
   ];
 
-  const sectionData = processNo;
-
-  // const sectionData = [
-  //   {
-  //     section: "Assembly",
-  //     subSection: [
-  //       "Shipment",
-  //       "FTB",
-  //       "MTB",
-  //       "Oil/water leak",
-  //       "Fuel Leak",
-  //       "CHS",
-  //       "BS",
-  //       "PS",
-  //       "SPS",
-  //       "MK line",
-  //     5],
-  //   },
-  //   {
-  //     section: "Machining",
-  //     subSection: ["Cylinder Block", "Cylinder Head", "Crank Shaft"],
-  //   },
-  //   {
-  //     section: "Supplier part",
-  //     subSection: [
-  //       "Cylinder Block",
-  //       "Cylinder Head",
-  //       "Crank Shaft",
-  //       "Connecting rod",
-  //       "Crank Case",
-  //       "Cam housing",
-  //       "Port Injector",
-  //       "Pully Crank Shaft",
-  //     ],
-  //   },
-  // ];
+  const sectionData = processNoData;
 
   const sectionOptions = sectionData.map((item) => {
     return { value: item.section, label: item.section };
@@ -122,13 +98,13 @@ function DeatialTraceability() {
   const initialSubSection = {};
 
   useEffect(() => {
-    itemSelected = sectionData?.filter((item) => item.section == section);
+    itemSelected = sectionData?.filter((item) => item.section == sectionIni);
 
     subSectionOptions1 = itemSelected[0]?.subSection?.map((item) => {
       return { value: item.name, label: item.name };
     });
     setSubSectionOptions2(subSectionOptions1);
-  }, [section]);
+  }, [sectionIni]);
 
   // useEffect(() => {
 
@@ -202,11 +178,11 @@ function DeatialTraceability() {
   const handleSectionChange = (selected, index) => {
     setSelectedSection(selected);
     dispatch(setSectionRedux(selected));
-    dispatch(setSubSectionRedux(processNo[index].subSection[0].name));
+    dispatch(setSubSectionRedux(processNoData[index].subSection[0].name));
     setIndexI(index);
-    const section = sectionData.find((item) => item.section === selected);
-    if (section) {
-      setSelectedSubSection(section.subSection[0].name);
+    const sectionNew = sectionData.find((item) => item.section === selected);
+    if (sectionNew) {
+      setSelectedSubSection(sectionNew.subSection[0].name);
       setIndexJ(0);
     }
   };
@@ -241,8 +217,6 @@ function DeatialTraceability() {
         >
           Detail Traceability
         </legend>
-
- 
 
         <div className="d-flex gap-3 mt-0">
           {/* Part selection */}
@@ -283,8 +257,6 @@ function DeatialTraceability() {
           {/*Results */}
           <ReusablePartNo />
           <ResultProcess />
-
-          
         </div>
         <div className="d-flex justify-content-start ">
           {/*Radio button  */}
@@ -304,58 +276,60 @@ function DeatialTraceability() {
           </form>
         </div>
 
+        {/* One day is selected*/}
+        {range === "oneDay" && (
+          <div className="mt-3">
+            <div className="h5">Select Date </div>
+            <div className="d-flex flex-wrap gap-3">
+              <div className="d-flex flex-column align-items-start">
+                <input
+                  type="date"
+                  value={fromDate}
+                  className="bg-warning"
+                  onChange={fromDateHandler}
+                />
+              </div>
+
+              <button className="btn btn-primary align-self-end ">
+                Search
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* This is for Date Range */}
         {range === "dateRange" && (
-            <div className="mt-3">
-              <div className="h5">Select Date Range</div>
-              <div className="d-flex flex-wrap gap-3">
-                <div className="d-flex flex-column align-items-start">
-                  <div className="text-center font-weight-bold  ">
-                    From Date:
-                  </div>
-                  <input
-                    type="date"
-                    value={fromDate}
-                    className="bg-warning"
-                    onChange={fromDateHandler}
-                  />
-                </div>
-
-                <div className="d-flex flex-column align-items-start">
-                  <div className="text-center font-weight-bold">To Date</div>
-
-                  <input
-                    type="date"
-                    value={toDate}
-                    className="bg-warning"
-                    onChange={toDateHandler}
-                  />
-                </div>
-                <button className="btn btn-primary align-self-end ">
-                  Search1
-                </button>
+          <div className="mt-3">
+            <div className="h5">Select Date Range</div>
+            <div className="d-flex flex-wrap gap-3">
+              <div className="d-flex flex-column align-items-start">
+                <div className="text-center font-weight-bold  ">From Date:</div>
+                <input
+                  type="date"
+                  value={fromDate}
+                  className="bg-warning"
+                  onChange={fromDateHandler}
+                />
               </div>
+
+              <div className="d-flex flex-column align-items-start">
+                <div className="text-center font-weight-bold">To Date</div>
+
+                <input
+                  type="date"
+                  value={toDate}
+                  className="bg-warning"
+                  onChange={toDateHandler}
+                />
+              </div>
+              <button className="btn btn-primary align-self-end ">
+                Search
+              </button>
             </div>
+          </div>
+        )}
 
-            // <div className="mt-3">
-            //   <div className="h5">Select Date Range</div>
-            //   <div className="d-flex flex-wrap gap-2 rang ">
-            //     <div className="text-center font-weight-bold ">From Date</div>
-
-            //     <div className="text-center font-weight-bold mx-4">To Date</div>
-
-            //     {/* <div className="text-center font-weight-bold bg-warning"> */}
-            //     <input type="date" value={fromDate} className="bg-warning" onChange={fromDateHandler}/>
-            //     {/* </div> */}
-            //     {/* <div className="text-center font-weight-bold bg-warning mx-4"> */}
-            //     <input type="date" value={toDate} className="bg-warning" onChange={toDateHandler}/>
-            //     {/* </div> */}
-            //     <button className="btn btn-primary block">Search</button>
-            //   </div>
-            // </div>
-          )}
-
-          {/* **************Table data */}
+        {/* **************Table data
         {range === "oneDay" && (
           <div>
             <MachiningHeadLeakHeading />
@@ -367,7 +341,11 @@ function DeatialTraceability() {
             <AssemblyLeakHeading />
             {valuesTable2}
           </div>
-        )}
+        )} */}
+
+        {section === "Machining" &&
+          subSection === "Block Cylinder" && 
+          processNo == "OP5" && <div><Heading_B_OP05 />{dataOneDay?.data?.map(element=><Reusable_B_OP05 key={element[1]} name={element[5]} serialNo={element[1]} date={element[8]}/>)}</div>}
       </fieldset>
     </div>
   );

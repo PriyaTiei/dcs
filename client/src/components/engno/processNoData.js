@@ -1,4 +1,4 @@
-export const processNo = [
+export const processNoData = [
   {
     section: "Assembly",
     subSection: [
@@ -48,25 +48,20 @@ export const processNo = [
         processNo: [
           { label: "OP5", value: "OP5" },
           { label: "OP150", value: "OP150" },
-          { label: "OP150", value: "OP150" },
-          { label: "OP150", value: "OP150" },
+          
           { label: "OP160", value: "OP160" },
           { label: "OP170", value: "OP170" },
           { label: "OP180", value: "OP180" },
           { label: "OP190", value: "OP190" },
-          { label: "OP195A", value: "OP195A" },
-          { label: "OP195B", value: "OP195B" },
+          { label: "OP195AB", value: "OP195AB" },
+         
           { label: "OP200", value: "OP200" },
           { label: "OP210", value: "OP210" },
           { label: "OP220", value: "OP220" },
-          { label: "OP230", value: "OP230" },
-          { label: "OP230", value: "OP230" },
-          { label: "OP230", value: "OP230" },
-          { label: "OP235", value: "OP235" },
-          { label: "OP235", value: "OP235" },
-          { label: "OP235", value: "OP235" },
-          { label: "OP235", value: "OP235" },
+          { label: "OP230", value: "OP230" },   
+          { label: "OP235", value: "OP235" }, 
           { label: "OP245", value: "OP245" },
+          { label: "FG", value: "FG" },
         ],
       },
       {
