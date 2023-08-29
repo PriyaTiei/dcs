@@ -53,10 +53,9 @@ function ReusablePartNo() {
   }, [subSection]);
 
   return (
-    <div className="d-flex   ">
-      <div className="text-center font-weight-bold">Part No.</div>
-
-      <div className="text-center font-weight-bold">{partNo}</div>
+    <div className="d-flex  flex-column dt2">
+      <div className=" font-weight-bold dt2f1">Serial No. - {subSection}</div>
+      <div className=" font-weight-bold dt2f2">{partNo}</div>
     </div>
   );
 }

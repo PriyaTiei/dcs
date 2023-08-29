@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import moment from "moment"
 
 function ResultProcess() {
   const data = useSelector((state) => state.engine.engineData.data);
@@ -61,7 +62,7 @@ function ResultProcess() {
   useEffect(() => {}, [processNo]);
 
   // ******** check conditions ********
-  if (range === "oneDay" && subSection === "Block Cylinder") {
+  if ( subSection === "Block Cylinder") {
     switch (processNo) {
       case "OP5":
         processNoFiltered = processNoList?.filter(
@@ -72,15 +73,15 @@ function ResultProcess() {
         display =
           processNoFiltered == undefined ||
           processNoFiltered.length == 0 ? null : (
-            <div className="d-flex flex-column">
-              <div className="d-flex gap-2">
-                <div>name</div> <div>{processNoFiltered[0][5]}</div>
+            <div className="d-flex flex-column dt1">
+              <div className="d-flex ">
+                <div className="dt1f1">Name</div> <div className="dt1f2">{processNoFiltered[0][5]}</div>
               </div>
-              <div className="d-flex gap-2">
-                <div>sl No.</div> <div>{processNoFiltered[0][1]}</div>
+              <div className="d-flex ">
+                <div className="dt1f1">Sl No.</div> <div className="dt1f2">{processNoFiltered[0][1]}</div>
               </div>
-              <div className="d-flex gap-2">
-                <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+              <div className="d-flex ">
+                <div className="dt1f1">Date</div> <div className="dt1f2">{moment(processNoFiltered[0][8]).format("DD-MM-YYYY HH:mm:ss")}</div>
               </div>
             </div>
           );
@@ -95,14 +96,14 @@ function ResultProcess() {
           processNoFiltered == undefined ||
           processNoFiltered.length == 0 ? null : (
             <div className="d-flex flex-column">
-              <div className="d-flex gap-2">
-                <div>name</div> <div>{processNoFiltered[0][5]}</div>
+              <div className="d-flex ">
+                <div className="dt1f1">name</div> <div className="dt1f2">{processNoFiltered[0][5]}</div>
               </div>
-              <div className="d-flex gap-2">
-                <div>Data</div> <div>{processNoFiltered[0][1]}</div>
+              <div className="d-flex ">
+                <div className="dt1f1">Data</div> <div className="dt1f2">{processNoFiltered[0][1]}</div>
               </div>
-              <div className="d-flex gap-2">
-                <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+              <div className="d-flex">
+                <div className="dt1f1">Date</div> <div className="dt1f2">{processNoFiltered[0][8]}</div>
               </div>
             </div>
           );
@@ -111,7 +112,7 @@ function ResultProcess() {
         display = null;
         break;
     }
-  } else if (range === "oneDay" && subSection === "Head Cylinder") {
+  } else if ( subSection === "Head Cylinder") {
     switch (processNo) {
   
       case "OP50":
@@ -184,7 +185,7 @@ function ResultProcess() {
         display = null;
         break;
     }
-  }else if (range === "oneDay" && subSection === "Crank Shaft") {
+  }else if (subSection === "Crank Shaft") {
     switch (processNo) {
   
       case "OP150 & 170":
@@ -197,7 +198,7 @@ function ResultProcess() {
           processNoFiltered == undefined ||
           processNoFiltered.length == 0 ? null : (
             <div className="d-flex flex-column">
-              <div className="d-flex gap-2">
+              <div className="d-flex gap-2 ">
                 <div>name</div> <div>{processNoFiltered[0][5]}</div>
               </div>
               <div className="d-flex gap-2">

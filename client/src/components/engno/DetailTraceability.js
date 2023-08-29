@@ -242,23 +242,7 @@ function DeatialTraceability() {
           Detail Traceability
         </legend>
 
-        <div className="d-flex justify-content-center ">
-          {/*Radio button  */}
-
-          <form onChange={radioHandler} className="form-group gap-3">
-            <div className="d-flex gap-3">
-              <label htmlFor="oneDay">One Day </label>
-              <input type="radio" name="isRange" id="oneDay" value="oneDay" />
-              <label htmlFor="dateRange">Date Range </label>
-              <input
-                type="radio"
-                name="isRange"
-                id="dateRange"
-                value="dateRange"
-              />
-            </div>
-          </form>
-        </div>
+ 
 
         <div className="d-flex gap-3 mt-0">
           {/* Part selection */}
@@ -300,8 +284,28 @@ function DeatialTraceability() {
           <ReusablePartNo />
           <ResultProcess />
 
-          {/* This is for Date Range */}
-          {range === "dateRange" && (
+          
+        </div>
+        <div className="d-flex justify-content-start ">
+          {/*Radio button  */}
+
+          <form onChange={radioHandler} className="form-group gap-3">
+            <div className="d-flex gap-3">
+              <label htmlFor="oneDay">One Day </label>
+              <input type="radio" name="isRange" id="oneDay" value="oneDay" />
+              <label htmlFor="dateRange">Date Range </label>
+              <input
+                type="radio"
+                name="isRange"
+                id="dateRange"
+                value="dateRange"
+              />
+            </div>
+          </form>
+        </div>
+
+        {/* This is for Date Range */}
+        {range === "dateRange" && (
             <div className="mt-3">
               <div className="h5">Select Date Range</div>
               <div className="d-flex flex-wrap gap-3">
@@ -350,7 +354,8 @@ function DeatialTraceability() {
             //   </div>
             // </div>
           )}
-        </div>
+
+          {/* **************Table data */}
         {range === "oneDay" && (
           <div>
             <MachiningHeadLeakHeading />
