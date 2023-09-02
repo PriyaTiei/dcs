@@ -14,7 +14,7 @@ function ReusageImageCards({ imageData }) {
       <div className="d-flex gap-1 ">
         <h6 className="w-50 ">Date & Time: </h6>
         <h6 className="w-50 ">
-          {moment(imageData.createdAt).format("DD-mm-yy HH:mm:ss")}
+          {moment(imageData.createdAt).format("DD-MM-YYYY HH:mm:ss")}
         </h6>
       </div>
       <div className="d-flex gap-1">

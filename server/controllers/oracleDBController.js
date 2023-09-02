@@ -43,11 +43,10 @@ exports.getEngineData = catchAsyncError(async (req, res, next) => {
   res.status(200).json({ coloumns: allColumnNames, data: result.rows });
 });
 
-
 // part data fetching using serialno
 exports.getPartData = catchAsyncError(async (req, res, next) => {
   let partNo = req.params.partNo;
- partNo = partNo + "    ";
+  partNo = partNo + "    ";
 
   const con = await oracleDBConnection();
 
@@ -68,7 +67,6 @@ exports.getPartData = catchAsyncError(async (req, res, next) => {
   const allColumnNames = result.metaData.map((item) => item.name);
   res.status(200).json({ coloumns: allColumnNames, data: result.rows });
 });
-
 
 // get shippment history for Single engine
 exports.getDateData = catchAsyncError(async (req, res, next) => {
@@ -91,25 +89,21 @@ exports.getDateData = catchAsyncError(async (req, res, next) => {
   }
   console.table(Object.keys(result));
   const allColumnNames = result.metaData.map((item) => item.name);
-  res.status(200).json({ coloumns: allColumnNames, data: result.rows, message:"for date" });
+  
+  res
+    .status(200)
+    .json({ coloumns: allColumnNames, data: result.rows, message: "for date" });
 });
 
 // Get part data from specific date range
 exports.getDateRangeData = catchAsyncError(async (req, res, next) => {
-  const {processNo, fromDate, toDate} = req.params;
-  console.log(processNo)
- 
-  
-  // const tempFromDate = new Date("2023-06-29T00:00:01.000Z")
-  // const tempToDate= new Date("2023-06-29T23:59:59.000Z")
-  // const tempProcessNo = "B3_OP190"
-
+  const { processNo, fromDate, toDate } = req.params;
   const con = await oracleDBConnection();
 
   const result = await con.execute(
     // `select * from todoitem`,
     "select * from KTTMSYS.T_MCHNSTJHO WHERE HNSTKNRIMEI =:value0 AND KSNDTTM BETWEEN :value1 AND :value2",
-    [processNo, new Date(fromDate),new Date(toDate)],
+    [processNo, new Date(fromDate), new Date(toDate)],
     {
       // maxRows: 2
     }
@@ -121,6 +115,39 @@ exports.getDateRangeData = catchAsyncError(async (req, res, next) => {
   }
   console.table(Object.keys(result));
   const allColumnNames = result.metaData.map((item) => item.name);
-  res.status(200).json({ coloumns: allColumnNames, data: result.rows, message:"for dateRange" });
+  result.rows.sort((a, b) => a[2] - b[2]);
+  res.status(200).json({
+    coloumns: allColumnNames,
+    data: result.rows,
+    message: "for dateRange",
+  });
 });
 
+// Get part data from specific date range
+exports.getEngineNoMatchingSerialNoList = catchAsyncError(
+  async (req, res, next) => {
+    const { serialNoListString } = req.query;
+    const serialNoList = serialNoListString.split(",");
+
+    const placeholders = serialNoList.map((_, i) => `:value${i}`).join(", ");
+    const con = await oracleDBConnection();
+
+    const result = await con.execute(
+      // `select * from todoitem`,
+      `select  ATAI,EGNO from KTTMSYS.T_HNSTJHO WHERE ATAI IN (${placeholders})`,
+      serialNoList,
+      {
+        // maxRows: 2
+      }
+    );
+
+    if (result.rows.length == 0) {
+      console.log("Serial no. do not exist & Engine can not be found");
+      return new ErrorHandler("Serial no. do not exist", 401);
+    }
+    console.table(Object.keys(result));
+    const allColumnNames = result.metaData.map((item) => item.name);
+    result.rows.sort((a, b) => a[1] - b[1]);
+    res.status(200).json({ coloumns: allColumnNames, data: result.rows });
+  }
+);

@@ -10,7 +10,10 @@ import {
   PROCESS_RANGE_SUCCESS,
   PROCESS_RANGE_FAILURE,
   SET_FROM_DATE,
-  SET_TO_DATE
+  SET_TO_DATE,
+  PROCESS_ENGINE_FETCH,
+  PROCESS_ENGINE_SUCCESS,
+  PROCESS_ENGINE_FAILURE,
 } from "./processTypes";
 import axios from "axios";
 
@@ -81,21 +84,39 @@ export const processRangeFailure = (error) => {
   };
 };
 
+export const processEngineFetch = () => {
+  return {
+    type: PROCESS_ENGINE_FETCH,
+  };
+};
+
+export const processEngineSuccess = (data) => {
+  return {
+    type: PROCESS_ENGINE_SUCCESS,
+    payload: data,
+  };
+};
+
+export const processEngineFailure = (error) => {
+  return {
+    type: PROCESS_ENGINE_FAILURE,
+    error: error,
+  };
+};
+
 export const setFromDate = (date) => {
   return {
     type: SET_FROM_DATE,
-     payload: date,
+    payload: date,
   };
 };
 
 export const setToDate = (date) => {
   return {
     type: SET_TO_DATE,
-     payload: date,
+    payload: date,
   };
 };
-
-
 
 export const getProcessDetails = (partNo) => {
   return (dispatch) => {
@@ -144,4 +165,20 @@ export const getProcessRangeDetails = (partNo, fromDate, toDate) => {
   };
 };
 
-// http://localhost:5081/oracle/processNo/OP10/fromDate/fromDate/toDate/toDate
+export const getProcessEngineDetails = (serialNoListString) => {
+  return (dispatch) => {
+    dispatch(processEngineFetch());
+    axios
+      .get(
+        `${process.env.REACT_APP_BACKEND_URL}/oracle/serialNoListString?serialNoListString=${serialNoListString}`
+      )
+      .then((response) => {
+        dispatch(processEngineSuccess(response.data));
+      })
+      .catch((err) => {
+        dispatch(processEngineFailure(err.message));
+      });
+  };
+};
+
+// http://localhost:5081/oracle/serialNoListString?serialNoListString=3611222303205354,3611132306192321

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import moment from "moment";
 import {
+  getProcessEngineDetails,
   getProcessOneDayDetails,
   setFromDate,
   setToDate,
@@ -14,6 +15,7 @@ function ResultProcess() {
   const subSection = useSelector((state) => state.engine.subSection);
   const processNo = useSelector((state) => state.process.processNo);
   const processNoList = useSelector((state) => state.process.data.data);
+  const dataOneDay = useSelector((state) => state.process.dataOneDay.data);
   var processNoFiltered = []; // contains only one element after filtering even thow it is list
   var slNo;
   var display = null;
@@ -89,6 +91,17 @@ function ResultProcess() {
       );
     }
   }, [section, subSection, processNo]);
+
+  // second user effect
+  useEffect(() => {
+    if (dataOneDay?.length >= 0) {
+      const serialNoListString = dataOneDay
+        .map((item) => item[2].trim())
+        .join(",");
+      dispatch(getProcessEngineDetails(serialNoListString));
+    }
+  }, [dataOneDay]);
+
   // used to set dates in redux , it is called from div element to get the work done
   var setdates = (processNoFiltered) => {};
 
@@ -117,7 +130,7 @@ function ResultProcess() {
                 <div className="dt1f1">Date</div>{" "}
                 <div className="dt1f2">
                   {moment(processNoFiltered[0][8]).format(
-                    "DD-MM-YYYY HH:mm:ss"
+                    "DD-MMMM-YYYY HH:mm:ss"
                   )}
                 </div>
               </div>

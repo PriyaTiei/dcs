@@ -11,6 +11,9 @@ import {
   PROCESS_RANGE_FAILURE,
   SET_FROM_DATE,
   SET_TO_DATE,
+  PROCESS_ENGINE_FETCH,
+  PROCESS_ENGINE_SUCCESS,
+  PROCESS_ENGINE_FAILURE
 } from "./processTypes";
 
 var tempFromDate = new Date(Date.now());
@@ -32,6 +35,7 @@ const initialStateProcess = {
   dataRange: [],
   fromDate: tempFromDate,
   toDate: tempToDate,
+  processEngine:[]
 };
 
 const processReducer = (state = initialStateProcess, action) => {
@@ -108,6 +112,26 @@ const processReducer = (state = initialStateProcess, action) => {
             ...state,         
             toDate: action.payload,        
           };
+
+          case PROCESS_ENGINE_FETCH:
+            return {
+              ...state,
+              loading: true,
+            };
+          case PROCESS_ENGINE_SUCCESS:
+            return {
+              ...state,
+              loading: false,
+              processEngine: action.payload,
+              error: "",
+            };
+          case PROCESS_ENGINE_FAILURE:
+            return {
+              ...state,
+              loading: false,
+              processEngine: [],
+              error: action.error,
+            };
       
     default:
       return state;

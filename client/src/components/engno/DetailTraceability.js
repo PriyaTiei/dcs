@@ -345,10 +345,12 @@ function DeatialTraceability() {
 
         {section === "Machining" &&
           subSection === "Block Cylinder" && 
-          processNo == "OP5" && <div><Heading_B_OP05 />{dataOneDay?.data?.map(element=><Reusable_B_OP05 key={element[1]} name={element[5]} serialNo={element[1]} date={element[8]}/>)}</div>}
+          processNo == "OP5" && <div><Heading_B_OP05 />{dataOneDay?.data?.map(element=><Reusable_B_OP05 key={element[1]} serialNo={element[1]} date={element[8]}/>)}</div>}
       </fieldset>
     </div>
   );
 }
 
 export default DeatialTraceability;
+
+// http://localhost:5081/oracle/serialNoListString?serialNoListString=3611222303205354,3611132306192321
