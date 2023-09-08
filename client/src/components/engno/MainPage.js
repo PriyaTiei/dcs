@@ -13,6 +13,7 @@ import RawMaterialDetails from "./RawMaterialDetails.js";
 import PartHistory from "./RMHistory.js";
 import { useSelector, useDispatch } from "react-redux";
 import { getEngineData } from "../../redux/slices/egNo/egNoActions.js";
+import { House, Person, Search } from 'bootstrap-icons-react';
 
 function EngNo() {
   const [engineNo, setEngineNo] = useState("");
@@ -49,9 +50,11 @@ function EngNo() {
   };
 
   const setHeadLeakValues = (data) => {
-    let leakDataInt = data?.filter((item) => data[5] == "H5_OP310");
+    if (data.length > 0) {
+      let leakDataInt = data?.filter((item) => data[5] == "H5_OP310");
 
-    setLeakData(leakDataInt);
+      setLeakData(leakDataInt);
+    }
   };
 
   // const machinedParts = ["Head S / N"];
@@ -62,15 +65,15 @@ function EngNo() {
   };
 
   const getPartData = async (partNo) => {
-    console.log("part nos are", partNo);
+    // console.log("part nos are", partNo);
     await axios
       .get(`${process.env.REACT_APP_BACKEND_URL}/oracle/partNo/${partNo}`)
       .then((result) => {
-        console.log("data from Oracle server initial");
+        // console.log("data from Oracle server initial");
         // Store leak values
         setHeadLeakValues(result.data);
 
-        console.log(result.data);
+        // console.log(result.data);
       })
       .catch((err) => console.log(err));
   };
@@ -79,16 +82,16 @@ function EngNo() {
     if (oracleData?.data) {
       const selectedColumns = getColumn(oracleData?.data, 17, 1, 21);
 
-      console.log(selectedColumns);
+      // console.log(selectedColumns);
       // only keeping 3c parts
-      const c3 = selectedColumns.filter((item) => {
+      const c3 = selectedColumns?.filter((item) => {
         return (
           item[0] === machinedParts[0] ||
           item[0] === machinedParts[1] ||
           item[0] === machinedParts[2]
         );
       });
-      console.log(c3);
+      // console.log(c3);
       c3.forEach((item) => {
         getPartData(item[1]);
       });
@@ -124,9 +127,11 @@ function EngNo() {
       {history}
     </>
   ) : null;
+
   return (
     <div>
       {/*************** * search engine no */}
+
       <div>
         <div>Engine Number</div>
 
@@ -139,7 +144,10 @@ function EngNo() {
             className="form-control w-25"
           ></input>
           <button className="btn btn-primary" onClick={getOracleData}>
-            Search
+            <Search >
+           
+            </Search>
+            <spam className="mx-1"> Search</spam>
           </button>
           <div>{leakData}</div>
         </div>

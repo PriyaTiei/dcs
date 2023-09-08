@@ -9,7 +9,7 @@ import DetailsTableValue2 from "./processDetails/ReusabeAssemblyLeakValues";
 import { a } from "./dummyHeadLeak";
 import { b } from "./dummyAssemblyLeak.js";
 import ProcessNumbers from "./ProcessNumbers";
-import ResultProcess from "./ProcessResults";
+import ResultProcess from "./ResultProcess";
 import SubOptions from "./SubOptions";
 import { processNoData } from "./processNoData";
 import { useSelector, useDispatch } from "react-redux";
@@ -18,13 +18,20 @@ import {
   setSubSectionRedux,
 } from "../../redux/slices/egNo/egNoActions";
 import ReusablePartNo from "./ReusablePartNo";
-import Heading_B_OP05 from "./processDetails/Heading_B_OP05"
+import Heading_B_OP05 from "./processDetails/Heading_B_OP05";
 import Reusable_B_OP05 from "./processDetails/Reusable_B_OP05";
+import {
+  getProcessOneDayDetails,
+  newFromDate,
+  newToDate,
+} from "../../redux/slices/processData/processActions";
+import CastingInformation from "./casting/CastingInformation";
+import {Search} from "bootstrap-icons-react"
 
 function DeatialTraceability() {
   // formating date
-  function getCurrentDateInYYYYMMDD() {
-    const today = new Date();
+  function getCurrentDateInYYYYMMDD(a) {
+    const today = new Date(a);
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
@@ -39,7 +46,16 @@ function DeatialTraceability() {
   const section = useSelector((state) => state.engine.section);
   const subSection = useSelector((state) => state.engine.subSection);
   const processNo = useSelector((state) => state.process.processNo);
+  const processName= useSelector((state) => state.process.processName);
   const dataOneDay = useSelector((state) => state.process.dataOneDay);
+  const processEngine = useSelector((state) => state.process.processEngine);
+  const processEngineDate = useSelector(
+    (state) => state.process.processEngineDate
+  );
+  const fromDateState = useSelector((state) => state.process.fromDate);
+  const toDateState = useSelector((state) => state.process.toDate);
+
+  // console.log(fromDateState.slice(0, 10));
 
   const [engineNo, setEngineNo] = useState("");
   const [part, setPart] = useState("");
@@ -56,6 +72,7 @@ function DeatialTraceability() {
   const [toDate, setToDate] = useState(formattedDate);
   const [fromDateValue, setFromDateValue] = useState();
   const [toDateValue, setToDateValue] = useState();
+  const [combineTable, setCombineTable] = useState([]);
 
   const hDate = new Date(Date.now()).toUTCString();
 
@@ -132,6 +149,7 @@ function DeatialTraceability() {
 
   const valuesTable2 = values2.map((item) => (
     <DetailsTableValue2
+      key={item.serialNo}
       serialNo={item.serialNo}
       dateTime={item.dateTime}
       wj={item.wj}
@@ -153,15 +171,42 @@ function DeatialTraceability() {
     setRange(e.target.value);
   };
 
-  const toDateHandler = (e) => {
-    setToDate(e.target.value);
-    console.log(e.target.value);
+
+  const oneDayDateHandler = (e) => {
+    let tempFromDate = new Date(e.target.value);
+    let tempToDate = new Date(e.target.value);
+    tempFromDate.setHours(5);
+    tempFromDate.setMinutes(30);
+    tempFromDate.setSeconds(1);
+    dispatch(newFromDate(tempFromDate.toISOString()));
+    tempToDate.setHours(28);
+    tempToDate.setMinutes(89);
+    tempToDate.setSeconds(59);
+
+    dispatch(newToDate(tempToDate.toISOString()));
   };
 
   const fromDateHandler = (e) => {
-    setFromDate(e.target.value);
-    console.log(e.target.value);
+    var tempFromDate = new Date(e.target.value);
+    tempFromDate.setHours(5);
+    tempFromDate.setMinutes(30);
+    tempFromDate.setSeconds(1);
+    dispatch(newFromDate(tempFromDate.toISOString()));
+    // setFromDate(e.target.value);
+    // console.log(e.target.value);
   };
+
+  const toDateHandler = (e) => {
+    var tempToDate = new Date(e.target.value);
+    tempToDate.setHours(28);
+    tempToDate.setMinutes(89);
+    tempToDate.setSeconds(59);
+
+    dispatch(newToDate(tempToDate.toISOString()));
+    // setToDate(e.target.value);
+    // console.log(e.target.value);
+  };
+
   // *************
   // form -C
 
@@ -206,6 +251,114 @@ function DeatialTraceability() {
         }))
       : [];
   };
+
+  /// Combine 2 tables
+  var bigList = null;
+  useEffect(() => {
+    if (
+      dataOneDay.hasOwnProperty("data") &&
+      dataOneDay.data.length > 0 &&
+      processEngine.hasOwnProperty("data") &&
+      processEngine.data.length > 0 &&
+      processEngine.data[0].length > 0 &&
+      processEngineDate.hasOwnProperty("data") &&
+      processEngineDate.data.length > 0 &&
+      processEngineDate.data[0].length > 0
+    ) {
+      // map to list serial no.s
+      if (
+        section == "Machining" &&
+        subSection == "Block Cylinder" &&
+        processNo == "OP5" &&
+        processEngine.data[0].length > 0 &&
+        processEngineDate.data[0].length > 0
+      ) {
+        const list1 = [...dataOneDay.data];
+        const list2 = [...processEngine.data];
+        const list3 = [...processEngineDate.data];
+
+        // mapping between list2 & list3
+        const resultList2 = [];
+
+        list2.forEach((a) => {
+          let flag2 = false;
+          list3.forEach((b) => {
+            if (a[1].trim() === b[0]) {
+              // let tempList = [...b.splice(1)];
+              // let tempList = ["Number available"];
+              resultList2.push([...a, b[1]]);
+              flag2 = true;
+            } else {
+            }
+          });
+
+          if (flag2 == false) {
+            resultList2.push([...a, "-"]);
+          }
+        });
+
+        // console.log(resultList2[0])
+
+        const resultList1 = [];
+
+        list1.forEach((a) => {
+          let flag1 = false;
+          resultList2.forEach((b) => {
+            if (a[2].trim() === b[0]) {
+              // let tempList = [...b.splice(1)];
+              // let tempList = ["Number available"];
+              resultList1.push([...a, b[1], b[2]]);
+              flag1 = true;
+            } else {
+            }
+          });
+
+          if (flag1 == false) {
+            resultList1.push([...a, "-"]);
+          }
+        });
+
+        // console.log(resultList1[0])
+        //// console.log(resultList);
+
+        setCombineTable(resultList1);
+      }
+    }
+  }, [processEngineDate]);
+
+  bigList = combineTable.map((element) => (
+    <Reusable_B_OP05
+      key={element[1]}
+      serialNo={element[1]}
+      date={element[8]}
+      engineNo={element[10]}
+      dispatchedDate={element[11]}
+    />
+  ));
+
+  // {dataOneDay?.data?.map(element=><Reusable_B_OP05 key={element[1]} serialNo={element[1]} date={element[8]}/>)}
+
+  // ****************Range button handler
+  // B1_ENGRAVED
+  // processNoFiltered[0][5]
+  const rangeButtonHandler = ()=>{
+    dispatch(
+      getProcessOneDayDetails(
+        processName,
+        fromDateState,
+        toDateState
+      )
+    )
+  }
+  const oneDayButtonHandler = ()=>{
+    dispatch(
+      getProcessOneDayDetails(
+        processName,
+        fromDateState,
+        toDateState
+      )
+    )
+  }
   return (
     <div>
       {/* search engine no */}
@@ -257,6 +410,7 @@ function DeatialTraceability() {
           {/*Results */}
           <ReusablePartNo />
           <ResultProcess />
+          <CastingInformation />
         </div>
         <div className="d-flex justify-content-start ">
           {/*Radio button  */}
@@ -284,14 +438,16 @@ function DeatialTraceability() {
               <div className="d-flex flex-column align-items-start">
                 <input
                   type="date"
-                  value={fromDate}
-                  className="bg-warning"
-                  onChange={fromDateHandler}
+                  value={fromDateState.slice(0, 10)}
+                  className="bg-warning text-center"
+                  onChange={oneDayDateHandler}
                 />
               </div>
 
-              <button className="btn btn-primary align-self-end ">
-                Search
+              <button className="btn btn-primary align-self-end " onClick={oneDayButtonHandler}>
+                <Search>
+            </Search>
+            <spam className="mx-1"> Search</spam>
               </button>
             </div>
           </div>
@@ -306,8 +462,8 @@ function DeatialTraceability() {
                 <div className="text-center font-weight-bold  ">From Date:</div>
                 <input
                   type="date"
-                  value={fromDate}
-                  className="bg-warning"
+                  value={fromDateState.slice(0, 10)}
+                  className="bg-warning text-center"
                   onChange={fromDateHandler}
                 />
               </div>
@@ -317,12 +473,12 @@ function DeatialTraceability() {
 
                 <input
                   type="date"
-                  value={toDate}
-                  className="bg-warning"
+                  value={toDateState.slice(0, 10)}
+                  className="bg-warning text-center"
                   onChange={toDateHandler}
                 />
               </div>
-              <button className="btn btn-primary align-self-end ">
+              <button className="btn btn-primary align-self-end " onClick={rangeButtonHandler} >
                 Search
               </button>
             </div>
@@ -344,8 +500,13 @@ function DeatialTraceability() {
         )} */}
 
         {section === "Machining" &&
-          subSection === "Block Cylinder" && 
-          processNo == "OP5" && <div><Heading_B_OP05 />{dataOneDay?.data?.map(element=><Reusable_B_OP05 key={element[1]} serialNo={element[1]} date={element[8]}/>)}</div>}
+          subSection === "Block Cylinder" &&
+          processNo == "OP5" && (
+            <div>
+              <Heading_B_OP05 />
+              {bigList}
+            </div>
+          )}
       </fieldset>
     </div>
   );

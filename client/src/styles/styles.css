@@ -80,11 +80,20 @@
    
 }
 
-.deta {
+/* .deta {
    width:90vw
 }
 .deta div {   
    width:10vw;
+   border: 1px solid grey;    
+   
+} */
+
+.deta {
+   width:90vw
+}
+.deta div {   
+   flex:1;
    border: 1px solid grey;    
    
 }

@@ -1,10 +1,13 @@
 import { ENGINE_FETCH, ENGINE_SUCCESS, ENGINE_FAIL } from "./egNoTypes";
-import { SHIPPING_DATA_FETCH, SHIPPING_DATA_SUCCESS, SHIPPING_DATA_FAIL } from "./egNoTypes";
-import { SECTION, SUB_SECTION} from "./egNoTypes";
-import axios from "axios"
+import {
+  SHIPPING_DATA_FETCH,
+  SHIPPING_DATA_SUCCESS,
+  SHIPPING_DATA_FAIL,
+} from "./egNoTypes";
+import { SECTION, SUB_SECTION } from "./egNoTypes";
+import axios from "axios";
 
-
-// object generator _ for Engine 
+// object generator _ for Engine
 export const engineFetch = () => {
   return {
     type: ENGINE_FETCH,
@@ -24,7 +27,6 @@ export const engineFail = (error) => {
     error: error,
   };
 };
-
 
 // object generator _ for Shipping date
 export const shippingDataFetch = () => {
@@ -47,9 +49,6 @@ export const shippingDataFail = (error) => {
   };
 };
 
-
-
-
 // Wrapper function _ for Engine No & shipping date
 export const getEngineData = (engineNo) => {
   return (dispatch) => {
@@ -57,33 +56,31 @@ export const getEngineData = (engineNo) => {
     axios
       .get(`${process.env.REACT_APP_BACKEND_URL}/oracle/engineNo/${engineNo}`)
       .then((result) => {
-        console.log(result.data);
+        // console.log(result.data);
         dispatch(engineSuccess(result.data));
 
         // console.log(result.data);
       })
       .catch((err) => {
-        console.log(err);
+        // console.log(err);
         dispatch(engineFail(err));
       });
     dispatch(shippingDataFetch());
     axios
       .get(`${process.env.REACT_APP_BACKEND_URL}/oracle/date/${engineNo}`)
       .then((result) => {
-        console.log(result.data.data, "my data");
+        // console.log(result.data.data, "my data");
         const dateRow = result.data.data.filter((item) => item[1] === "200");
 
-        console.log(dateRow[0], "Date row");
-        dispatch(shippingDataSuccess(dateRow[0]))
-    
+        // console.log(dateRow[0], "Date row");
+        dispatch(shippingDataSuccess(dateRow[0]));
       })
       .catch((err) => {
-        console.log(err)
-        dispatch(shippingDataFail(err))
+        // console.log(err);
+        dispatch(shippingDataFail(err));
       });
   };
 };
-
 
 // section & sub section object generator
 export const setSectionRedux = (section) => {
@@ -96,8 +93,6 @@ export const setSectionRedux = (section) => {
 export const setSubSectionRedux = (subSection) => {
   return {
     type: SUB_SECTION,
-   payload: subSection,
+    payload: subSection,
   };
 };
-
-

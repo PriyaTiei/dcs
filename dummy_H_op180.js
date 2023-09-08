@@ -1,50 +1,58 @@
-// const li = [
-//   "3611122306296555",
-//   "000002", //
-//   "000008",
-//   "000008",
-//   "000008",
-//   "000008",
-//   "000008",
-//   "000075000000", //crank j#1 bore innere dia  (Remove 6 digits from right side will give in micro)
-//   "000079000000",//crank j#2 bore innere dia
-//   "000075000000",//crank j#3 bore innere dia
-//   "000076000000",//crank j#4 bore innere dia
-//   "000080000000",//crank j#5 bore innere dia
+// // const li = [
+// //   "3611122306296555",
+// //   "000002", //
+// //   "000008",
+// //   "000008",
+// //   "000008",
+// //   "000008",
+// //   "000008",
+// //   "000075000000", //crank j#1 bore innere dia  (Remove 6 digits from right side will give in micro)
+// //   "000079000000",//crank j#2 bore innere dia
+// //   "000075000000",//crank j#3 bore innere dia
+// //   "000076000000",//crank j#4 bore innere dia
+// //   "000080000000",//crank j#5 bore innere dia
+// // ];
+
+// // ******************************
+
+// const list1 = [
+//   ["a", 1],
+//   ["b", 2],
+//   ["c", 3],
 // ];
 
-// ******************************
+// const list2 = [
+//   ["a", "app"],
+//   ["b", "bal"],
+//   ["c", "cat"],
+// ];
 
-const list1 = [
-  ["a", 1],
-  ["b", 2],
-  ["c", 3],
-];
+// const resultList = [];
 
-const list2 = [
-  ["a", "app"],
-  ["b", "bal"],
-  ["c", "cat"],
-];
+// list1.forEach((a) => {
+//   let flag1 = false;
+//   list2.forEach((b) => {
+//     if (a[0] === b[0]) {
+//       console.log(b);
+//       let tempList = b.splice(1);
 
-const resultList = [];
+//       resultList.push([...a, ...tempList]);
+//       flag1 = true;
+//     } else {
+//     }
+//   });
 
-list1.forEach((a) => {
-  let flag1 = false;
-  list2.forEach((b) => {
-    if (a[0] === b[0]) {
-      console.log(b);
-      let tempList = b.splice(1);
+//   if (flag1 == false) {
+//     resultList.push([...a, "not available"]);
+//   }
+// });
 
-      resultList.push([...a, ...tempList]);
-      flag1 = true;
-    } else {
-    }
-  });
+// console.log(resultList);
 
-  if (flag1 == false) {
-    resultList.push([...a, "not available"]);
-  }
-});
 
-console.log(resultList);
+// const arr =new Date()
+// arr.setHours(5)
+// arr.setMinutes(30)
+
+
+// console.log(arr)

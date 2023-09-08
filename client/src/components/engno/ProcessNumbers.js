@@ -9,16 +9,20 @@ function ProcessData({ processNo }) {
   const dispatch = useDispatch();
 
   //populate process no
-  const processNoElements = processNo.map((item) => (
-    <div className="p-2 border btn" onClick={() => processHandler(item.value)}>
+  const processNoElements = processNo.map((item, index) => (
+    <div
+      key={index}
+      className={` p-2 border btn ${item.value==item.label ? "disabled" : null}`}
+      onClick={() => processHandler(item.label, item.value)}
+    >
       {item.label}
     </div>
   ));
-  console.log(processNo, "process No");
+  // console.log(processNo, "process No");
 
   //dispatch process no & fetch the required data
-  const processHandler = (processNo) => {
-    dispatch(setProcessNo(processNo));
+  const processHandler = (processNo, processName) => {
+    dispatch(setProcessNo(processNo, processName));
     // dispatch(getProcessDetails(processNo));
   };
 

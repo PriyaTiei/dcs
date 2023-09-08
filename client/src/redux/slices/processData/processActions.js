@@ -14,13 +14,22 @@ import {
   PROCESS_ENGINE_FETCH,
   PROCESS_ENGINE_SUCCESS,
   PROCESS_ENGINE_FAILURE,
+  PROCESS_ENGINE_DATE_FETCH,
+  PROCESS_ENGINE_DATE_SUCCESS,
+  PROCESS_ENGINE_DATE_FAILURE,
+  SET_PROCESS_NAME,
+  PROCESS_CASTING_NO_FETCH,
+  PROCESS_CASTING_NO_SUCCESS,
+  PROCESS_CASTING_NO_FAILURE
 } from "./processTypes";
 import axios from "axios";
+import {toast} from "react-toastify"
 
-export const setProcessNo = (processNo) => {
+export const setProcessNo = (processNo, processName) => {
   return {
     type: SET_PROCESS_NO,
     processNo: processNo,
+    processName:processName
   };
 };
 
@@ -103,32 +112,82 @@ export const processEngineFailure = (error) => {
     error: error,
   };
 };
+export const processEngineDateFetch = () => {
+  return {
+    type: PROCESS_ENGINE_DATE_FETCH,
+  };
+};
 
-export const setFromDate = (date) => {
+export const processEngineDateSuccess = (data) => {
+  return {
+    type: PROCESS_ENGINE_DATE_SUCCESS,
+    payload: data,
+  };
+};
+
+export const processEngineDateFailure = (error) => {
+  return {
+    type: PROCESS_ENGINE_DATE_FAILURE,
+    error: error,
+  };
+};
+
+export const newFromDate = (date) => {
   return {
     type: SET_FROM_DATE,
     payload: date,
   };
 };
 
-export const setToDate = (date) => {
+export const newToDate = (date) => {
   return {
     type: SET_TO_DATE,
     payload: date,
   };
 };
+export const setProcessName = (name) => {
+  return {
+    type: SET_PROCESS_NAME,
+    payload: name,
+  };
+};
+
+
+export const processCastingNoFetch = () => {
+  return {
+    type: PROCESS_CASTING_NO_FETCH,
+  };
+};
+
+export const processCastingNoSuccess = (data) => {
+  return {
+    type: PROCESS_CASTING_NO_SUCCESS,
+    payload: data,
+  };
+};
+
+export const processCastingNoFailure = (error) => {
+  return {
+    type: PROCESS_CASTING_NO_FAILURE,
+    error: error,
+  };
+};
+
+
 
 export const getProcessDetails = (partNo) => {
   return (dispatch) => {
-    console.log("inside dispatch");
+    // console.log("inside dispatch");
     dispatch(processFetch());
     axios
       .get(`${process.env.REACT_APP_BACKEND_URL}/oracle/partNo/${partNo}`)
       .then((response) => {
         dispatch(processSuccess(response.data));
+        toast.success("3C Part information obtained Successfully")
       })
       .catch((err) => {
         dispatch(processFailure(err.message));
+        toast.error(err.message)
       });
   };
 };
@@ -142,9 +201,11 @@ export const getProcessOneDayDetails = (partNo, fromDate, toDate) => {
       )
       .then((response) => {
         dispatch(processOneDaySuccess(response.data));
+        toast.success("3C part information from certain period obtained Successfully")
       })
       .catch((err) => {
         dispatch(processOneDayFailure(err.message));
+        toast.error(err.message)
       });
   };
 };
@@ -158,9 +219,11 @@ export const getProcessRangeDetails = (partNo, fromDate, toDate) => {
       )
       .then((response) => {
         dispatch(processRangeSuccess(response.data));
+        toast.success("3C part information from certain period obtained Successfully")
       })
       .catch((err) => {
         dispatch(processRangeFailure(err.message));
+        toast.error(err.message)
       });
   };
 };
@@ -169,14 +232,60 @@ export const getProcessEngineDetails = (serialNoListString) => {
   return (dispatch) => {
     dispatch(processEngineFetch());
     axios
-      .get(
-        `${process.env.REACT_APP_BACKEND_URL}/oracle/serialNoListString?serialNoListString=${serialNoListString}`
+      // .get(
+      //   `${process.env.REACT_APP_BACKEND_URL}/oracle/serialNoListString?serialNoListString=${serialNoListString}`
+      // )
+      .post(
+        `${process.env.REACT_APP_BACKEND_URL}/oracle/serialNoListString`,{"serialNoListString":serialNoListString}
       )
       .then((response) => {
         dispatch(processEngineSuccess(response.data));
+        toast.success("Engine Information for all part obtained Successfully")
       })
       .catch((err) => {
         dispatch(processEngineFailure(err.message));
+        toast.error(err.message)
+      });
+  };
+};
+
+export const getProcessEngineDateDetails = (engineNoListString) => {
+  return (dispatch) => {
+    dispatch(processEngineDateFetch());
+    axios
+      // .get(
+      //   `${process.env.REACT_APP_BACKEND_URL}/oracle/dispatchDates/engineNoListString?engineNoListString=${engineNoListString}`
+      // )
+      .post(
+        `${process.env.REACT_APP_BACKEND_URL}/oracle/dispatchDates/engineNoListString`, {"engineNoListString":engineNoListString}
+      )
+      .then((response) => {
+        dispatch(processEngineDateSuccess(response.data));
+        toast.success("Shipment date for all the Engines obtained Successfully")
+      })
+      .catch((err) => {
+        dispatch(processEngineDateFailure(err.message));
+        toast.error(err.message)
+      });
+  };
+};
+
+export const getProcessCastingNo = (castingNo) => {
+  return (dispatch) => {
+    dispatch(processCastingNoFetch());
+    axios
+      .get(
+        `${process.env.REACT_APP_BACKEND_URL}/oracle/parts/castingNo?castingNo=${castingNo}`
+       
+      )
+   
+      .then((response) => {
+        dispatch(processCastingNoSuccess(response.data));
+        toast.success("Part Information w.r.t casting details obtained Successfully")
+      })
+      .catch((err) => {
+        dispatch(processCastingNoFailure(err.message));
+        toast.error(err.message)
       });
   };
 };

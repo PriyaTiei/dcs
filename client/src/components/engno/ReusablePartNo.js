@@ -8,9 +8,9 @@ function ReusablePartNo() {
   const data = useSelector((state) => state.engine.engineData.data);
   const [partNo, setPartNo] = useState("");
   const dispatch= useDispatch()
-  console.log("oart no");
-  console.log(section);
-  console.log(subSection);
+  // console.log("oart no");
+  // console.log(section);
+  // console.log(subSection);
   var filteredDataList = []; // note its a list but contain only one element at 0th index
 
   // dispatch & also set local state
@@ -23,8 +23,8 @@ function ReusablePartNo() {
 
   useEffect(() => {
     if (section == "Machining") {
-      console.log("in if conditin");
-      console.log(subSection);
+      // console.log("in if conditin");
+      // console.log(subSection);
       switch (subSection) {
         case "Block Cylinder":
           filteredDataList = data?.filter(
