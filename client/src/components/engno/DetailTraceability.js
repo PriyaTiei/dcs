@@ -26,7 +26,7 @@ import {
   newToDate,
 } from "../../redux/slices/processData/processActions";
 import CastingInformation from "./casting/CastingInformation";
-import {Search} from "bootstrap-icons-react"
+import { Search } from "bootstrap-icons-react";
 
 function DeatialTraceability() {
   // formating date
@@ -46,7 +46,7 @@ function DeatialTraceability() {
   const section = useSelector((state) => state.engine.section);
   const subSection = useSelector((state) => state.engine.subSection);
   const processNo = useSelector((state) => state.process.processNo);
-  const processName= useSelector((state) => state.process.processName);
+  const processName = useSelector((state) => state.process.processName);
   const dataOneDay = useSelector((state) => state.process.dataOneDay);
   const processEngine = useSelector((state) => state.process.processEngine);
   const processEngineDate = useSelector(
@@ -170,7 +170,6 @@ function DeatialTraceability() {
   const radioHandler = (e) => {
     setRange(e.target.value);
   };
-
 
   const oneDayDateHandler = (e) => {
     let tempFromDate = new Date(e.target.value);
@@ -341,24 +340,12 @@ function DeatialTraceability() {
   // ****************Range button handler
   // B1_ENGRAVED
   // processNoFiltered[0][5]
-  const rangeButtonHandler = ()=>{
-    dispatch(
-      getProcessOneDayDetails(
-        processName,
-        fromDateState,
-        toDateState
-      )
-    )
-  }
-  const oneDayButtonHandler = ()=>{
-    dispatch(
-      getProcessOneDayDetails(
-        processName,
-        fromDateState,
-        toDateState
-      )
-    )
-  }
+  const rangeButtonHandler = () => {
+    dispatch(getProcessOneDayDetails(processName, fromDateState, toDateState));
+  };
+  const oneDayButtonHandler = () => {
+    dispatch(getProcessOneDayDetails(processName, fromDateState, toDateState));
+  };
   return (
     <div>
       {/* search engine no */}
@@ -406,13 +393,15 @@ function DeatialTraceability() {
           <ProcessNumbers
             processNo={sectionData[indexI]["subSection"][indexJ]["processNo"]}
           />
-
-          {/*Results */}
+        </div>
+        {/*Results */}
+        <div className="d-flex align-items-start flex-row gap-3 mt-4">
           <ReusablePartNo />
           <ResultProcess />
-          <CastingInformation />
+          {/* <CastingInformation /> */}
         </div>
-        <div className="d-flex justify-content-start ">
+
+        <div className="d-flex justify-content-start  mt-5">
           {/*Radio button  */}
 
           <form onChange={radioHandler} className="form-group gap-3">
@@ -433,7 +422,7 @@ function DeatialTraceability() {
         {/* One day is selected*/}
         {range === "oneDay" && (
           <div className="mt-3">
-            <div className="h5">Select Date </div>
+            <div className="h6">Select Date </div>
             <div className="d-flex flex-wrap gap-3">
               <div className="d-flex flex-column align-items-start">
                 <input
@@ -444,10 +433,12 @@ function DeatialTraceability() {
                 />
               </div>
 
-              <button className="btn btn-primary align-self-end " onClick={oneDayButtonHandler}>
-                <Search>
-            </Search>
-            <spam className="mx-1"> Search</spam>
+              <button
+                className="btn btn-primary align-self-end "
+                onClick={oneDayButtonHandler}
+              >
+                <Search></Search>
+                <spam className="mx-1"> Search</spam>
               </button>
             </div>
           </div>
@@ -478,8 +469,12 @@ function DeatialTraceability() {
                   onChange={toDateHandler}
                 />
               </div>
-              <button className="btn btn-primary align-self-end " onClick={rangeButtonHandler} >
-                Search
+              <button
+                className="btn btn-primary align-self-end "
+                onClick={rangeButtonHandler}
+              >
+                <Search></Search>
+                <spam className="mx-1"> Search</spam>
               </button>
             </div>
           </div>

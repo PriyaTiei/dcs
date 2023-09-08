@@ -121,18 +121,19 @@ function ResultProcess() {
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
               <div className="d-flex flex-column dt1">
+                <div className="h6 mb-2">Engraving Details</div>
                 <div className="d-flex ">
                   <div className="dt1f1">Name</div>{" "}
                   <div className="dt1f2">{processNoFiltered[0][5]}</div>
                 </div>
                 <div className="d-flex ">
-                  <div className="dt1f1">Sl No.</div>{" "}
+                  <div className="dt1f1">Casting No.</div>{" "}
                   <div className="dt1f2">
                     {processNoFiltered[0][1].slice(16)}
                   </div>
                 </div>
                 <div className="d-flex ">
-                  <div className="dt1f1">Date</div>{" "}
+                  <div className="dt1f1">Engraving Date</div>{" "}
                   <div className="dt1f2">
                     {moment(processNoFiltered[0][8]).format(
                       "DD-MMMM-YYYY HH:mm:ss"
@@ -350,9 +351,10 @@ function ResultProcess() {
 
  
   return (
-    <div className="d-flex flex-column">
-      {display}
-      {castingDetails}
+    <div className="d-flex gap-3">
+      <>{display}</>
+      <>{castingDetails}</>
+      
      
     </div>
   );

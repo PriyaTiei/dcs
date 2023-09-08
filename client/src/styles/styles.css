@@ -30,7 +30,7 @@
 
 
  .prosMach {
-    width:30vw
+    width:70vw
  }
 
  .prosMach div {
@@ -125,18 +125,19 @@
 }
 
 .dt1f1{
-   width: 5vw;
+   width: 8vw;
 
 }
 
 .dt1f2{
-   width: 21vw;
+   width: 13vw;
 }
 
 
 .dt2>div{
    border: 1px solid black;
    padding: 5px;
+   /* margin-top: 3px; */
 }
 .dt2f1{
    width: 10vw;

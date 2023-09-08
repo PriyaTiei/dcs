@@ -6,6 +6,7 @@ import {
 } from "./egNoTypes";
 import { SECTION, SUB_SECTION } from "./egNoTypes";
 import axios from "axios";
+import {toast} from "react-toastify"
 
 // object generator _ for Engine
 export const engineFetch = () => {
@@ -58,12 +59,14 @@ export const getEngineData = (engineNo) => {
       .then((result) => {
         // console.log(result.data);
         dispatch(engineSuccess(result.data));
+        toast.success("Engine key process /station no.s information obtained Successfully")
 
         // console.log(result.data);
       })
       .catch((err) => {
         // console.log(err);
         dispatch(engineFail(err));
+        toast.error(err.message)
       });
     dispatch(shippingDataFetch());
     axios
@@ -74,10 +77,12 @@ export const getEngineData = (engineNo) => {
 
         // console.log(dateRow[0], "Date row");
         dispatch(shippingDataSuccess(dateRow[0]));
+        toast.success("Shipment History Dates obtained Successfully")
       })
       .catch((err) => {
         // console.log(err);
         dispatch(shippingDataFail(err));
+        toast.error(err.message)
       });
   };
 };
