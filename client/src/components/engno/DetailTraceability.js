@@ -27,6 +27,7 @@ import {
 } from "../../redux/slices/processData/processActions";
 import CastingInformation from "./casting/CastingInformation";
 import { Search } from "bootstrap-icons-react";
+import Heading_B_OP190 from "./processDetails/Heading_B_OP190";
 
 function DeatialTraceability() {
   // formating date
@@ -335,6 +336,7 @@ function DeatialTraceability() {
     />
   ));
 
+
   // {dataOneDay?.data?.map(element=><Reusable_B_OP05 key={element[1]} serialNo={element[1]} date={element[8]}/>)}
 
   // ****************Range button handler
@@ -391,7 +393,7 @@ function DeatialTraceability() {
 
           {/* Process data [Machining or Maching]  */}
           <ProcessNumbers
-            processNo={sectionData[indexI]["subSection"][indexJ]["processNo"]}
+            processNoListInitial={sectionData[indexI]["subSection"][indexJ]["processNo"]}
           />
         </div>
         {/*Results */}
@@ -500,6 +502,14 @@ function DeatialTraceability() {
             <div>
               <Heading_B_OP05 />
               {bigList}
+            </div>
+          )}
+             {
+          processName == "B3_OP190" && (
+            <div>
+              <Heading_B_OP190 />
+              
+          
             </div>
           )}
       </fieldset>

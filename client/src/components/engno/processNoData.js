@@ -53,9 +53,9 @@ export const processNoData = [
           { label: "OP170", value: "OP170" },
           { label: "OP180", value: "OP180" },
           { label: "OP190", value: "B3_OP190" },
-          { label: "OP195AB", value: "OP195AB" },
+          { label: "OP195AB", value: "B4_Finishing gantry" },
 
-          { label: "OP200", value: "B4_Finishing gantry" },
+          { label: "OP200", value: "OP200" },
           { label: "OP210", value: "OP210" },
           { label: "OP220", value: "OP220" },
           { label: "OP230", value: "OP230" },
