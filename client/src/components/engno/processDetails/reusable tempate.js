@@ -89,7 +89,7 @@ function B_OP_190() {
   bigList = combineTable.map((element) => (
     <Reusable_B_OP190
       key={element[1]}
-      data={element[1]}
+      serialNo={element[1]}
       date={element[8]}
       engineNo={element[10]}
       dispatchedDate={element[11]}

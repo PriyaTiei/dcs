@@ -28,6 +28,7 @@ import {
 import CastingInformation from "./casting/CastingInformation";
 import { Search } from "bootstrap-icons-react";
 import Heading_B_OP190 from "./processDetails/Heading_B_OP190";
+import B_OP_190 from "./processDetails/B_OP_190";
 
 function DeatialTraceability() {
   // formating date
@@ -508,6 +509,7 @@ function DeatialTraceability() {
           processName == "B3_OP190" && (
             <div>
               <Heading_B_OP190 />
+              <B_OP_190 />
               
           
             </div>

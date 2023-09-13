@@ -99,7 +99,7 @@ function ResultProcess() {
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
               <div className="d-flex flex-column">
-                 <div className="h6 mb-2">Journal diameter</div>
+                 <div className="h6 mb-2">Journal diameter in microns</div>
                 {/* <div className="d-flex ">
                   <div className="dt1f1">Process No.</div>{" "}
                   <div className="dt1f2">{processNoFiltered[0][5]}</div>

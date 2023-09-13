@@ -37,11 +37,11 @@ function CastingInformation({ castingNo }) {
     castingDate = new Date(
       `${2023}-${castingMonth}-${castingDayOfMonth}`
     ).toISOString();
-    console.log(castingYear);
-    console.log(castingMonth);
-    console.log(castingDayOfMonth);
-    console.log("casting date :");
-    console.log(castingDate);
+    // console.log(castingYear);
+    // console.log(castingMonth);
+    // console.log(castingDayOfMonth);
+    // console.log("casting date :");
+    // console.log(castingDate);
   }
 
   const [castingMachineNo, setCastingMachineNo] = useState(
