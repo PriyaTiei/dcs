@@ -137,22 +137,30 @@ function ResultProcess() {
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "B4_Finishing gantry"
           );
+          if(processNoFiltered != undefined && processNoFiltered.length > 0){
+            var op195Data = processNoFiltered[0][1].slice(16,20)
+            // console.log(op190Data)
+            // console.log(op190Data[7])
+            // console.log(parseInt(op190Data[7].slice(0,6)))
+          }
 
           display =
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
               <div className="d-flex flex-column">
-                <div className="d-flex ">
-                  <div className="dt1f1">name</div>{" "}
+                <div className="d-flex  dt2">
+                  <div className="dt1f1">Process Name</div>{" "}
                   <div className="dt1f2">{processNoFiltered[0][5]}</div>
                 </div>
-                <div className="d-flex ">
-                  <div className="dt1f1">Data</div>{" "}
-                  <div className="dt1f2">{processNoFiltered[0][1]}</div>
+                <div className="d-flex  dt2">
+                  <div className="dt1f1">Machine</div>{" "}
+                  <div className="dt1f2">{op195Data=="0011"?"OP195A":(op195Data=="0012"?"OP195B":"")}</div>
                 </div>
-                <div className="d-flex">
+                <div className="d-flex  dt2">
                   <div className="dt1f1">Date</div>{" "}
-                  <div className="dt1f2">{processNoFiltered[0][8]}</div>
+                  <div className="dt1f2">{moment(processNoFiltered[0][8]).format(
+                      "DD-MMMM-YYYY HH:mm:ss"
+                    )}</div>
                 </div>
               </div>
             );
@@ -166,7 +174,7 @@ function ResultProcess() {
               processNoFiltered == undefined ||
               processNoFiltered.length == 0 ? null : (
                 <div className="d-flex flex-column">
-                  <div className="d-flex ">
+                  <div className="d-flex  ">
                     <div className="dt1f1">name</div>{" "}
                     <div className="dt1f2">{processNoFiltered[0][5]}</div>
                   </div>
@@ -190,17 +198,19 @@ function ResultProcess() {
                 processNoFiltered == undefined ||
                 processNoFiltered.length == 0 ? null : (
                   <div className="d-flex flex-column">
-                    <div className="d-flex ">
-                      <div className="dt1f1">name</div>{" "}
+                    <div className="d-flex dt2">
+                      <div className="dt1f1">Process Name</div>{" "}
                       <div className="dt1f2">{processNoFiltered[0][5]}</div>
                     </div>
-                    <div className="d-flex ">
+                    {/* <div className="d-flex dt2">
                       <div className="dt1f1">Data</div>{" "}
                       <div className="dt1f2">{processNoFiltered[0][1]}</div>
-                    </div>
-                    <div className="d-flex">
-                      <div className="dt1f1">Date</div>{" "}
-                      <div className="dt1f2">{processNoFiltered[0][8]}</div>
+                    </div> */}
+                    <div className="d-flex dt2">
+                      <div className="dt1f1">FG Date</div>{" "}
+                      <div className="dt1f2">{moment(processNoFiltered[0][8]).format(
+                      "DD-MMMM-YYYY HH:mm:ss"
+                    )}</div>
                     </div>
                   </div>
                 );

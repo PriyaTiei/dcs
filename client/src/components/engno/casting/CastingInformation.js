@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { getProcessCastingNo } from "../../../redux/slices/processData/processActions";
 import { useDispatch } from "react-redux";
-import {Search} from "bootstrap-icons-react"
+import { Search } from "bootstrap-icons-react";
 
 function CastingInformation({ castingNo }) {
   const dispatch = useDispatch();
@@ -15,22 +15,20 @@ function CastingInformation({ castingNo }) {
     castingYear = `20${castingNo.slice(6, 8)}`;
     castingDayOfMonth = castingNo.slice(9, 11);
     switch (castingNo.slice(8, 9)) {
-      case "a":
-        castingMonth = "11";
-        break;
       case "A":
+        castingMonth = "10";
+        break;
+
+      case "B":
         castingMonth = "11";
         break;
-      case "b":
-        castingMonth = "12";
-        break;
-      case "B":
+      case "C":
         castingMonth = "12";
         break;
       default:
-        castingMonth = `${parseInt(castingNo.slice(8, 9)) + 1}`;
+        castingMonth = `${parseInt(castingNo.slice(8, 9))}`;
         if (castingMonth.length == 1) {
-          castingMonth = `0${parseInt(castingNo.slice(8, 9)) + 1}`;
+          castingMonth = `0${parseInt(castingNo.slice(8, 9))}`;
         }
         break;
     }
@@ -62,17 +60,16 @@ function CastingInformation({ castingNo }) {
   };
 
   const castingSearch = () => {
-    
     let y = date.slice(2, 4);
     let m = date.slice(5, 7);
     if (m == "10") {
-      m = "9";
-    } else if (m == "11") {
       m = "A";
-    } else if (m == "12") {
+    } else if (m == "11") {
       m = "B";
+    } else if (m == "12") {
+      m = "C";
     } else {
-      m = parseInt(date.slice(6, 7)) - 1;
+      m = parseInt(date.slice(6, 7));
     }
     let d = date.slice(8, 10);
     let castingNo = `${castingMachineNo}${dieNo}${y}${m}${d}${shift}`;
@@ -165,9 +162,8 @@ function CastingInformation({ castingNo }) {
           className=" my-3 btn btn-primary form-control"
           onClick={castingSearch}
         >
-         <Search>
-         </Search>
-            <spam className="mx-1"> Search</spam>
+          <Search></Search>
+          <spam className="mx-1"> Search</spam>
         </button>
       </fieldset>
     );

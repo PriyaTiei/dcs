@@ -28,7 +28,11 @@ import {
 import CastingInformation from "./casting/CastingInformation";
 import { Search } from "bootstrap-icons-react";
 import Heading_B_OP190 from "./processDetails/Heading_B_OP190";
+import Heading_B_OP195 from "./processDetails/Heading_B_OP195";
 import B_OP_190 from "./processDetails/B_OP_190";
+import B_OP_195 from "./processDetails/B_OP_195";
+import Heading_B_FG from "./processDetails/Heading_B_FG";
+import B_OP_FG from "./processDetails/B_OP_FG";
 
 function DeatialTraceability() {
   // formating date
@@ -337,7 +341,6 @@ function DeatialTraceability() {
     />
   ));
 
-
   // {dataOneDay?.data?.map(element=><Reusable_B_OP05 key={element[1]} serialNo={element[1]} date={element[8]}/>)}
 
   // ****************Range button handler
@@ -394,7 +397,9 @@ function DeatialTraceability() {
 
           {/* Process data [Machining or Maching]  */}
           <ProcessNumbers
-            processNoListInitial={sectionData[indexI]["subSection"][indexJ]["processNo"]}
+            processNoListInitial={
+              sectionData[indexI]["subSection"][indexJ]["processNo"]
+            }
           />
         </div>
         {/*Results */}
@@ -505,15 +510,24 @@ function DeatialTraceability() {
               {bigList}
             </div>
           )}
-             {
-          processName == "B3_OP190" && (
-            <div>
-              <Heading_B_OP190 />
-              <B_OP_190 />
-              
-          
-            </div>
-          )}
+        {processName == "B3_OP190" && (
+          <div>
+            <Heading_B_OP190 />
+            <B_OP_190 />
+          </div>
+        )}
+        {processName == "B4_Finishing gantry" && (
+          <div>
+            <Heading_B_OP195 />
+            <B_OP_195 />
+          </div>
+        )}
+           {processName == "B7_OP990" && (
+          <div>
+            <Heading_B_FG />
+            <B_OP_FG />
+          </div>
+        )}
       </fieldset>
     </div>
   );
