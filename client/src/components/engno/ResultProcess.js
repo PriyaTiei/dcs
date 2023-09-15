@@ -9,6 +9,7 @@ import {
   newToDate,
 } from "../../redux/slices/processData/processActions";
 import CastingInformation from "./casting/CastingInformation";
+import CastingInformation_H from "./casting/CastingInformation_H";
 
 function ResultProcess() {
   const dispatch = useDispatch();
@@ -315,6 +316,32 @@ function ResultProcess() {
               </div>
             );
           break;
+          case "FG":
+              processNoFiltered = processNoALCData?.filter(
+                (elements) => elements[5] ==="H12_OP990"
+              );
+    
+              display =
+                processNoFiltered == undefined ||
+                processNoFiltered.length == 0 ? null : (
+                  <div className="d-flex flex-column">
+                    <div className="d-flex dt2">
+                      <div className="dt1f1">Process Name</div>{" "}
+                      <div className="dt1f2">{processNoFiltered[0][5]}</div>
+                    </div>
+                    {/* <div className="d-flex dt2">
+                      <div className="dt1f1">Data</div>{" "}
+                      <div className="dt1f2">{processNoFiltered[0][1]}</div>
+                    </div> */}
+                    <div className="d-flex dt2">
+                      <div className="dt1f1">FG Date</div>{" "}
+                      <div className="dt1f2">{moment(processNoFiltered[0][8]).format(
+                      "DD-MMMM-YYYY HH:mm:ss"
+                    )}</div>
+                    </div>
+                  </div>
+                );
+              break;
         default:
           display = null;
           break;
@@ -402,6 +429,11 @@ function ResultProcess() {
         castingDetails=  <CastingInformation castingNo={processNoFiltered[0][1].slice(16)} />
       }
   }
+  else if(processName == "H1_Material input/engraving"){
+    if(processNoFiltered != undefined && processNoFiltered.length > 0 ){
+      castingDetails=  <CastingInformation_H castingNo={processNoFiltered[0][1].slice(16)} />
+    }
+}
   
 
  

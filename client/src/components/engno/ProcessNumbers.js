@@ -39,13 +39,13 @@ function ProcessData({ processNoListInitial }) {
     } else {
       // console.log("entered if ")
       var tempFromDate = new Date(processNoFiltered[0][8]);
-      tempFromDate.setHours(5);
-      tempFromDate.setMinutes(30);
+      tempFromDate.setDate(tempFromDate.getDate() - 1);
+      tempFromDate.setHours(23);
+      tempFromDate.setMinutes(60);
       tempFromDate.setSeconds(1);
-
       var tempToDate = new Date(processNoFiltered[0][8]);
-      tempToDate.setHours(28);
-      tempToDate.setMinutes(89);
+      tempToDate.setHours(23);
+      tempToDate.setMinutes(59);
       tempToDate.setSeconds(59);
 
       dispatch(newFromDate(tempFromDate.toISOString()));

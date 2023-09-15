@@ -35,6 +35,10 @@ import Heading_B_FG from "./processDetails/Heading_B_FG";
 import B_OP_FG from "./processDetails/B_OP_FG";
 import Heading_H_OP05 from "./processDetails/Heading_H_OP05";
 import H_OP_05 from "./processDetails/H_OP_05";
+import Heading_H_FG from "./processDetails/Heading_H_FG";
+import H_OP_FG from "./processDetails/H_OP_FG";
+import Heading_C_FG from "./processDetails/Heading_C_FG";
+import C_OP_FG from "./processDetails/C_OP_FG";
 
 function DeatialTraceability() {
   // formating date
@@ -76,8 +80,8 @@ function DeatialTraceability() {
   const [supplierPart, setSupplierPart] = useState("");
   const [range, setRange] = useState("oneDay");
 
-  const [fromDate, setFromDate] = useState(formattedDate);
-  const [toDate, setToDate] = useState(formattedDate);
+  // const [fromDate, setFromDate] = useState(formattedDate);
+  // const [toDate, setToDate] = useState(formattedDate);
   const [fromDateValue, setFromDateValue] = useState();
   const [toDateValue, setToDateValue] = useState();
   const [combineTable, setCombineTable] = useState([]);
@@ -85,6 +89,9 @@ function DeatialTraceability() {
   const hDate = new Date(Date.now()).toUTCString();
 
   const detail1 = "details";
+  var fromDate = new Date(fromDateState)
+  fromDate.setDate(fromDate.getDate()+1)
+  var fromDateString = fromDate.toISOString()
 
   const assemblyProcess = [
     "Shipment",
@@ -181,22 +188,26 @@ function DeatialTraceability() {
 
   const oneDayDateHandler = (e) => {
     let tempFromDate = new Date(e.target.value);
-    let tempToDate = new Date(e.target.value);
-    tempFromDate.setHours(5);
-    tempFromDate.setMinutes(30);
+
+    tempFromDate.setDate(tempFromDate.getDate() - 1);
+    tempFromDate.setHours(23);
+    tempFromDate.setMinutes(60);
     tempFromDate.setSeconds(1);
     dispatch(newFromDate(tempFromDate.toISOString()));
-    tempToDate.setHours(28);
-    tempToDate.setMinutes(89);
-    tempToDate.setSeconds(59);
 
+    let tempToDate = new Date(e.target.value);
+    tempToDate.setHours(23);
+    tempToDate.setMinutes(59);
+    tempToDate.setSeconds(59);
     dispatch(newToDate(tempToDate.toISOString()));
   };
 
   const fromDateHandler = (e) => {
     var tempFromDate = new Date(e.target.value);
-    tempFromDate.setHours(5);
-    tempFromDate.setMinutes(30);
+
+    tempFromDate.setDate(tempFromDate.getDate() - 1);
+    tempFromDate.setHours(23);
+    tempFromDate.setMinutes(60);
     tempFromDate.setSeconds(1);
     dispatch(newFromDate(tempFromDate.toISOString()));
     // setFromDate(e.target.value);
@@ -205,8 +216,8 @@ function DeatialTraceability() {
 
   const toDateHandler = (e) => {
     var tempToDate = new Date(e.target.value);
-    tempToDate.setHours(28);
-    tempToDate.setMinutes(89);
+    tempToDate.setHours(23);
+    tempToDate.setMinutes(59);
     tempToDate.setSeconds(59);
 
     dispatch(newToDate(tempToDate.toISOString()));
@@ -437,7 +448,7 @@ function DeatialTraceability() {
               <div className="d-flex flex-column align-items-start">
                 <input
                   type="date"
-                  value={fromDateState.slice(0, 10)}
+                  value={fromDateString.slice(0, 10)}
                   className="bg-warning text-center"
                   onChange={oneDayDateHandler}
                 />
@@ -447,8 +458,10 @@ function DeatialTraceability() {
                 className="btn btn-primary align-self-end "
                 onClick={oneDayButtonHandler}
               >
-                <Search></Search>
-                <div className="mx-1"> Search</div>
+                <div className="d-flex gap-2 align-items-center">
+                  <Search />
+                  Search
+                </div>
               </button>
             </div>
           </div>
@@ -463,7 +476,7 @@ function DeatialTraceability() {
                 <div className="text-center font-weight-bold  ">From Date:</div>
                 <input
                   type="date"
-                  value={fromDateState.slice(0, 10)}
+                  value={fromDateString.slice(0, 10)}
                   className="bg-warning text-center"
                   onChange={fromDateHandler}
                 />
@@ -483,8 +496,10 @@ function DeatialTraceability() {
                 className="btn btn-primary align-self-end "
                 onClick={rangeButtonHandler}
               >
-                <Search></Search>
-                <div className="mx-1"> Search</div>
+                <div className="d-flex gap-2 align-items-center">
+                  <Search />
+                  Search
+                </div>
               </button>
             </div>
           </div>
@@ -504,6 +519,7 @@ function DeatialTraceability() {
           </div>
         )} */}
 
+        {/* ************************  Block process */}
         {section === "Machining" &&
           subSection === "Block Cylinder" &&
           processNo == "OP5" && (
@@ -524,18 +540,38 @@ function DeatialTraceability() {
             <B_OP_195 />
           </div>
         )}
-           {processName == "B7_OP990" && (
+        {processName == "B7_OP990" && (
           <div>
             <Heading_B_FG />
             <B_OP_FG />
           </div>
         )}
+
+        {/* ****************** Head process */}
         {processName == "H1_Material input/engraving" && (
           <div>
             <Heading_H_OP05 />
             <H_OP_05 />
           </div>
         )}
+
+        {processName == "H12_OP990" && (
+          <div>
+            <Heading_H_FG />
+            <H_OP_FG />
+          </div>
+        )}
+
+        {/* **************Crank process */}
+
+        {processName == "C8_OP990" && (
+          <div>
+            <Heading_C_FG />
+            <C_OP_FG />
+          </div>
+        )}
+
+        {/* "C8_OP990" */}
       </fieldset>
     </div>
   );

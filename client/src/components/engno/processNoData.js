@@ -123,7 +123,7 @@ export const processNoData = [
           { label: "OP200", value: "OP200" },
           { label: "OP220", value: "C4_OP220" },
           { label: "OPFG", value: "C8_OP990" },
-          { label: "OPFG", value: "C1_Comaterial" },
+          { label: "OPCoMaterial", value: "C1_Comaterial" },
         ],
       },
     ],

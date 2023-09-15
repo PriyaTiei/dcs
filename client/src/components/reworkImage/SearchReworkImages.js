@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import ReusageImageCards from "./ReusageImageCards";
 import { toast } from "react-toastify";
+import {  Search } from 'bootstrap-icons-react';
 
 function SearchReworkImages() {
   const [engineNo, setEngineNo] = useState("");
@@ -46,7 +47,8 @@ function SearchReworkImages() {
           className="form-control w-25"
         />
         <button onClick={getImages} className="btn btn-primary">
-          Search
+        <div className="d-flex gap-2 align-items-center"><Search />
+             Search</div>
         </button>
       </div>
       <div className="d-flex flex-wrap my-3"> {images}</div>

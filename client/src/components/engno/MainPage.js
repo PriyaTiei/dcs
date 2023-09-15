@@ -13,7 +13,7 @@ import RawMaterialDetails from "./RawMaterialDetails.js";
 import PartHistory from "./RMHistory.js";
 import { useSelector, useDispatch } from "react-redux";
 import { getEngineData } from "../../redux/slices/egNo/egNoActions.js";
-import { House, Person, Search } from 'bootstrap-icons-react';
+import {  Search } from 'bootstrap-icons-react';
 
 function EngNo() {
   const [engineNo, setEngineNo] = useState("");
@@ -144,10 +144,8 @@ function EngNo() {
             className="form-control w-25"
           ></input>
           <button className="btn btn-primary" onClick={getOracleData}>
-            <Search >
-           
-            </Search>
-            <div className="mx-1"> Search</div>
+            <div className="d-flex gap-2 align-items-center"><Search />
+             Search</div>
           </button>
           <div>{leakData}</div>
         </div>
