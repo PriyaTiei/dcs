@@ -163,7 +163,7 @@ function CastingInformation({ castingNo }) {
           onClick={castingSearch}
         >
           <Search></Search>
-          <spam className="mx-1"> Search</spam>
+          <div className="mx-1"> Search</div>
         </button>
       </fieldset>
     );

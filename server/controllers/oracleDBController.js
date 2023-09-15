@@ -97,7 +97,13 @@ exports.getDateData = catchAsyncError(async (req, res, next) => {
 
 // Get part data from specific date range
 exports.getDateRangeData = catchAsyncError(async (req, res, next) => {
-  const { processNo, fromDate, toDate } = req.params;
+  let { processNo, fromDate, toDate } = req.params;
+  
+  console.log(processNo)
+  if(processNo==="H1_Material_input_engraving"){
+    processNo="H1_Material input/engraving"
+  }
+
   const con = await oracleDBConnection();
 
   const result = await con.execute(
@@ -108,7 +114,7 @@ exports.getDateRangeData = catchAsyncError(async (req, res, next) => {
       // maxRows: 2
     }
   );
-
+console.log("what is the resutl")
   if (result.rows.length == 0) {
     console.log("Engine not found");
     return new ErrorHandler("Engine no. do not exist", 401);

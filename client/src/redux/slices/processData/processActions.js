@@ -193,6 +193,10 @@ export const getProcessDetails = (partNo) => {
 };
 
 export const getProcessOneDayDetails = (partNo, fromDate, toDate) => {
+ 
+  if(partNo==="H1_Material input/engraving"){
+    partNo="H1_Material_input_engraving"
+  }
   return (dispatch) => {
     dispatch(processOneDayFetch());
     axios
@@ -211,6 +215,10 @@ export const getProcessOneDayDetails = (partNo, fromDate, toDate) => {
 };
 
 export const getProcessRangeDetails = (partNo, fromDate, toDate) => {
+ 
+  if(partNo==="H1_Material input/engraving"){
+    partNo="H1_Material_input_engraving"
+  }
   return (dispatch) => {
     dispatch(processRangeFetch());
     axios

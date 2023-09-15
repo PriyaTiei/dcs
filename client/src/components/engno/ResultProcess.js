@@ -221,6 +221,37 @@ function ResultProcess() {
       }
     } else if (subSection === "Head Cylinder") {
       switch (processNo) {
+        case "OP05":
+          processNoFiltered = processNoALCData?.filter(
+            (elements) => elements[5] === "H1_Material input/engraving"
+          );
+
+          display =
+            processNoFiltered == undefined ||
+            processNoFiltered.length == 0 ? null : (
+              <div className="d-flex flex-column dt1">
+                <div className="h6 mb-2">Engraving Details</div>
+                <div className="d-flex ">
+                  <div className="dt1f1">Name</div>{" "}
+                  <div className="dt1f2">{processNoFiltered[0][5]}</div>
+                </div>
+                <div className="d-flex ">
+                  <div className="dt1f1">Casting No.</div>{" "}
+                  <div className="dt1f2">
+                    {processNoFiltered[0][1].slice(16)}
+                  </div>
+                </div>
+                <div className="d-flex ">
+                  <div className="dt1f1">Engraving Date</div>{" "}
+                  <div className="dt1f2">
+                    {moment(processNoFiltered[0][8]).format(
+                      "DD-MMMM-YYYY HH:mm:ss"
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          break;
         case "OP50":
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "H2_OP050"

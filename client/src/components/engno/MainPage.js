@@ -147,7 +147,7 @@ function EngNo() {
             <Search >
            
             </Search>
-            <spam className="mx-1"> Search</spam>
+            <div className="mx-1"> Search</div>
           </button>
           <div>{leakData}</div>
         </div>

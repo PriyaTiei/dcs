@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Heading_B_OP05() {
+function Heading_H_OP05() {
  
     return (
       <>
@@ -8,7 +8,7 @@ function Heading_B_OP05() {
           <div className="h5">Engraving Done on that day</div>
           <div className="d-flex flex-wrap gap-0 deta ">
    
-            <div className="text-center font-weight-bold flex-1">Block No.</div>
+            <div className="text-center font-weight-bold flex-1">Head No.</div>
             <div className="text-center font-weight-bold flex-1">Serial No.</div>
             <div className="text-center font-weight-bold flex-1">Date</div>
             <div className="text-center font-weight-bold flex-1">Engine No.</div>
@@ -21,4 +21,4 @@ function Heading_B_OP05() {
     );
 }
 
-export default Heading_B_OP05
+export default Heading_H_OP05

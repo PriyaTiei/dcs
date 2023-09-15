@@ -4,7 +4,7 @@ function Heading_B_OP190() {
   return (
     <>
       <div className="mt-3">
-        <div className="h5">Journal data in microns</div>
+        <div className="h5">Journal diameter in microns</div>
         <div className="d-flex flex-wrap gap-0 deta ">
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
             Block No.

@@ -33,6 +33,8 @@ import B_OP_190 from "./processDetails/B_OP_190";
 import B_OP_195 from "./processDetails/B_OP_195";
 import Heading_B_FG from "./processDetails/Heading_B_FG";
 import B_OP_FG from "./processDetails/B_OP_FG";
+import Heading_H_OP05 from "./processDetails/Heading_H_OP05";
+import H_OP_05 from "./processDetails/H_OP_05";
 
 function DeatialTraceability() {
   // formating date
@@ -446,7 +448,7 @@ function DeatialTraceability() {
                 onClick={oneDayButtonHandler}
               >
                 <Search></Search>
-                <spam className="mx-1"> Search</spam>
+                <div className="mx-1"> Search</div>
               </button>
             </div>
           </div>
@@ -482,7 +484,7 @@ function DeatialTraceability() {
                 onClick={rangeButtonHandler}
               >
                 <Search></Search>
-                <spam className="mx-1"> Search</spam>
+                <div className="mx-1"> Search</div>
               </button>
             </div>
           </div>
@@ -526,6 +528,12 @@ function DeatialTraceability() {
           <div>
             <Heading_B_FG />
             <B_OP_FG />
+          </div>
+        )}
+        {processName == "H1_Material input/engraving" && (
+          <div>
+            <Heading_H_OP05 />
+            <H_OP_05 />
           </div>
         )}
       </fieldset>
