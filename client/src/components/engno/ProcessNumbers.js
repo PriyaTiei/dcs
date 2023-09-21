@@ -26,6 +26,7 @@ function ProcessData({ processNoListInitial }) {
     (state) => state.process.processEngineDate.data
   );
 
+  const [colorOfButtonClicked, setColorOfButtonClicked] = useState("")
   const dispatch = useDispatch();
   ///**********Return based on process No */
 
@@ -102,7 +103,7 @@ function ProcessData({ processNoListInitial }) {
       key={index}
       className={` p-2 border btn ${
         item.value == item.label ? "disabled" : null
-      }`}
+      } ${colorOfButtonClicked}`}
       onClick={() => processHandler(item.label, item.value)}
     >
       {item.label}
@@ -113,6 +114,8 @@ function ProcessData({ processNoListInitial }) {
   //dispatch process no & fetch the required data
   const processHandler = (processNo, processName) => {
     dispatch(setProcessNo(processNo, processName));
+    setColorOfButtonClicked()
+    
     // dispatch(getProcessDetails(processNo));
   };
 

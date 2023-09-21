@@ -147,3 +147,14 @@
 .dt2f2{
    width: 10vw;
 }
+
+.dt3>div{
+   border: 1px solid black;
+   padding: 5px;
+   /* margin-top: 3px; */
+}
+
+.dt3 :last-child{
+   text-align:center;
+  
+}

@@ -20,7 +20,8 @@ import {
   SET_PROCESS_NAME,
   PROCESS_CASTING_NO_FETCH,
   PROCESS_CASTING_NO_SUCCESS,
-  PROCESS_CASTING_NO_FAILURE
+  PROCESS_CASTING_NO_FAILURE,
+  CLEAR
 } from "./processTypes";
 import axios from "axios";
 import {toast} from "react-toastify"
@@ -173,6 +174,12 @@ export const processCastingNoFailure = (error) => {
   };
 };
 
+export const processDataClear = () => {
+  return {
+    type: CLEAR,    
+  };
+};
+
 
 
 export const getProcessDetails = (partNo) => {
@@ -205,7 +212,7 @@ export const getProcessOneDayDetails = (partNo, fromDate, toDate) => {
       )
       .then((response) => {
         dispatch(processOneDaySuccess(response.data));
-        toast.success("3C part information from certain period obtained Successfully")
+        // toast.success("3C part information from certain period obtained Successfully")
       })
       .catch((err) => {
         dispatch(processOneDayFailure(err.message));
@@ -227,7 +234,7 @@ export const getProcessRangeDetails = (partNo, fromDate, toDate) => {
       )
       .then((response) => {
         dispatch(processRangeSuccess(response.data));
-        toast.success("3C part information from certain period obtained Successfully")
+        // toast.success("3C part information from certain period obtained Successfully")
       })
       .catch((err) => {
         dispatch(processRangeFailure(err.message));
@@ -248,7 +255,7 @@ export const getProcessEngineDetails = (serialNoListString) => {
       )
       .then((response) => {
         dispatch(processEngineSuccess(response.data));
-        toast.success("Engine Information for all part obtained Successfully")
+        // toast.success("Engine Information for all part obtained Successfully")
       })
       .catch((err) => {
         dispatch(processEngineFailure(err.message));

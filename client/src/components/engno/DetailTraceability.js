@@ -39,6 +39,14 @@ import Heading_H_FG from "./processDetails/Heading_H_FG";
 import H_OP_FG from "./processDetails/H_OP_FG";
 import Heading_C_FG from "./processDetails/Heading_C_FG";
 import C_OP_FG from "./processDetails/C_OP_FG";
+import Heading_C_OP220 from "./processDetails/Heading_C_OP220";
+import C_OP_220 from "./processDetails/C_OP_220";
+import Heading_C_OP02 from "./processDetails/Heading_C_OP02";
+import C_OP_02 from "./processDetails/C_OP_02";
+import Heading_C_OP140 from "./processDetails/Heading_C_OP140";
+import C_OP_140 from "./processDetails/C_OP_140";
+import Heading_Timing from "./processDetails/Heading_Timing";
+import Timing from "./processDetails/Timing";
 
 function DeatialTraceability() {
   // formating date
@@ -89,9 +97,9 @@ function DeatialTraceability() {
   const hDate = new Date(Date.now()).toUTCString();
 
   const detail1 = "details";
-  var fromDate = new Date(fromDateState)
-  fromDate.setDate(fromDate.getDate()+1)
-  var fromDateString = fromDate.toISOString()
+  var fromDate = new Date(fromDateState);
+  fromDate.setDate(fromDate.getDate() + 1);
+  var fromDateString = fromDate.toISOString();
 
   const assemblyProcess = [
     "Shipment",
@@ -418,13 +426,12 @@ function DeatialTraceability() {
         {/*Results */}
         <div className="d-flex align-items-start flex-row gap-3 mt-4">
           <ReusablePartNo />
+          {console.log("called")}
           <ResultProcess />
-          {/* <CastingInformation /> */}
         </div>
 
         <div className="d-flex justify-content-start  mt-5">
-          {/*Radio button  */}
-
+          Radio button
           <form onChange={radioHandler} className="form-group gap-3">
             <div className="d-flex gap-3">
               <label htmlFor="oneDay">One Day </label>
@@ -571,7 +578,30 @@ function DeatialTraceability() {
           </div>
         )}
 
-        {/* "C8_OP990" */}
+        {processName == "C4_OP220" && (
+          <div className="overflow-auto" style={{ width: "90vw" }}>
+            <Heading_C_OP220 />
+            <C_OP_220 />
+          </div>
+        )}
+        {processName == "C1_Comaterial" && (
+          <div>
+            <Heading_C_OP02 />
+            <C_OP_02 />
+          </div>
+        )}
+        {processName == "C7_Gantry after OP140" && (
+          <div>
+            <Heading_C_OP140 />
+            <C_OP_140 />
+          </div>
+        )}
+        {processName == "C6_OP170 front gantry" && (
+          <div>
+            <Heading_Timing line="Crank" op="OP170" />
+            <Timing selectedProcessName="C6_OP170 front gantry" />
+          </div>
+        )}
       </fieldset>
     </div>
   );

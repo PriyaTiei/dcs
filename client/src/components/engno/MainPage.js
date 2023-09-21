@@ -13,7 +13,8 @@ import RawMaterialDetails from "./RawMaterialDetails.js";
 import PartHistory from "./RMHistory.js";
 import { useSelector, useDispatch } from "react-redux";
 import { getEngineData } from "../../redux/slices/egNo/egNoActions.js";
-import {  Search } from 'bootstrap-icons-react';
+import { Search } from "bootstrap-icons-react";
+import { processDataClear } from "../../redux/slices/processData/processActions.js";
 
 function EngNo() {
   const [engineNo, setEngineNo] = useState("");
@@ -61,6 +62,7 @@ function EngNo() {
   const machinedParts = ["Block S / N", "Crank S / N", "Head S / N"];
 
   const getOracleData = () => {
+    dispatch(processDataClear());
     dispatch(getEngineData(engineNo));
   };
 
@@ -144,8 +146,10 @@ function EngNo() {
             className="form-control w-25"
           ></input>
           <button className="btn btn-primary" onClick={getOracleData}>
-            <div className="d-flex gap-2 align-items-center"><Search />
-             Search</div>
+            <div className="d-flex gap-2 align-items-center">
+              <Search />
+              Search
+            </div>
           </button>
           <div>{leakData}</div>
         </div>

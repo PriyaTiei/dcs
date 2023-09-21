@@ -20,12 +20,13 @@ import {
   SET_PROCESS_NAME,
   PROCESS_CASTING_NO_FETCH,
   PROCESS_CASTING_NO_SUCCESS,
-  PROCESS_CASTING_NO_FAILURE
+  PROCESS_CASTING_NO_FAILURE,
+  CLEAR,
 } from "./processTypes";
 
 var tempFromDate = new Date(Date.now());
 
-tempFromDate.setDate(tempFromDate.getDate()-1)
+tempFromDate.setDate(tempFromDate.getDate() - 1);
 tempFromDate.setHours(23);
 tempFromDate.setMinutes(60);
 tempFromDate.setSeconds(1);
@@ -38,7 +39,7 @@ tempToDate.setSeconds(59);
 const initialStateProcess = {
   processNo: "",
   loading: false,
-  data: [],
+  data: {},
   error: "",
   dataOneDay: {},
   dataRange: {},
@@ -46,7 +47,7 @@ const initialStateProcess = {
   toDate: tempToDate.toISOString(),
   processEngine: {},
   processEngineDate: {},
-  processName:""
+  processName: "",
 };
 
 const processReducer = (state = initialStateProcess, action) => {
@@ -164,31 +165,34 @@ const processReducer = (state = initialStateProcess, action) => {
         processEngineDate: {},
         error: action.error,
       };
-      case SET_PROCESS_NAME:
+    case SET_PROCESS_NAME:
       return {
-        ...state,       
-        processName: action.payload,       
+        ...state,
+        processName: action.payload,
       };
-   
-        case PROCESS_CASTING_NO_FETCH:
-          return {
-            ...state,
-            loading: true,
-          };
-          case PROCESS_CASTING_NO_SUCCESS:
-            return {
-              ...state,
-            loading: false,
-            dataOneDay: action.payload,
-            error: "",      
-            };
-        case PROCESS_CASTING_NO_FAILURE:
-          return {
-            ...state,
-            loading: false,
-            dataOneDay: {},
-            error: action.error,
-          };
+
+    case PROCESS_CASTING_NO_FETCH:
+      return {
+        ...state,
+        loading: true,
+      };
+    case PROCESS_CASTING_NO_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        dataOneDay: action.payload,
+        error: "",
+      };
+    case PROCESS_CASTING_NO_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        dataOneDay: {},
+        error: action.error,
+      };
+    case CLEAR:
+      return initialStateProcess;
+
     default:
       return state;
   }

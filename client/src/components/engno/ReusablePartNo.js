@@ -53,7 +53,7 @@ function ReusablePartNo() {
     } else {
       setPartNo("");
     }
-  }, [subSection]);
+  }, [subSection, data]);
 
   return (
     <div>

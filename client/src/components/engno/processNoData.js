@@ -68,7 +68,7 @@ export const processNoData = [
         name: "Head Cylinder",
         processNo: [
           { label: "OP05", value: "H1_Material input/engraving" },
-         
+
           { label: "OP10", value: "OP10" },
           { label: "OP20", value: "OP20" },
           { label: "OP30", value: "OP30" },
@@ -98,7 +98,7 @@ export const processNoData = [
       {
         name: "Crank Shaft",
         processNo: [
-          { label: "OP02", value: "OP02" },
+          { label: "OP02", value: "C1_Comaterial" },
           { label: "OP05", value: "OP05" },
           { label: "OP10", value: "OP10" },
           { label: "OP20", value: "OP20" },
@@ -114,7 +114,8 @@ export const processNoData = [
           { label: "OP128", value: "OP128" },
           { label: "OP130", value: "OP130" },
           { label: "OP140", value: "C7_Gantry after OP140" },
-          { label: "OP150 & 170", value: "C3_OP150_170" },
+          // { label: "OP150_170", value: "C3_OP150_170" },
+          { label: "OP150_170", value: "OP150_170" },
           { label: "170 front Gantry", value: "C6_OP170 front gantry" },
 
           { label: "OP160", value: "OP160" },
@@ -122,8 +123,7 @@ export const processNoData = [
           { label: "OP190", value: "OP190" },
           { label: "OP200", value: "OP200" },
           { label: "OP220", value: "C4_OP220" },
-          { label: "OPFG", value: "C8_OP990" },
-          { label: "OPCoMaterial", value: "C1_Comaterial" },
+          { label: "FG", value: "C8_OP990" },
         ],
       },
     ],
