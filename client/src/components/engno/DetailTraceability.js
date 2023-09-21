@@ -47,6 +47,8 @@ import Heading_C_OP140 from "./processDetails/Heading_C_OP140";
 import C_OP_140 from "./processDetails/C_OP_140";
 import Heading_Timing from "./processDetails/Heading_Timing";
 import Timing from "./processDetails/Timing";
+import Heading_H_OP310 from "./processDetails/Heading_H_OP310";
+import H_OP_310 from "./processDetails/H_OP_310";
 
 function DeatialTraceability() {
   // formating date
@@ -559,6 +561,12 @@ function DeatialTraceability() {
           <div>
             <Heading_H_OP05 />
             <H_OP_05 />
+          </div>
+        )}
+        {processName == "H5_OP310" && (
+          <div className="overflow-auto" style={{ width: "90vw" }}>
+            <Heading_H_OP310 />
+            <H_OP_310 />
           </div>
         )}
 

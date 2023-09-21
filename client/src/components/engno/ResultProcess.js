@@ -49,8 +49,6 @@ function ResultProcess() {
     console.log(e.target.value);
   };
 
-  
-
   // ******** check conditions ********
   if (section === "Machining") {
     if (subSection === "Block Cylinder") {
@@ -59,7 +57,7 @@ function ResultProcess() {
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "B1_ENGRAVED"
           );
-            console.log("hfsh")
+          console.log("hfsh");
           display =
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
@@ -90,8 +88,8 @@ function ResultProcess() {
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "B3_OP190"
           );
-          if(processNoFiltered != undefined && processNoFiltered.length > 0){
-            var op190Data = processNoFiltered[0][1].split(",")
+          if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+            var op190Data = processNoFiltered[0][1].split(",");
             // console.log(op190Data)
             // console.log(op190Data[7])
             // console.log(parseInt(op190Data[7].slice(0,6)))
@@ -100,33 +98,53 @@ function ResultProcess() {
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
               <div className="d-flex flex-column">
-                 <div className="h6 mb-2">Journal diameter in microns</div>
+                <div className="h6 mb-2">Journal diameter in microns</div>
                 {/* <div className="d-flex ">
                   <div className="dt1f1">Process No.</div>{" "}
                   <div className="dt1f2">{processNoFiltered[0][5]}</div>
                 </div> */}
                 <div className="d-flex  ">
-                <div className="d-flex flex-column dt2 ">
-                  <div className="dt1f1 text-center bg-dark text-light ">J1</div>{" "}
-                  <div className="dt1f1 text-center">{parseInt(op190Data[7].slice(0,6))}</div>
+                  <div className="d-flex flex-column dt2 ">
+                    <div className="dt1f1 text-center bg-dark text-light ">
+                      J1
+                    </div>{" "}
+                    <div className="dt1f1 text-center">
+                      {parseInt(op190Data[7].slice(0, 6))}
+                    </div>
+                  </div>
+                  <div className="d-flex flex-column dt2">
+                    <div className="dt1f1 text-center bg-dark text-light ">
+                      J2
+                    </div>{" "}
+                    <div className="dt1f1 text-center">
+                      {parseInt(op190Data[8].slice(0, 6))}
+                    </div>
+                  </div>
+                  <div className="d-flex flex-column dt2">
+                    <div className="dt1f1 text-center bg-dark text-light ">
+                      J3
+                    </div>{" "}
+                    <div className="dt1f1 text-center">
+                      {parseInt(op190Data[9].slice(0, 6))}
+                    </div>
+                  </div>
+                  <div className="d-flex flex-column dt2">
+                    <div className="dt1f1 text-center bg-dark text-light ">
+                      J4
+                    </div>{" "}
+                    <div className="dt1f1 text-center">
+                      {parseInt(op190Data[10].slice(0, 6))}
+                    </div>
+                  </div>
+                  <div className="d-flex flex-column dt2">
+                    <div className="dt1f1 text-center bg-dark text-light ">
+                      J5
+                    </div>{" "}
+                    <div className="dt1f1 text-center">
+                      {parseInt(op190Data[11].slice(0, 6))}
+                    </div>
+                  </div>
                 </div>
-                <div className="d-flex flex-column dt2">
-                  <div className="dt1f1 text-center bg-dark text-light ">J2</div>{" "}
-                  <div className="dt1f1 text-center">{parseInt(op190Data[8].slice(0,6))}</div>
-                </div>
-                <div className="d-flex flex-column dt2">
-                  <div className="dt1f1 text-center bg-dark text-light ">J3</div>{" "}
-                  <div className="dt1f1 text-center">{parseInt(op190Data[9].slice(0,6))}</div>
-                </div>
-                <div className="d-flex flex-column dt2">
-                  <div className="dt1f1 text-center bg-dark text-light ">J4</div>{" "}
-                  <div className="dt1f1 text-center">{parseInt(op190Data[10].slice(0,6))}</div>
-                </div>
-                <div className="d-flex flex-column dt2">
-                  <div className="dt1f1 text-center bg-dark text-light ">J5</div>{" "}
-                  <div className="dt1f1 text-center">{parseInt(op190Data[11].slice(0,6))}</div>
-                </div>
-              </div>
                 {/* <div className="d-flex">
                   <div className="dt1f1">Date</div>{" "}
                   <div className="dt1f2">{processNoFiltered[0][8]}</div>
@@ -138,8 +156,8 @@ function ResultProcess() {
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "B4_Finishing gantry"
           );
-          if(processNoFiltered != undefined && processNoFiltered.length > 0){
-            var op195Data = processNoFiltered[0][1].slice(16,20)
+          if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+            var op195Data = processNoFiltered[0][1].slice(16, 20);
             // console.log(op190Data)
             // console.log(op190Data[7])
             // console.log(parseInt(op190Data[7].slice(0,6)))
@@ -155,67 +173,77 @@ function ResultProcess() {
                 </div>
                 <div className="d-flex  dt2">
                   <div className="dt1f1">Machine</div>{" "}
-                  <div className="dt1f2">{op195Data=="0011"?"OP195A":(op195Data=="0012"?"OP195B":"")}</div>
+                  <div className="dt1f2">
+                    {op195Data == "0011"
+                      ? "OP195A"
+                      : op195Data == "0012"
+                      ? "OP195B"
+                      : ""}
+                  </div>
                 </div>
                 <div className="d-flex  dt2">
                   <div className="dt1f1">Date</div>{" "}
-                  <div className="dt1f2">{moment(processNoFiltered[0][8]).format(
+                  <div className="dt1f2">
+                    {moment(processNoFiltered[0][8]).format(
                       "DD-MMMM-YYYY HH:mm:ss"
-                    )}</div>
+                    )}
+                  </div>
                 </div>
               </div>
             );
           break;
-          case "OP235":
-            processNoFiltered = processNoALCData?.filter(
-              (elements) => elements[5] === "B5_OP235"
-            );
-  
-            display =
-              processNoFiltered == undefined ||
-              processNoFiltered.length == 0 ? null : (
-                <div className="d-flex flex-column">
-                  <div className="d-flex  ">
-                    <div className="dt1f1">name</div>{" "}
-                    <div className="dt1f2">{processNoFiltered[0][5]}</div>
-                  </div>
-                  <div className="d-flex ">
-                    <div className="dt1f1">Data</div>{" "}
-                    <div className="dt1f2">{processNoFiltered[0][1]}</div>
-                  </div>
-                  <div className="d-flex">
-                    <div className="dt1f1">Date</div>{" "}
-                    <div className="dt1f2">{processNoFiltered[0][8]}</div>
-                  </div>
+        case "OP235":
+          processNoFiltered = processNoALCData?.filter(
+            (elements) => elements[5] === "B5_OP235"
+          );
+
+          display =
+            processNoFiltered == undefined ||
+            processNoFiltered.length == 0 ? null : (
+              <div className="d-flex flex-column">
+                <div className="d-flex  ">
+                  <div className="dt1f1">name</div>{" "}
+                  <div className="dt1f2">{processNoFiltered[0][5]}</div>
                 </div>
-              );
-            break;
-            case "FG":
-              processNoFiltered = processNoALCData?.filter(
-                (elements) => elements[5] === "B7_OP990"
-              );
-    
-              display =
-                processNoFiltered == undefined ||
-                processNoFiltered.length == 0 ? null : (
-                  <div className="d-flex flex-column">
-                    <div className="d-flex dt2">
-                      <div className="dt1f1">Process Name</div>{" "}
-                      <div className="dt1f2">{processNoFiltered[0][5]}</div>
-                    </div>
-                    {/* <div className="d-flex dt2">
+                <div className="d-flex ">
+                  <div className="dt1f1">Data</div>{" "}
+                  <div className="dt1f2">{processNoFiltered[0][1]}</div>
+                </div>
+                <div className="d-flex">
+                  <div className="dt1f1">Date</div>{" "}
+                  <div className="dt1f2">{processNoFiltered[0][8]}</div>
+                </div>
+              </div>
+            );
+          break;
+        case "FG":
+          processNoFiltered = processNoALCData?.filter(
+            (elements) => elements[5] === "B7_OP990"
+          );
+
+          display =
+            processNoFiltered == undefined ||
+            processNoFiltered.length == 0 ? null : (
+              <div className="d-flex flex-column">
+                <div className="d-flex dt2">
+                  <div className="dt1f1">Process Name</div>{" "}
+                  <div className="dt1f2">{processNoFiltered[0][5]}</div>
+                </div>
+                {/* <div className="d-flex dt2">
                       <div className="dt1f1">Data</div>{" "}
                       <div className="dt1f2">{processNoFiltered[0][1]}</div>
                     </div> */}
-                    <div className="d-flex dt2">
-                      <div className="dt1f1">FG Date</div>{" "}
-                      <div className="dt1f2">{moment(processNoFiltered[0][8]).format(
+                <div className="d-flex dt2">
+                  <div className="dt1f1">FG Date</div>{" "}
+                  <div className="dt1f2">
+                    {moment(processNoFiltered[0][8]).format(
                       "DD-MMMM-YYYY HH:mm:ss"
-                    )}</div>
-                    </div>
+                    )}
                   </div>
-                );
-              break;
+                </div>
+              </div>
+            );
+          break;
         default:
           display = null;
           break;
@@ -295,54 +323,286 @@ function ResultProcess() {
               </div>
             );
           break;
+
         case "OP310":
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "H5_OP310"
+          );
+
+          let H_OP310_list = processNoFiltered[0][1].split(",");
+          if (H_OP310_list.length >= 29) {
+            let f1 = H_OP310_list[0].slice(16, 17);
+            // H_OP310_list.forEach((item) => console.log(item));
+            let correctList = H_OP310_list.map((item) => parseFloat(item));
+
+            display =
+              processNoFiltered == undefined ||
+              processNoFiltered.length == 0 ? null : (
+                <div className="d-flex flex-column">
+                  <div className="h6 mb-2">Leak Testing</div>
+                  <div className="d-flex flex-row flex-wrap">
+                    <div className="d-flex flex-column flex-wrap dt3">
+                      <div>Process Name</div>{" "}
+                      <div>{processNoFiltered[0][5]}</div>
+                    </div>
+
+                    <div className="d-flex flex-column flex-wrap dt3">
+                      <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+                    </div>
+                  </div>
+
+                  <div className="d-flex flex-row flex-wrap mt-2">
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-warning text-light">WJ</div>{" "}
+                      {/* <div>{correctList[1]}</div> */}
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">Judgment</div>{" "}
+                      <div>
+                        {f1 == "1"
+                          ? "LL NG"
+                          : f1 == "2"
+                          ? "OK"
+                          : f1 == "4"
+                          ? "UL NG"
+                          : f1 == "9"
+                          ? "LL2 NG"
+                          : f1 == "D"
+                          ? "ERR"
+                          : ""}
+                      </div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        Measurement leak (mL / min)
+                      </div>{" "}
+                      <div>{correctList[1]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
+                      <div>{correctList[2]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
+                      <div>{correctList[3]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        Correction (mL / min)
+                      </div>{" "}
+                      <div>{correctList[4]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        Test pressure(kPa)
+                      </div>{" "}
+                      <div>{correctList[5]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        K (Ve) value (mL)
+                      </div>{" "}
+                      <div>{correctList[6]}</div>
+                    </div>
+                  </div>
+
+                  <div className="d-flex flex-row flex-wrap mt-2">
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-warning text-light">OH</div>{" "}
+                      {/* <div>{correctList[1]}</div> */}
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">Judgment</div>{" "}
+                      <div>
+                        {correctList[7].toString() == "1"
+                          ? "LL NG"
+                          : correctList[7].toString() == "2"
+                          ? "OK"
+                          : correctList[7].toString() == "4"
+                          ? "UL NG"
+                          : correctList[7].toString() == "9"
+                          ? "LL2 NG"
+                          : correctList[7].toString() == "D"
+                          ? "ERR"
+                          : ""}
+                      </div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        Measurement leak (mL / min)
+                      </div>{" "}
+                      <div>{correctList[8]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
+                      <div>{correctList[9]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
+                      <div>{correctList[10]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        Correction (mL / min)
+                      </div>{" "}
+                      <div>{correctList[11]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        Test pressure(kPa)
+                      </div>{" "}
+                      <div>{correctList[12]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        K (Ve) value (mL)
+                      </div>{" "}
+                      <div>{correctList[13]}</div>
+                    </div>
+                  </div>
+
+                  <div className="d-flex flex-row flex-wrap mt-2">
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-warning text-light">CC</div>{" "}
+                      {/* <div>{correctList[1]}</div> */}
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">Judgment</div>{" "}
+                      <div>
+                        {correctList[14].toString() == "1"
+                          ? "LL NG"
+                          : correctList[14].toString() == "2"
+                          ? "OK"
+                          : correctList[14].toString() == "4"
+                          ? "UL NG"
+                          : correctList[14].toString() == "9"
+                          ? "LL2 NG"
+                          : correctList[14].toString() == "D"
+                          ? "ERR"
+                          : ""}
+                      </div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        Measurement leak (mL / min)
+                      </div>{" "}
+                      <div>{correctList[15]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
+                      <div>{correctList[16]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
+                      <div>{correctList[17]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        Correction (mL / min)
+                      </div>{" "}
+                      <div>{correctList[18]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        Test pressure(kPa)
+                      </div>{" "}
+                      <div>{correctList[19]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        K (Ve) value (mL)
+                      </div>{" "}
+                      <div>{correctList[20]}</div>
+                    </div>
+                  </div>
+
+                  <div className="d-flex flex-row flex-wrap mt-2">
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-warning text-light">EGR</div>{" "}
+                      {/* <div>{correctList[1]}</div> */}
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">Judgment</div>{" "}
+                      <div>
+                        {correctList[21].toString() == "1"
+                          ? "LL NG"
+                          : correctList[21].toString() == "2"
+                          ? "OK"
+                          : correctList[21].toString() == "4"
+                          ? "UL NG"
+                          : correctList[21].toString() == "9"
+                          ? "LL2 NG"
+                          : correctList[21].toString() == "D"
+                          ? "ERR"
+                          : ""}
+                      </div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        Measurement leak (mL / min)
+                      </div>{" "}
+                      <div>{correctList[22]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
+                      <div>{correctList[23]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
+                      <div>{correctList[24]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        Correction (mL / min)
+                      </div>{" "}
+                      <div>{correctList[25]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        Test pressure(kPa)
+                      </div>{" "}
+                      <div>{correctList[26]}</div>
+                    </div>
+                    <div className="d-flex flex-column dt3">
+                      <div className="bg-dark text-light">
+                        K (Ve) value (mL)
+                      </div>{" "}
+                      <div>{correctList[27]}</div>
+                    </div>
+                  </div>
+                </div>
+              );
+          }
+          break;
+        case "FG":
+          processNoFiltered = processNoALCData?.filter(
+            (elements) => elements[5] === "H12_OP990"
           );
 
           display =
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
               <div className="d-flex flex-column">
-                <div className="d-flex gap-2">
-                  <div>name</div> <div>{processNoFiltered[0][5]}</div>
+                <div className="h6 mb-2">FG Time Details</div>
+                <div className="d-flex dt2">
+                  <div className="dt1f1">Process Name</div>{" "}
+                  <div className="dt1f2">{processNoFiltered[0][5]}</div>
                 </div>
-                <div className="d-flex gap-2">
-                  <div>Data</div> <div>{processNoFiltered[0][1]}</div>
-                </div>
-                <div className="d-flex gap-2">
-                  <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+                {/* <div className="d-flex dt2">
+                      <div className="dt1f1">Data</div>{" "}
+                      <div className="dt1f2">{processNoFiltered[0][1]}</div>
+                    </div> */}
+                <div className="d-flex dt2">
+                  <div className="dt1f1">FG Date</div>{" "}
+                  <div className="dt1f2">
+                    {moment(processNoFiltered[0][8]).format(
+                      "DD-MMMM-YYYY HH:mm:ss"
+                    )}
+                  </div>
                 </div>
               </div>
             );
           break;
-          case "FG":
-              processNoFiltered = processNoALCData?.filter(
-                (elements) => elements[5] ==="H12_OP990"
-              );
-    
-              display =
-                processNoFiltered == undefined ||
-                processNoFiltered.length == 0 ? null : (
-                  <div className="d-flex flex-column">
-                    <div className="h6 mb-2">FG Time Details</div>
-                    <div className="d-flex dt2">
-                      <div className="dt1f1">Process Name</div>{" "}
-                      <div className="dt1f2">{processNoFiltered[0][5]}</div>
-                    </div>
-                    {/* <div className="d-flex dt2">
-                      <div className="dt1f1">Data</div>{" "}
-                      <div className="dt1f2">{processNoFiltered[0][1]}</div>
-                    </div> */}
-                    <div className="d-flex dt2">
-                      <div className="dt1f1">FG Date</div>{" "}
-                      <div className="dt1f2">{moment(processNoFiltered[0][8]).format(
-                      "DD-MMMM-YYYY HH:mm:ss"
-                    )}</div>
-                    </div>
-                  </div>
-                );
-              break;
         default:
           display = null;
           break;
@@ -362,17 +622,19 @@ function ResultProcess() {
                 <div className="d-flex dt2">
                   <div className="dt1f1">Process Name</div>{" "}
                   <div className="dt1f2">{processNoFiltered[0][5]}</div>
-                </div>               
+                </div>
                 <div className="d-flex dt2">
                   <div className="dt1f1">FG Date</div>{" "}
-                  <div className="dt1f2">{moment(processNoFiltered[0][8]).format(
-                  "DD-MMMM-YYYY HH:mm:ss"
-                )}</div>
+                  <div className="dt1f2">
+                    {moment(processNoFiltered[0][8]).format(
+                      "DD-MMMM-YYYY HH:mm:ss"
+                    )}
+                  </div>
                 </div>
               </div>
             );
           break;
-          case "OP140":
+        case "OP140":
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "C7_Gantry after OP140"
           );
@@ -385,12 +647,14 @@ function ResultProcess() {
                 <div className="d-flex dt2">
                   <div className="dt1f1">Process Name</div>{" "}
                   <div className="dt1f2">{processNoFiltered[0][5]}</div>
-                </div>               
+                </div>
                 <div className="d-flex dt2">
                   <div className="dt1f1">FG Date</div>{" "}
-                  <div className="dt1f2">{moment(processNoFiltered[0][8]).format(
-                  "DD-MMMM-YYYY HH:mm:ss"
-                )}</div>
+                  <div className="dt1f2">
+                    {moment(processNoFiltered[0][8]).format(
+                      "DD-MMMM-YYYY HH:mm:ss"
+                    )}
+                  </div>
                 </div>
               </div>
             );
@@ -416,240 +680,293 @@ function ResultProcess() {
               </div>
             );
           break;
-          case "170 front Gantry":
-            processNoFiltered = processNoALCData?.filter(
-              (elements) => elements[5] === "C6_OP170 front gantry"
-            );
-  
-            display =
-              processNoFiltered == undefined ||
-              processNoFiltered.length == 0 ? null : (
-                <div className="d-flex flex-column">
-                  <div className="h6 mb-2">OP170 Time Details</div>
-                  <div className="d-flex dt2">
-                    <div className="dt1f1">Process Name</div>{" "}
-                    <div className="dt1f2">{processNoFiltered[0][5]}</div>
-                  </div>               
-                  <div className="d-flex dt2">
-                    <div className="dt1f1">FG Date</div>{" "}
-                    <div className="dt1f2">{moment(processNoFiltered[0][8]).format(
-                    "DD-MMMM-YYYY HH:mm:ss"
-                  )}</div>
+        case "170 front Gantry":
+          processNoFiltered = processNoALCData?.filter(
+            (elements) => elements[5] === "C6_OP170 front gantry"
+          );
+
+          display =
+            processNoFiltered == undefined ||
+            processNoFiltered.length == 0 ? null : (
+              <div className="d-flex flex-column">
+                <div className="h6 mb-2">OP170 Time Details</div>
+                <div className="d-flex dt2">
+                  <div className="dt1f1">Process Name</div>{" "}
+                  <div className="dt1f2">{processNoFiltered[0][5]}</div>
+                </div>
+                <div className="d-flex dt2">
+                  <div className="dt1f1">FG Date</div>{" "}
+                  <div className="dt1f2">
+                    {moment(processNoFiltered[0][8]).format(
+                      "DD-MMMM-YYYY HH:mm:ss"
+                    )}
                   </div>
                 </div>
-              );
-            break;
+              </div>
+            );
+          break;
         case "OP220":
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "C4_OP220"
           );
           // console.log(processNoFiltered[0])
 
-          let C_OP220_list =processNoFiltered[0][1].split(",")
+          let C_OP220_list = processNoFiltered[0][1].split(",");
           // console.log(C_OP220_list)
-          C_OP220_list.forEach(item=>console.log(item))
+          C_OP220_list.forEach((item) => console.log(item));
 
-          let correctList = C_OP220_list.map(item=>{
-            let newItem = item.split("-")
+          let correctList = C_OP220_list.map((item) => {
+            let newItem = item.split("-");
             // console.log(newItem)
-            if(newItem.length>=2){
-              return -1  * newItem[1]
-            }else{
-              return parseInt(newItem[0]         )
+            if (newItem.length >= 2) {
+              return -1 * newItem[1];
+            } else {
+              return parseInt(newItem[0]);
             }
-          })      
+          });
 
-          console.log(correctList)
+          console.log(correctList);
 
-          var tt
-          var ttString = tt=correctList[39].toString().replace(".", "").slice(0,8)
-          if(correctList[1]===11){
-            tt=ttString.slice(0,4)
+          var tt;
+          var ttString = (tt = correctList[39]
+            .toString()
+            .replace(".", "")
+            .slice(0, 8));
+          if (correctList[1] === 11) {
+            tt = ttString.slice(0, 4);
+          } else {
+            tt = ttString.slice(7, 8) + ttString.slice(0, 4);
           }
-          else{
-            tt=ttString.slice(7,8)+ttString.slice(0,4)
-          }
-           
-         
-          
-        //  console.log( C_OP220_list[2].split("-"))
+
+          //  console.log( C_OP220_list[2].split("-"))
 
           display =
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
               <div className="d-flex flex-column">
-                 <div className="h6 mb-2">Journal & Pin Diameter & Taper details</div>
-                <div className="d-flex flex-row flex-wrap">
-                <div  className="d-flex flex-column flex-wrap dt3">
-                  <div >Process Name</div> <div>{processNoFiltered[0][5]}</div>
+                <div className="h6 mb-2">
+                  Journal & Pin Diameter & Taper details
                 </div>
-                {/* <div className="d-flex gap-2">
+                <div className="d-flex flex-row flex-wrap">
+                  <div className="d-flex flex-column flex-wrap dt3">
+                    <div>Process Name</div> <div>{processNoFiltered[0][5]}</div>
+                  </div>
+                  {/* <div className="d-flex gap-2">
                   <div>Data</div> <div>{correctList}</div>
                 </div> */}
-                {/* <div className="d-flex gap-2">
+                  {/* <div className="d-flex gap-2">
                   <div>Serial</div> <div>{correctList[0]}</div>
                 </div> */}
-                <div  className="d-flex flex-column flex-wrap dt3">
-                  <div>Model</div> <div>{correctList[1]===11?"Model 1" : (correctList[1]===12? "Model 2": (correctList[1]===13? "Model 3": ""))}</div>
-                  {/* correctList[1]==="11"?"model 1" : (correctList[1]==="12"? "model 2": (correctList[1]==="13"? "model 3": ""))*/}
-                </div>          
-                
+                  <div className="d-flex flex-column flex-wrap dt3">
+                    <div>Model</div>{" "}
+                    <div>
+                      {correctList[1] === 11
+                        ? "Model 1"
+                        : correctList[1] === 12
+                        ? "Model 2"
+                        : correctList[1] === 13
+                        ? "Model 3"
+                        : ""}
+                    </div>
+                    {/* correctList[1]==="11"?"model 1" : (correctList[1]==="12"? "model 2": (correctList[1]==="13"? "model 3": ""))*/}
+                  </div>
 
-                <div  className="d-flex flex-column flex-wrap dt3">
-                  <div>Date</div> <div>{processNoFiltered[0][8]}</div>
-                </div>
-                </div>
-
-                <div className="d-flex flex-row flex-wrap mt-2">
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J1 - ⌀1</div> <div>{correctList[2]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J1 - ⌀2</div> <div className="text-center">{correctList[3]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J1 - ⌀3</div> <div>{correctList[4]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J2 - ⌀1</div> <div>{correctList[5]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J2 - ⌀2/</div> <div>{correctList[6]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J2 - ⌀3</div> <div>{correctList[7]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J3 - ⌀1</div> <div>{correctList[8]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J3 - ⌀2</div> <div>{correctList[9]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J3 - ⌀3</div> <div>{correctList[10]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J4 - ⌀3</div> <div>{correctList[11]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J4 - ⌀2</div> <div>{correctList[12]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J4 - ⌀3</div> <div>{correctList[13]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J5 - ⌀1</div> <div>{correctList[14]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J5 - ⌀2</div> <div>{correctList[15]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J5 - ⌀3</div> <div>{correctList[16]}</div>
-                </div>
-                </div>
-                <div className="d-flex flex-row flex-wrap mt-2">
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J1 - Taper</div> <div>{correctList[17]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J2 - Taper</div> <div>{correctList[18]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J3 - Taper</div> <div>{correctList[19]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J4 - Taper</div> <div>{correctList[20]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J5 - Taper</div> <div>{correctList[21]}</div>
-                </div>
-                </div>
-                <div className="d-flex flex-row flex-wrap mt-2">
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P1 - ⌀1</div> <div>{correctList[22]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P1 - ⌀2</div> <div>{correctList[23]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P1 - ⌀3</div> <div>{correctList[24]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P2 - ⌀1</div> <div>{correctList[25]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P2 - ⌀2</div> <div>{correctList[26]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P2 - ⌀3</div> <div>{correctList[27]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P3 - ⌀1</div> <div>{correctList[28]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P3 - ⌀2</div> <div>{correctList[29]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P3 - ⌀3</div> <div>{correctList[30]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P4 - ⌀1</div> <div>{correctList[31]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P4 - ⌀2</div> <div>{correctList[32]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P4 - ⌀3</div> <div>{correctList[33]}</div>
-                </div>
-                </div>
-                <div className="d-flex flex-row flex-wrap mt-2">
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P1 - Taper</div> <div>{correctList[34]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P2 - Taper</div> <div>{correctList[35]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P3 - Taper</div> <div>{correctList[36]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">P4 - Taper</div> <div>{correctList[37]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">Rr Flange ⌀ </div> <div>{correctList[38]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">J1～J5 stamped rank value</div> <div>{tt}</div>
-                </div>
+                  <div className="d-flex flex-column flex-wrap dt3">
+                    <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+                  </div>
                 </div>
 
+                <div className="d-flex flex-row flex-wrap mt-2">
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J1 - ⌀1</div>{" "}
+                    <div>{correctList[2]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J1 - ⌀2</div>{" "}
+                    <div className="text-center">{correctList[3]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J1 - ⌀3</div>{" "}
+                    <div>{correctList[4]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J2 - ⌀1</div>{" "}
+                    <div>{correctList[5]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J2 - ⌀2/</div>{" "}
+                    <div>{correctList[6]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J2 - ⌀3</div>{" "}
+                    <div>{correctList[7]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J3 - ⌀1</div>{" "}
+                    <div>{correctList[8]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J3 - ⌀2</div>{" "}
+                    <div>{correctList[9]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J3 - ⌀3</div>{" "}
+                    <div>{correctList[10]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J4 - ⌀3</div>{" "}
+                    <div>{correctList[11]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J4 - ⌀2</div>{" "}
+                    <div>{correctList[12]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J4 - ⌀3</div>{" "}
+                    <div>{correctList[13]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J5 - ⌀1</div>{" "}
+                    <div>{correctList[14]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J5 - ⌀2</div>{" "}
+                    <div>{correctList[15]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J5 - ⌀3</div>{" "}
+                    <div>{correctList[16]}</div>
+                  </div>
+                </div>
+                <div className="d-flex flex-row flex-wrap mt-2">
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J1 - Taper</div>{" "}
+                    <div>{correctList[17]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J2 - Taper</div>{" "}
+                    <div>{correctList[18]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J3 - Taper</div>{" "}
+                    <div>{correctList[19]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J4 - Taper</div>{" "}
+                    <div>{correctList[20]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">J5 - Taper</div>{" "}
+                    <div>{correctList[21]}</div>
+                  </div>
+                </div>
+                <div className="d-flex flex-row flex-wrap mt-2">
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P1 - ⌀1</div>{" "}
+                    <div>{correctList[22]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P1 - ⌀2</div>{" "}
+                    <div>{correctList[23]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P1 - ⌀3</div>{" "}
+                    <div>{correctList[24]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P2 - ⌀1</div>{" "}
+                    <div>{correctList[25]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P2 - ⌀2</div>{" "}
+                    <div>{correctList[26]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P2 - ⌀3</div>{" "}
+                    <div>{correctList[27]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P3 - ⌀1</div>{" "}
+                    <div>{correctList[28]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P3 - ⌀2</div>{" "}
+                    <div>{correctList[29]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P3 - ⌀3</div>{" "}
+                    <div>{correctList[30]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P4 - ⌀1</div>{" "}
+                    <div>{correctList[31]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P4 - ⌀2</div>{" "}
+                    <div>{correctList[32]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P4 - ⌀3</div>{" "}
+                    <div>{correctList[33]}</div>
+                  </div>
+                </div>
+                <div className="d-flex flex-row flex-wrap mt-2">
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P1 - Taper</div>{" "}
+                    <div>{correctList[34]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P2 - Taper</div>{" "}
+                    <div>{correctList[35]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P3 - Taper</div>{" "}
+                    <div>{correctList[36]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">P4 - Taper</div>{" "}
+                    <div>{correctList[37]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">Rr Flange ⌀ </div>{" "}
+                    <div>{correctList[38]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">
+                      J1～J5 stamped rank value
+                    </div>{" "}
+                    <div>{tt}</div>
+                  </div>
+                </div>
               </div>
             );
           break;
-     
-          case "FG":
-            processNoFiltered = processNoALCData?.filter(
-              (elements) => elements[5] === "C8_OP990"
-            );
-  
-            display =
-              processNoFiltered == undefined ||
-              processNoFiltered.length == 0 ? null : (
-                <div className="d-flex flex-column">
-                  <div className="h6 mb-2">FG Time Details</div>
-                  <div className="d-flex dt2">
-                    <div className="dt1f1">Process Name</div>{" "}
-                    <div className="dt1f2">{processNoFiltered[0][5]}</div>
-                  </div>               
-                  <div className="d-flex dt2">
-                    <div className="dt1f1">FG Date</div>{" "}
-                    <div className="dt1f2">{moment(processNoFiltered[0][8]).format(
-                    "DD-MMMM-YYYY HH:mm:ss"
-                  )}</div>
+
+        case "FG":
+          processNoFiltered = processNoALCData?.filter(
+            (elements) => elements[5] === "C8_OP990"
+          );
+
+          display =
+            processNoFiltered == undefined ||
+            processNoFiltered.length == 0 ? null : (
+              <div className="d-flex flex-column">
+                <div className="h6 mb-2">FG Time Details</div>
+                <div className="d-flex dt2">
+                  <div className="dt1f1">Process Name</div>{" "}
+                  <div className="dt1f2">{processNoFiltered[0][5]}</div>
+                </div>
+                <div className="d-flex dt2">
+                  <div className="dt1f1">FG Date</div>{" "}
+                  <div className="dt1f2">
+                    {moment(processNoFiltered[0][8]).format(
+                      "DD-MMMM-YYYY HH:mm:ss"
+                    )}
                   </div>
                 </div>
-              );
-            break;
+              </div>
+            );
+          break;
         default:
           display = null;
           break;
@@ -662,26 +979,25 @@ function ResultProcess() {
   // H3_OP055
 
   // C3_OP150_170
-  var castingDetails=null
-  if(processName == "B1_ENGRAVED"){
-      if(processNoFiltered != undefined && processNoFiltered.length > 0 ){
-        castingDetails=  <CastingInformation castingNo={processNoFiltered[0][1].slice(16)} />
-      }
-  }
-  else if(processName == "H1_Material input/engraving"){
-    if(processNoFiltered != undefined && processNoFiltered.length > 0 ){
-      castingDetails=  <CastingInformation_H castingNo={processNoFiltered[0][1].slice(16)} />
+  var castingDetails = null;
+  if (processName == "B1_ENGRAVED") {
+    if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+      castingDetails = (
+        <CastingInformation castingNo={processNoFiltered[0][1].slice(16)} />
+      );
     }
-}
-  
+  } else if (processName == "H1_Material input/engraving") {
+    if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+      castingDetails = (
+        <CastingInformation_H castingNo={processNoFiltered[0][1].slice(16)} />
+      );
+    }
+  }
 
- 
   return (
     <div className="d-flex gap-3">
       <>{display}</>
       <>{castingDetails}</>
-      
-     
     </div>
   );
 }
