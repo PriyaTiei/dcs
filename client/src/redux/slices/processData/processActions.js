@@ -248,7 +248,7 @@ export const getProcessRangeDetails = (partNo, fromDate, toDate) => {
 };
 
 export const getProcessRangeDetailsAssy = (partNo, fromDate, toDate) => {
-  console.log("getprocessRangeDetails")
+  console.log("getprocessRangeDetailsAssy")
   console.log(partNo)
   console.log(fromDate)
   console.log(toDate)

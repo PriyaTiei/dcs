@@ -4,12 +4,11 @@ import moment from "moment";
 import {
   getProcessEngineDetails,
   getProcessEngineDateDetails,
-  getProcessOneDayDetails,
+  getProcessRangeDetails,
   newFromDate,
   newToDate,
   getProcessDetails,
   setProcessNo,
-  getProcessRangeDetails,
   getProcessRangeDetailsAssy,
 } from "../../redux/slices/processData/processActions";
 
@@ -67,7 +66,7 @@ function ProcessData({ processNoListInitial }) {
         dispatch(newFromDate(tempFromDate.toISOString()));
         dispatch(newToDate(tempToDate.toISOString()));
         dispatch(
-          getProcessOneDayDetails(
+          getProcessRangeDetails(
             processNoFiltered[0][5],
             tempFromDate.toISOString(),
             tempToDate.toISOString()

@@ -21,7 +21,7 @@ import ReusablePartNo from "./ReusablePartNo";
 import Heading_B_OP05 from "./processDetails/Heading_B_OP05";
 import Reusable_B_OP05 from "./processDetails/Reusable_B_OP05";
 import {
-  getProcessOneDayDetails,
+  getProcessRangeDetails,
   newFromDate,
   newToDate,
 } from "../../redux/slices/processData/processActions";
@@ -378,10 +378,10 @@ function DeatialTraceability() {
   // B1_ENGRAVED
   // processNoFiltered[0][5]
   const rangeButtonHandler = () => {
-    dispatch(getProcessOneDayDetails(processName, fromDateState, toDateState));
+    dispatch(getProcessRangeDetails(processName, fromDateState, toDateState));
   };
   const oneDayButtonHandler = () => {
-    dispatch(getProcessOneDayDetails(processName, fromDateState, toDateState));
+    dispatch(getProcessRangeDetails(processName, fromDateState, toDateState));
   };
   return (
     <div>

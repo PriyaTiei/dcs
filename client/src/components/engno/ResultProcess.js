@@ -4,7 +4,7 @@ import moment from "moment";
 import {
   getProcessEngineDetails,
   getProcessEngineDateDetails,
-  getProcessOneDayDetails,
+  getProcessRangeDetails,
   newFromDate,
   newToDate,
 } from "../../redux/slices/processData/processActions";
@@ -200,20 +200,20 @@ function ResultProcess() {
           if (processNoFiltered != undefined && processNoFiltered.length > 0) {
             var result = decodeBlock235(processNoFiltered[0][1]);
             var plug2to5 = [];
-            var PLabel= ["P1","P2", "P3", "P4", "P5", "P6","", "SP"];
+            var PLabel = ["P1", "P2", "P3", "P4", "P5", "P6", "", "SP"];
             for (let i = 0; i < 40; i += 5) {
-              if(i===30){
-                  continue
+              if (i === 30) {
+                continue;
               }
               let el = (
                 <div className="d-flex flex-row flex-wrap mt-2">
                   <div className="d-flex flex-column dt3">
-                    <div className="bg-warning text-light">{PLabel[i/5]}</div>{" "}
+                    <div className="bg-warning text-light">{PLabel[i / 5]}</div>{" "}
                     {/* <div>{correctList[1]}</div> */}
                   </div>
                   <div className="d-flex flex-column dt3">
                     <div className="bg-dark text-light">Judgment</div>{" "}
-                    <div>{result[i+3]}</div>
+                    <div>{result[i + 3]}</div>
                   </div>
                   <div className="d-flex flex-column dt3">
                     <div className="bg-dark text-light">
@@ -234,7 +234,7 @@ function ResultProcess() {
                   </div>
                   <div className="d-flex flex-column dt3">
                     <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
-                    <div>{result[i +7]}</div>
+                    <div>{result[i + 7]}</div>
                   </div>
                 </div>
               );
@@ -245,8 +245,7 @@ function ResultProcess() {
           display =
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
-              <div className="d-flex flex-row flex-wrap">              
-
+              <div className="d-flex flex-row flex-wrap">
                 <div className="d-flex flex-column dt2 ">
                   <div className="dt1f1 text-center bg-dark text-light ">
                     Model
@@ -267,18 +266,25 @@ function ResultProcess() {
                   </div>{" "}
                   <div className="dt1f1 text-center">{result[2]}</div>
                 </div>
-                <div className="d-flex flex-column dt2 flex-1 " style={{width:"200px"}}>
-                  <div className="dt1f1 text-center bg-dark text-light " style={{width:"200px"}}>
+                <div
+                  className="d-flex flex-column dt2 flex-1 "
+                  style={{ width: "200px" }}
+                >
+                  <div
+                    className="dt1f1 text-center bg-dark text-light "
+                    style={{ width: "200px" }}
+                  >
                     Process Date & Time
                   </div>{" "}
-                  <div className="dt1f1 text-center" style={{width:"200px"}}>{moment(processNoFiltered[0][8]).format(
+                  <div className="dt1f1 text-center" style={{ width: "200px" }}>
+                    {moment(processNoFiltered[0][8]).format(
                       "DD-MMMM-YYYY HH:mm:ss"
-                    )}</div>
+                    )}
+                  </div>
                 </div>
 
                 {/* plug1~6 and SrewPlug */}
-                {plug2to5}             
-                
+                {plug2to5}
               </div>
             );
           break;
@@ -394,12 +400,14 @@ function ResultProcess() {
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "H5_OP310"
           );
-
-          let H_OP310_list = processNoFiltered[0][1].split(",");
-          if (H_OP310_list.length >= 29) {
-            let f1 = H_OP310_list[0].slice(16, 17);
-            // H_OP310_list.forEach((item) => console.log(item));
-            let correctList = H_OP310_list.map((item) => parseFloat(item));
+          if (processNoFiltered != undefined || processNoFiltered.length > 0) {
+           var H_OP310_list = processNoFiltered[0][1].split(",");
+           var f1,correctList 
+            if (H_OP310_list.length >= 29) {
+              f1 = H_OP310_list[0].slice(16, 17);
+              // H_OP310_list.forEach((item) => console.log(item));
+              correctList = H_OP310_list.map((item) => parseFloat(item));
+            }
 
             display =
               processNoFiltered == undefined ||

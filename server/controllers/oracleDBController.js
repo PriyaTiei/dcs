@@ -309,9 +309,7 @@ exports.getFullData = catchAsyncError(async (req, res, next) => {
   result.rows.forEach((a) => {
     let flag1 = false;
     resultList2.forEach((b) => {
-      if (a[1].trim() === b[0]) {
-        // let tempList = [...b.splice(1)];
-        // let tempList = ["Number available"];
+      if (a[1].trim() === b[0]) {      
         resultList1.push([...a, b[1], b[2]]);
         flag1 = true;
       } else {
