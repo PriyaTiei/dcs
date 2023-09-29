@@ -19,7 +19,7 @@ export const processNoData = [
           { label: "CamHousing_S/N", value: "CamHousing S/N" },
           { label: "EX_cam_S / N", value: "EX cam S / N" },
           { label: "IN_cam_S / N", value: "IN cam S / N" },
-          { label: "HEADSUB_OFF", value: "HEADSUB_OFF" },
+          { label: "HeadSub_OFF", value: "HEADSUB_OFF" },
           { label: "Head_S / N", value: "Head S / N" },
         ],
       },

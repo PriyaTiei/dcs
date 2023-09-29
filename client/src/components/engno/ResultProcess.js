@@ -10,6 +10,7 @@ import {
 } from "../../redux/slices/processData/processActions";
 import CastingInformation from "./casting/CastingInformation";
 import CastingInformation_H from "./casting/CastingInformation_H";
+import { decodeBlock235 } from "./processDetails/func_B_235";
 
 function ResultProcess() {
   const dispatch = useDispatch();
@@ -196,23 +197,88 @@ function ResultProcess() {
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "B5_OP235"
           );
+          if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+            var result = decodeBlock235(processNoFiltered[0][1]);
+            var plug2to5 = [];
+            var PLabel= ["P1","P2", "P3", "P4", "P5", "P6","", "SP"];
+            for (let i = 0; i < 40; i += 5) {
+              if(i===30){
+                  continue
+              }
+              let el = (
+                <div className="d-flex flex-row flex-wrap mt-2">
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-warning text-light">{PLabel[i/5]}</div>{" "}
+                    {/* <div>{correctList[1]}</div> */}
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">Judgment</div>{" "}
+                    <div>{result[i+3]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">
+                      Measurement leak (mL / min)
+                    </div>{" "}
+                    <div>{result[i + 4]}</div>
+                  </div>
+
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">
+                      Correction (mL / min)
+                    </div>{" "}
+                    <div>{result[i + 5]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
+                    <div>{result[i + 6]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
+                    <div>{result[i +7]}</div>
+                  </div>
+                </div>
+              );
+              plug2to5.push(el);
+            }
+          }
 
           display =
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
-              <div className="d-flex flex-column">
-                <div className="d-flex  ">
-                  <div className="dt1f1">name</div>{" "}
-                  <div className="dt1f2">{processNoFiltered[0][5]}</div>
+              <div className="d-flex flex-row flex-wrap">              
+
+                <div className="d-flex flex-column dt2 ">
+                  <div className="dt1f1 text-center bg-dark text-light ">
+                    Model
+                  </div>{" "}
+                  <div className="dt1f1 text-center">{result[1].model}</div>
                 </div>
-                <div className="d-flex ">
-                  <div className="dt1f1">Data</div>{" "}
-                  <div className="dt1f2">{processNoFiltered[0][1]}</div>
+
+                <div className="d-flex flex-column dt2 ">
+                  <div className="dt1f1 text-center bg-dark text-light ">
+                    Lts.
+                  </div>{" "}
+                  <div className="dt1f1 text-center">{result[1].lts}</div>
                 </div>
-                <div className="d-flex">
-                  <div className="dt1f1">Date</div>{" "}
-                  <div className="dt1f2">{processNoFiltered[0][8]}</div>
+
+                <div className="d-flex flex-column dt2 ">
+                  <div className="dt1f1 text-center bg-dark text-light ">
+                    Judgment
+                  </div>{" "}
+                  <div className="dt1f1 text-center">{result[2]}</div>
                 </div>
+                <div className="d-flex flex-column dt2 flex-1 " style={{width:"200px"}}>
+                  <div className="dt1f1 text-center bg-dark text-light " style={{width:"200px"}}>
+                    Process Date & Time
+                  </div>{" "}
+                  <div className="dt1f1 text-center" style={{width:"200px"}}>{moment(processNoFiltered[0][8]).format(
+                      "DD-MMMM-YYYY HH:mm:ss"
+                    )}</div>
+                </div>
+
+                {/* plug1~6 and SrewPlug */}
+                {plug2to5}             
+                
               </div>
             );
           break;

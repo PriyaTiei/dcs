@@ -21,6 +21,7 @@ function ProcessData({ processNoListInitial }) {
   const processName = useSelector((state) => state.process.processName);
   const processNoALCData = useSelector((state) => state.process.data.data);
   const dataOneDay = useSelector((state) => state.process.dataOneDay.data);
+  const [indexButton, setIndexButton]=useState("")
   var processEngineData = useSelector(
     (state) => state.process.processEngine.data
   );
@@ -141,8 +142,8 @@ function ProcessData({ processNoListInitial }) {
       key={index}
       className={` p-2 border btn ${
         item.value == item.label ? "disabled" : null
-      } ${colorOfButtonClicked}`}
-      onClick={() => processHandler(item.label, item.value)}
+      } ${indexButton===index?"bg-warning":null}`}
+      onClick={() => processHandler(item.label, item.value, index)}
     >
       {item.label}
     </div>
@@ -150,9 +151,10 @@ function ProcessData({ processNoListInitial }) {
   // console.log(processNo, "process No");
 
   //dispatch process no & fetch the required data
-  const processHandler = (processNo, processName) => {
+  const processHandler = (processNo, processName, index) => {
     console.log("button clicked");
     dispatch(setProcessNo(processNo, processName));
+    setIndexButton(index)
     setColorOfButtonClicked();
 
     // dispatch(getProcessDetails(processNo));
