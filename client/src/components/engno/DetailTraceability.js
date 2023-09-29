@@ -49,6 +49,14 @@ import Heading_Timing from "./processDetails/Heading_Timing";
 import Timing from "./processDetails/Timing";
 import Heading_H_OP310 from "./processDetails/Heading_H_OP310";
 import H_OP_310 from "./processDetails/H_OP_310";
+import Heading_A_LeakTest from "./processDetails/Heading_A_LeakTest";
+import A_OP_LeakTest from "./processDetails/A_OP_LeakTest";
+import Heading_A_Information from "./processDetails/Heading_A_Information";
+import A_OP_Information from "./processDetails/A_OP_Information";
+import Heading_A_ONTime from "./processDetails/Heading_A_ONTime";
+import A_OP_ONTime from "./processDetails/A_OP_ONTime";
+import Heading_A_INTime from "./processDetails/Heading_A_INTime";
+import A_OP_INTime from "./processDetails/A_OP_INTime";
 
 function DeatialTraceability() {
   // formating date
@@ -608,6 +616,51 @@ function DeatialTraceability() {
           <div>
             <Heading_Timing line="Crank" op="OP170" />
             <Timing selectedProcessName="C6_OP170 front gantry" />
+          </div>
+        )}
+        {(processName == "FuelLeak" ||
+          processName == "WalterLeak" ||
+          processName == "OileLeak") && (
+          <div>
+            <Heading_A_LeakTest />
+            <A_OP_LeakTest />
+            {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
+          </div>
+        )}
+
+        {processName == "Engine quality information" && (
+          <div>
+            <Heading_A_Information />
+            <A_OP_Information />
+            {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
+          </div>
+        )}
+        {(processName == "TEST_ON" ||
+          processName == "MAIN_ON" ||
+          processName == "CRANK_ON"||
+          processName == "HEADSUB_OFF"||
+          processName == "CAMHOUSINGSIB_OFF"
+          ||
+          processName == "BLOCKSUB_ON"
+           ) && (
+            <div>
+              <Heading_A_ONTime />
+              <A_OP_ONTime />
+              {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
+            </div>
+          )}
+        {/* "Head S / N" */}
+        {(processName == "EX cam S / N" ||
+          processName == "IN cam S / N" ||
+          processName == "CamHousing S/N" ||
+          processName == "Head S / N" ||
+          processName == "Crank S / N" ||
+          processName == "Block S / N") && (
+          <div>
+            {console.log("test ex")}
+            <Heading_A_INTime />
+            <A_OP_INTime />
+            {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
           </div>
         )}
       </fieldset>

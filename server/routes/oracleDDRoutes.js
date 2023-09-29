@@ -7,6 +7,8 @@ const {
   getEngineNoMatchingSerialNoList,
   getDispatchDatesMatchingEnigneNoList,
   getCastNoDateRangeData,
+  getFullData,
+  getFullDataAssy,
 } = require("../controllers/oracleDBController");
 const router = express.Router();
 
@@ -17,6 +19,8 @@ router.route("/processNo/:processNo/fromDate/:fromDate/toDate/:toDate").get(getD
 router.route("/serialNoListString").post(getEngineNoMatchingSerialNoList)
 router.route("/dispatchDates/engineNoListString").post(getDispatchDatesMatchingEnigneNoList)
 router.route("/parts/castingNo").get(getCastNoDateRangeData)
+router.route("/getFullData/:processNo/fromDate/:fromDate/toDate/:toDate").get(getFullData)
+router.route("/getFullDataAssy/:processNo/fromDate/:fromDate/toDate/:toDate").get(getFullDataAssy)
 
 
 

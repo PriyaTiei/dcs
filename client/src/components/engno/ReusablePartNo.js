@@ -17,10 +17,18 @@ function ReusablePartNo() {
 
   // dispatch & also set local state
   const dispatchAndLocalState = () => {
-    if (data != null && filteredDataList.length >= 0) {
+    if (data != null && filteredDataList.length > 0) {
       setPartNo(filteredDataList[0][1]);
      
       dispatch(getProcessDetails(filteredDataList[0][1]));
+    }
+  };
+  const dispatchAndLocalStateAssy = () => {
+    console.log(filteredDataList )
+    if (data != null && filteredDataList.length > 0) {
+      setPartNo(filteredDataList[0][17]);
+     
+      // dispatch(getProcessDetails(filteredDataList[0][17]));
     }
   };
 
@@ -54,16 +62,30 @@ function ReusablePartNo() {
       setPartNo("");
     }
   }, [subSection, data]);
+  // useEffect(() => {
+  //   if (section == "Assembly") {
+  //     filteredDataList = data?.filter(
+  //       (element) => element[17] === ""
+  //     );      
+  //         dispatchAndLocalStateAssy();
+  //   }
+         
+  // }, [subSection, data]);
 
   return (
+   
     <div>
+      { section==="Machining"? <>
       <div className="h6 ">Serial No. -</div>
       <div className="d-flex  flex-row dt2">
         <div className=" font-weight-bold dt2f1"> {subSection}</div>
         <div className=" font-weight-bold dt2f2">{partNo}</div>
       </div>
+      </>:null
+      }
       
     </div>
+   
   );
 }
 

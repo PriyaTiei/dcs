@@ -37,17 +37,17 @@ tempToDate.setMinutes(59);
 tempToDate.setSeconds(59);
 
 const initialStateProcess = {
-  processNo: "",
   loading: false,
-  data: {},
   error: "",
-  dataOneDay: {},
-  dataRange: {},
+  processNo: "",
+  processName: "",
   fromDate: tempFromDate.toISOString(),
   toDate: tempToDate.toISOString(),
+  data: {},
+  dataOneDay: {},
+  dataRange: {}, 
   processEngine: {},
-  processEngineDate: {},
-  processName: "",
+  processEngineDate: {},  
 };
 
 const processReducer = (state = initialStateProcess, action) => {

@@ -9,6 +9,8 @@ import {
   newToDate,
   getProcessDetails,
   setProcessNo,
+  getProcessRangeDetails,
+  getProcessRangeDetailsAssy,
 } from "../../redux/slices/processData/processActions";
 
 function ProcessData({ processNoListInitial }) {
@@ -26,56 +28,92 @@ function ProcessData({ processNoListInitial }) {
     (state) => state.process.processEngineDate.data
   );
 
-  const [colorOfButtonClicked, setColorOfButtonClicked] = useState("")
+  const [colorOfButtonClicked, setColorOfButtonClicked] = useState("");
   const dispatch = useDispatch();
+  var filteredDataList = [];
   ///**********Return based on process No */
-
 
   useEffect(() => {
     // console.log("activated process name")
-    var processNoFiltered = processNoALCData?.filter(
-      (elements) => elements[5] === processName
-    );
-    if (processNoFiltered == undefined || processNoFiltered.length == 0) {
-    } else {
-      // console.log("entered if ")
-      var tempFromDate = new Date(processNoFiltered[0][8]);
-      tempFromDate.setDate(tempFromDate.getDate() - 1);
-      tempFromDate.setHours(23);
-      tempFromDate.setMinutes(60);
-      tempFromDate.setSeconds(1);
-      var tempToDate = new Date(processNoFiltered[0][8]);
-      tempToDate.setHours(23);
-      tempToDate.setMinutes(59);
-      tempToDate.setSeconds(59);
-
-      dispatch(newFromDate(tempFromDate.toISOString()));
-      dispatch(newToDate(tempToDate.toISOString()));
-      dispatch(
-        getProcessOneDayDetails(
-          processNoFiltered[0][5],
-          tempFromDate.toISOString(),
-          tempToDate.toISOString()
-        )
+    if (section === "Machining") {
+      var processNoFiltered = processNoALCData?.filter(
+        (elements) => elements[5] === processName
       );
+      if (processNoFiltered == undefined || processNoFiltered.length == 0) {
+        console.log(
+          "processNoFiltered == undefined || processNoFiltered.length == 0"
+        );
+        console.log("processNoFiltered");
+        console.log(processNoFiltered);
+        console.log("processNoALCData");
+        console.log(processNoALCData);
+      } else {
+        console.log("processNoFiltered");
+        console.log(processNoFiltered);
+        console.log("processNoALCData");
+        console.log(processNoALCData);
+        console.log("entered if ");
+        var tempFromDate = new Date(processNoFiltered[0][8]);
+        tempFromDate.setDate(tempFromDate.getDate() - 1);
+        tempFromDate.setHours(23);
+        tempFromDate.setMinutes(60);
+        tempFromDate.setSeconds(1);
+        var tempToDate = new Date(processNoFiltered[0][8]);
+        tempToDate.setHours(23);
+        tempToDate.setMinutes(59);
+        tempToDate.setSeconds(59);
+
+        dispatch(newFromDate(tempFromDate.toISOString()));
+        dispatch(newToDate(tempToDate.toISOString()));
+        dispatch(
+          getProcessOneDayDetails(
+            processNoFiltered[0][5],
+            tempFromDate.toISOString(),
+            tempToDate.toISOString()
+          )
+        );
+      }
+    } else if (section === "Assembly") {
+      filteredDataList = data?.filter((element) => element[17] === processName);
+      if (filteredDataList != undefined && filteredDataList.length > 0) {
+        console.log("assembly filter");
+        console.log(filteredDataList);
+        var tempFromDate = new Date(filteredDataList[0][21]);
+        tempFromDate.setDate(tempFromDate.getDate() - 1);
+        tempFromDate.setHours(23);
+        tempFromDate.setMinutes(60);
+        tempFromDate.setSeconds(1);
+        var tempToDate = new Date(filteredDataList[0][21]);
+        tempToDate.setHours(23);
+        tempToDate.setMinutes(59);
+        tempToDate.setSeconds(59);
+        console.log(tempFromDate.toISOString());
+        dispatch(newFromDate(tempFromDate.toISOString()));
+        dispatch(newToDate(tempToDate.toISOString()));
+        dispatch(
+          getProcessRangeDetailsAssy(
+            processName,
+            tempFromDate.toISOString(),
+            tempToDate.toISOString()
+          )
+        );
+      }
     }
   }, [processName]);
 
   // second user effect - to get engine nos of all part based on serial no
   useEffect(() => {
-   
     if (dataOneDay?.length >= 0) {
-  
       // if (
       //   section == "Machining" &&
       //   subSection == "Block Cylinder" &&
       //   processNo == "OP5"
       // ) {
- 
-        const serialNoListString = dataOneDay
-          .map((item) => item[2].trim())
-          .join(",");
-        dispatch(getProcessEngineDetails(serialNoListString));
+
+      const serialNoListString = dataOneDay
+        .map((item) => item[2].trim())
+        .join(",");
+      dispatch(getProcessEngineDetails(serialNoListString));
       // }
     }
   }, [dataOneDay]);
@@ -88,11 +126,11 @@ function ProcessData({ processNoListInitial }) {
       //   subSection == "Block Cylinder" &&
       //   processNo == "OP5"
       // ) {
-        const engineNoListString = processEngineData
-          .map((item) => item[1].trim())
-          .join(",");
+      const engineNoListString = processEngineData
+        .map((item) => item[1].trim())
+        .join(",");
 
-        dispatch(getProcessEngineDateDetails(engineNoListString));
+      dispatch(getProcessEngineDateDetails(engineNoListString));
       // }
     }
   }, [processEngineData]);
@@ -113,9 +151,10 @@ function ProcessData({ processNoListInitial }) {
 
   //dispatch process no & fetch the required data
   const processHandler = (processNo, processName) => {
+    console.log("button clicked");
     dispatch(setProcessNo(processNo, processName));
-    setColorOfButtonClicked()
-    
+    setColorOfButtonClicked();
+
     // dispatch(getProcessDetails(processNo));
   };
 

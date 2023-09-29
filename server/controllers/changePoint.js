@@ -5,7 +5,7 @@ const ErrorHandler = require("../middleware/errorHandler.js");
 
 exports.createChangePoint = catchAsyncError(async (req, res, next) => {
   const changePoint = await ChangePoint.create(req.body);
-  
+
   if (!changePoint) {
     return next(new ErrorHandler("Error, could not save change points", 401));
   }
@@ -39,9 +39,7 @@ exports.deleteChangePoint = catchAsyncError(async (req, res, next) => {
   }
 
   const result = await ChangePoint.findByIdAndDelete(req.params.id);
-  res
-    .status(202)
-    .json({ success: true, message: "Deleted succesfully"});
+  res.status(202).json({ success: true, message: "Deleted succesfully" });
 });
 
 exports.getChangePointsCount = catchAsyncError(async (req, res, next) => {
@@ -51,9 +49,7 @@ exports.getChangePointsCount = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("change point not found", 400));
   }
 
-  res
-    .status(200)
-    .json({ success: true, totalPages:changePointCount/2});
+  res.status(200).json({ success: true, totalPages: changePointCount / 2 });
 });
 
 exports.getChangePoint = catchAsyncError(async (req, res, next) => {
@@ -63,16 +59,14 @@ exports.getChangePoint = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("change point not found", 400));
   }
 
-  res
-    .status(200)
-    .json({ success: true, changePoint});
+  res.status(200).json({ success: true, changePoint });
 });
 
-exports.getAllChangePoints= async(req, res, next)=>{
+exports.getAllChangePoints = async (req, res, next) => {
   const headObject = new ApiFeatureHead(ChangePoint, req.query.filtered)
-  .filter()
-  .pagination(req.query.currentPage,req.query.docsPerPage);
-  
+    .filter()
+    .pagination(req.query.currentPage, req.query.docsPerPage);
+
   const headCheckList = await headObject.query;
 
   if (headCheckList.length === 0) {
@@ -81,7 +75,9 @@ exports.getAllChangePoints= async(req, res, next)=>{
 
   var totalDoc = await ChangePoint.countDocuments(headObject.newQueryStr);
 
-  var totalCount = totalDoc/req.query.docsPerPage
+  var totalCount = totalDoc / req.query.docsPerPage;
   // return results
-  res.status(201).json({ success: true, headCheckList, totalCount:Math.ceil(totalCount) });
-}
+  res
+    .status(201)
+    .json({ success: true, headCheckList, totalCount: Math.ceil(totalCount) });
+};

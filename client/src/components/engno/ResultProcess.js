@@ -992,6 +992,202 @@ function ResultProcess() {
         <CastingInformation_H castingNo={processNoFiltered[0][1].slice(16)} />
       );
     }
+  } else if (section === "Assembly") {
+    // switch (processName) {
+    //   case "OP02":
+    if (
+      processName == "FuelLeak" ||
+      processName == "WalterLeak" ||
+      processName == "OileLeak"
+    ) {
+      processNoFiltered = data?.filter(
+        (elements) => elements[17] === processName
+      );
+      if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+        display = (
+          <div className="d-flex flex-column">
+            <div className="h6 mb-2">Assembly process details</div>
+            <div className="d-flex dt2">
+              <div className="dt1f1">Process Value</div>{" "}
+              <div className="dt1f2">
+                {processNoFiltered[0][1].slice(75, 84)}
+              </div>
+            </div>
+            <div className="d-flex dt2">
+              <div className="dt1f1">Judgment</div>{" "}
+              <div className="dt1f2">
+                {processNoFiltered[0][1].slice(84, 85) == "2"
+                  ? "OK"
+                  : processNoFiltered[0][1].slice(84, 85) == "1"
+                  ? "NG"
+                  : ""}
+              </div>
+            </div>
+            <div className="d-flex dt2">
+              <div className="dt1f1">Process Date</div>{" "}
+              <div className="dt1f2">
+                {moment(processNoFiltered[0][21]).format(
+                  "DD-MMMM-YYYY HH:mm:ss"
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      }
+    } else if (processName == "Engine quality information") {
+      processNoFiltered = data?.filter(
+        (elements) => elements[17] === processName
+      );
+      if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+        let code = processNoFiltered[0][1].slice(38, 41);
+        let lts;
+        let customer;
+        switch (code) {
+          case "101":
+            lts = "1.5 Lts. Hydbrid";
+            customer = "TKM";
+            break;
+          case "201":
+            lts = "2.0 Lts. Hydbrid";
+            customer = "TKM";
+            break;
+          case "202":
+            lts = "2.0 Lts. Conventional";
+            customer = "TKM";
+            break;
+          case "203":
+            lts = "2.0 Lts. Hydbrid";
+            customer = "TMMIN";
+            break;
+          case "204":
+            lts = "2.0 Lts. Conventional";
+            customer = "TMMIN";
+            break;
+        }
+        display = (
+          <div className="d-flex flex-column">
+            <div className="h6 mb-2">Engine quality information</div>
+            <div className="d-flex dt2">
+              <div className="dt1f1">Code</div>{" "}
+              {console.log(processNoFiltered[0][1])}
+              <div className="dt1f2">{code}</div>
+            </div>
+            <div className="d-flex dt2">
+              <div className="dt1f1">Engine Type</div>{" "}
+              {console.log(processNoFiltered[0][1])}
+              <div className="dt1f2">{lts}</div>
+            </div>
+            <div className="d-flex dt2">
+              <div className="dt1f1">Customer</div>{" "}
+              <div className="dt1f2">{customer}</div>
+            </div>
+            <div className="d-flex dt2">
+              <div className="dt1f1">Process Date</div>{" "}
+              <div className="dt1f2">
+                {moment(processNoFiltered[0][21]).format(
+                  "DD-MMMM-YYYY HH:mm:ss"
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      }
+    } else if (
+      processName == "TEST_ON" ||
+      processName == "MAIN_ON" ||
+      processName == "CRANK_ON" ||
+      processName == "HEADSUB_OFF" ||
+      processName == "CAMHOUSINGSIB_OFF" ||
+      processName == "BLOCKSUB_ON"
+    ) {
+      processNoFiltered = data?.filter(
+        (elements) => elements[17] === processName
+      );
+      if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+        display = (
+          <div className="d-flex flex-column">
+            <div className="h6 mb-2">Engine quality information</div>
+            {/* <div className="d-flex dt2">
+              <div className="dt1f1">Code</div>{" "}
+              {console.log(processNoFiltered[0][1])}
+              <div className="dt1f2">{processNoFiltered[0][1]}</div>
+            </div> */}
+
+            <div className="d-flex dt2">
+              <div className="dt1f1">Process Date</div>{" "}
+              <div className="dt1f2">
+                {moment(processNoFiltered[0][21]).format(
+                  "DD-MMMM-YYYY HH:mm:ss"
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      }
+    } else if (
+      processName == "EX cam S / N" ||
+      processName == "IN cam S / N" ||
+      processName == "CamHousing S/N" ||
+      processName == "Head S / N" ||
+      processName == "Crank S / N" ||
+      processName == "Block S / N"
+    ) {
+      processNoFiltered = data?.filter(
+        (elements) => elements[17] === processName
+      );
+      if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+        display = (
+          <div className="d-flex flex-column">
+            <div className="h6 mb-2">Engine quality information</div>
+            <div className="d-flex dt2">
+              <div className="dt1f1">Serial no.</div>{" "}
+              {console.log(processNoFiltered[0][1])}
+              <div className="dt1f2">{processNoFiltered[0][1]}</div>
+            </div>
+
+            <div className="d-flex dt2">
+              <div className="dt1f1">Process Date</div>{" "}
+              <div className="dt1f2">
+                {moment(processNoFiltered[0][21]).format(
+                  "DD-MMMM-YYYY HH:mm:ss"
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      }
+    } else if ("p" == "p") {
+      processNoFiltered = data?.filter(
+        (elements) => elements[17] === processName
+      );
+      if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+        display = (
+          <div className="d-flex flex-column">
+            <div className="h6 mb-2">Engine quality information</div>
+            <div className="d-flex dt2">
+              <div className="dt1f1">Code</div>{" "}
+              {console.log(processNoFiltered[0][1])}
+              <div className="dt1f2">{processNoFiltered[0][1]}</div>
+            </div>
+
+            <div className="d-flex dt2">
+              <div className="dt1f1">Process Date</div>{" "}
+              <div className="dt1f2">
+                {moment(processNoFiltered[0][21]).format(
+                  "DD-MMMM-YYYY HH:mm:ss"
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      }
+    }
+
+    //     break;
+    //   default:
+    //     display = null;
+    //     break;
+    // }
   }
 
   return (

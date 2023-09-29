@@ -222,6 +222,10 @@ export const getProcessOneDayDetails = (partNo, fromDate, toDate) => {
 };
 
 export const getProcessRangeDetails = (partNo, fromDate, toDate) => {
+  console.log("getprocessRangeDetails")
+  console.log(partNo)
+  console.log(fromDate)
+  console.log(toDate)
  
   if(partNo==="H1_Material input/engraving"){
     partNo="H1_Material_input_engraving"
@@ -230,7 +234,48 @@ export const getProcessRangeDetails = (partNo, fromDate, toDate) => {
     dispatch(processRangeFetch());
     axios
       .get(
-        `${process.env.REACT_APP_BACKEND_URL}/oracle/processNo/${partNo}/fromDate/${fromDate}/toDate/${toDate}`
+        `${process.env.REACT_APP_BACKEND_URL}/oracle/getFullData/${partNo}/fromDate/${fromDate}/toDate/${toDate}`
+      )
+      .then((response) => {
+        dispatch(processRangeSuccess(response.data));
+        // toast.success("3C part information from certain period obtained Successfully")
+      })
+      .catch((err) => {
+        dispatch(processRangeFailure(err.message));
+        toast.error(err.message)
+      });
+  };
+};
+
+export const getProcessRangeDetailsAssy = (partNo, fromDate, toDate) => {
+  console.log("getprocessRangeDetails")
+  console.log(partNo)
+  console.log(fromDate)
+  console.log(toDate)
+ 
+  if(partNo==="H1_Material input/engraving"){
+    partNo="H1_Material_input_engraving"
+  }else if(partNo==="IN cam S / N"){
+    partNo="IN_cam_S_N"
+  }else if(partNo==="EX cam S / N"){
+    partNo="EX_cam_S_N"
+  }else if(partNo==="Block S / N"){
+    partNo="Block_S_N"
+  }else if(partNo==="Crank S / N"){
+    partNo="Crank_S_N"
+  }else if(partNo==="Head S / N"){
+    partNo="Head_S_N"
+  }else if(partNo==="CamHousing S/N"){
+    partNo="CamHousing_S_N"
+  }
+
+
+ 
+  return (dispatch) => {
+    dispatch(processRangeFetch());
+    axios
+      .get(
+        `${process.env.REACT_APP_BACKEND_URL}/oracle/getFullDataAssy/${partNo}/fromDate/${fromDate}/toDate/${toDate}`
       )
       .then((response) => {
         dispatch(processRangeSuccess(response.data));
