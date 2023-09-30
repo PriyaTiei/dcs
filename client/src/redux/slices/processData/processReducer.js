@@ -45,9 +45,9 @@ const initialStateProcess = {
   toDate: tempToDate.toISOString(),
   data: {},
   dataOneDay: {},
-  dataRange: {}, 
+  dataRange: {},
   processEngine: {},
-  processEngineDate: {},  
+  processEngineDate: {},
 };
 
 const processReducer = (state = initialStateProcess, action) => {
@@ -180,14 +180,14 @@ const processReducer = (state = initialStateProcess, action) => {
       return {
         ...state,
         loading: false,
-        dataOneDay: action.payload,
+        dataRange: action.payload,
         error: "",
       };
     case PROCESS_CASTING_NO_FAILURE:
       return {
         ...state,
         loading: false,
-        dataOneDay: {},
+        dataRange: {},
         error: action.error,
       };
     case CLEAR:

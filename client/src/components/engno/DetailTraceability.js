@@ -57,6 +57,7 @@ import Heading_A_ONTime from "./processDetails/Heading_A_ONTime";
 import A_OP_ONTime from "./processDetails/A_OP_ONTime";
 import Heading_A_INTime from "./processDetails/Heading_A_INTime";
 import A_OP_INTime from "./processDetails/A_OP_INTime";
+import B_OP_05 from "./processDetails/B_OP_05";
 
 function DeatialTraceability() {
   // formating date
@@ -290,88 +291,9 @@ function DeatialTraceability() {
 
   /// Combine 2 tables
   var bigList = null;
-  useEffect(() => {
-    if (
-      dataOneDay.hasOwnProperty("data") &&
-      dataOneDay.data.length > 0 &&
-      processEngine.hasOwnProperty("data") &&
-      processEngine.data.length > 0 &&
-      processEngine.data[0].length > 0 &&
-      processEngineDate.hasOwnProperty("data") &&
-      processEngineDate.data.length > 0 &&
-      processEngineDate.data[0].length > 0
-    ) {
-      // map to list serial no.s
-      if (
-        section == "Machining" &&
-        subSection == "Block Cylinder" &&
-        processNo == "OP5" &&
-        processEngine.data[0].length > 0 &&
-        processEngineDate.data[0].length > 0
-      ) {
-        const list1 = [...dataOneDay.data];
-        const list2 = [...processEngine.data];
-        const list3 = [...processEngineDate.data];
 
-        // mapping between list2 & list3
-        const resultList2 = [];
 
-        list2.forEach((a) => {
-          let flag2 = false;
-          list3.forEach((b) => {
-            if (a[1].trim() === b[0]) {
-              // let tempList = [...b.splice(1)];
-              // let tempList = ["Number available"];
-              resultList2.push([...a, b[1]]);
-              flag2 = true;
-            } else {
-            }
-          });
-
-          if (flag2 == false) {
-            resultList2.push([...a, "-"]);
-          }
-        });
-
-        // console.log(resultList2[0])
-
-        const resultList1 = [];
-
-        list1.forEach((a) => {
-          let flag1 = false;
-          resultList2.forEach((b) => {
-            if (a[2].trim() === b[0]) {
-              // let tempList = [...b.splice(1)];
-              // let tempList = ["Number available"];
-              resultList1.push([...a, b[1], b[2]]);
-              flag1 = true;
-            } else {
-            }
-          });
-
-          if (flag1 == false) {
-            resultList1.push([...a, "-"]);
-          }
-        });
-
-        // console.log(resultList1[0])
-        //// console.log(resultList);
-
-        setCombineTable(resultList1);
-      }
-    }
-  }, [processEngineDate]);
-
-  bigList = combineTable.map((element) => (
-    <Reusable_B_OP05
-      key={element[1]}
-      serialNo={element[1]}
-      date={element[8]}
-      engineNo={element[10]}
-      dispatchedDate={element[11]}
-    />
-  ));
-
+  
   // {dataOneDay?.data?.map(element=><Reusable_B_OP05 key={element[1]} serialNo={element[1]} date={element[8]}/>)}
 
   // ****************Range button handler
@@ -542,7 +464,7 @@ function DeatialTraceability() {
           processNo == "OP5" && (
             <div>
               <Heading_B_OP05 />
-              {bigList}
+              <B_OP_05 />
             </div>
           )}
         {processName == "B3_OP190" && (
@@ -637,18 +559,16 @@ function DeatialTraceability() {
         )}
         {(processName == "TEST_ON" ||
           processName == "MAIN_ON" ||
-          processName == "CRANK_ON"||
-          processName == "HEADSUB_OFF"||
-          processName == "CAMHOUSINGSIB_OFF"
-          ||
-          processName == "BLOCKSUB_ON"
-           ) && (
-            <div>
-              <Heading_A_ONTime />
-              <A_OP_ONTime />
-              {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
-            </div>
-          )}
+          processName == "CRANK_ON" ||
+          processName == "HEADSUB_OFF" ||
+          processName == "CAMHOUSINGSIB_OFF" ||
+          processName == "BLOCKSUB_ON") && (
+          <div>
+            <Heading_A_ONTime />
+            <A_OP_ONTime />
+            {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
+          </div>
+        )}
         {/* "Head S / N" */}
         {(processName == "EX cam S / N" ||
           processName == "IN cam S / N" ||

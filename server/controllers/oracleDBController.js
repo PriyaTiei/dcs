@@ -194,6 +194,7 @@ exports.getDispatchDatesMatchingEnigneNoList = catchAsyncError(
 // Search with reference to casting details
 exports.getCastNoDateRangeData = catchAsyncError(async (req, res, next) => {
   const { castingNo } = req.query;
+  console.log("castingNo");
   console.log(castingNo);
   // const castingNo = "11236142";
   const con = await oracleDBConnection();
@@ -203,7 +204,7 @@ exports.getCastNoDateRangeData = catchAsyncError(async (req, res, next) => {
     // REGEXP_LIKE(product_name, 'apple', 'i');
     // "select * from KTTMSYS.T_MCHNSTJHO WHERE SUBSTR(ATAI, 21, LENGTH(ATAI) - 28) LIKE :value0 ",
 
-    "select * from KTTMSYS.T_MCHNSTJHO WHERE REGEXP_LIKE(ATAI, :value0 ) ",
+    "select ATAI, SRALNO, JSSKIDTTM  from KTTMSYS.T_MCHNSTJHO WHERE REGEXP_LIKE(ATAI, :value0 ) ",
     [castingNo],
     {
       // maxRows: 2
@@ -215,12 +216,92 @@ exports.getCastNoDateRangeData = catchAsyncError(async (req, res, next) => {
     res.status(401).json({ messgage: "engine not found" });
     return next(new ErrorHandler("Engine no. do not exist", 401));
   }
-  console.table(Object.keys(result));
-  const allColumnNames = result.metaData.map((item) => item.name);
-  result.rows.sort((a, b) => a[2] - b[2]);
+
+  console.log("result from casting");
+  console.log(result);
+  let serialNoList = result.rows.map((item) => item[1].trim());
+  console.log("serialNoList");
+  console.log(serialNoList);
+  const placeholders = serialNoList.map((_, i) => `:value${i}`).join(", ");
+  console.log("palceholders");
+  console.log(placeholders);
+
+  const result2 = await con.execute(
+    // `select * from todoitem`,
+    `select  ATAI, EGNO from KTTMSYS.T_HNSTJHO WHERE ATAI IN (${placeholders})`,
+    serialNoList,
+    {
+      // maxRows: 2
+    }
+  );
+  console.log("result2");
+  console.log(result2);
+  if (result2.rows.length == 0) {
+    console.log("Serial no. do not exist & Engine can not be found");
+    return next(new ErrorHandler("Serial no. do not exist", 401));
+  }
+
+  let engineNoList = result2.rows.map((item) => item[1]);
+  const placeholders2 = engineNoList.map((_, i) => `:value${i}`).join(", ");
+  engineNoList.push("200");
+  console.log(engineNoList);
+
+  const result3 = await con.execute(
+    `SELECT EGNO, JSSKIDTTM FROM KTTMSYS.T_SISNJSSKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
+    engineNoList,
+    {
+      //     // maxRows: 2
+    }
+  );
+
+  if (result3.rows.length == 0) {
+    console.log("Engine no. do not exist & Engine can not be found");
+    return next(new ErrorHandler("Engine no. do not exist", 401));
+  }
+
+  // ************combine 3 datas
+  const resultList2 = [];
+
+  result2.rows.forEach((a) => {
+    let flag2 = false;
+    result3.rows.forEach((b) => {
+      if (a[1].trim() === b[0]) {
+        resultList2.push([...a, b[1]]);
+        flag2 = true;
+      } else {
+      }
+    });
+
+    if (flag2 == false) {
+      resultList2.push([...a, "-"]);
+    }
+  });
+
+  // console.log(resultList2[0])
+
+  const resultList1 = [];
+
+  result.rows.forEach((a) => {
+    let flag1 = false;
+    resultList2.forEach((b) => {
+      if (a[1].trim() === b[0]) {
+        resultList1.push([...a, b[1], b[2]]);
+        flag1 = true;
+      } else {
+      }
+    });
+
+    if (flag1 == false) {
+      resultList1.push([...a, "-"]);
+    }
+  });
+
+  // const allColumnNames = result.metaData.map((item) => item.name);
+  resultList1.sort((a, b) => a[1] - b[1]);
+
   res.status(200).json({
-    coloumns: allColumnNames,
-    data: result.rows,
+    // coloumns: allColumnNames,
+    data: resultList1,
     message: "based on casting no.",
   });
 });
@@ -309,7 +390,7 @@ exports.getFullData = catchAsyncError(async (req, res, next) => {
   result.rows.forEach((a) => {
     let flag1 = false;
     resultList2.forEach((b) => {
-      if (a[1].trim() === b[0]) {      
+      if (a[1].trim() === b[0]) {
         resultList1.push([...a, b[1], b[2]]);
         flag1 = true;
       } else {
