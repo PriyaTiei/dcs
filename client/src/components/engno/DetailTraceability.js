@@ -58,6 +58,8 @@ import A_OP_ONTime from "./processDetails/A_OP_ONTime";
 import Heading_A_INTime from "./processDetails/Heading_A_INTime";
 import A_OP_INTime from "./processDetails/A_OP_INTime";
 import B_OP_05 from "./processDetails/B_OP_05";
+import Heading_B_OP235 from "./processDetails/Heading_B_OP235";
+import B_OP_235 from "./processDetails/B_OP_235";
 
 function DeatialTraceability() {
   // formating date
@@ -292,8 +294,6 @@ function DeatialTraceability() {
   /// Combine 2 tables
   var bigList = null;
 
-
-  
   // {dataOneDay?.data?.map(element=><Reusable_B_OP05 key={element[1]} serialNo={element[1]} date={element[8]}/>)}
 
   // ****************Range button handler
@@ -493,8 +493,14 @@ function DeatialTraceability() {
             <H_OP_05 />
           </div>
         )}
+        {processName == "B5_OP235" && (
+          <div className="" style={{width:"90vw", overflowX:"auto"}}>
+            <Heading_B_OP235 />
+            <B_OP_235 />
+          </div>
+        )}
         {processName == "H5_OP310" && (
-          <div className="overflow-auto" style={{ width: "90vw" }}>
+          <div className="" style={{ width: "90vw",overflowX:"auto" }}>
             <Heading_H_OP310 />
             <H_OP_310 />
           </div>
@@ -517,7 +523,7 @@ function DeatialTraceability() {
         )}
 
         {processName == "C4_OP220" && (
-          <div className="overflow-auto" style={{ width: "90vw" }}>
+          <div style={{ width: "90vw", overflowX: "auto" }}>
             <Heading_C_OP220 />
             <C_OP_220 />
           </div>

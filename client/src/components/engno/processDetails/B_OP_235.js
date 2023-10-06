@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import  Reusable_H_OP310 from "./Reusable_H_OP310"
+import Reusable_B_OP235 from "./Reusable_B_OP235";
 
-function H_OP_310() {
+function B_OP_235() {
   const processName = useSelector((state) => state.process.processName);
   const dataOneDay = useSelector((state) => state.process.dataOneDay);
   const processEngine = useSelector((state) => state.process.processEngine);
@@ -12,13 +12,10 @@ function H_OP_310() {
   const [combineTable, setCombineTable] = useState([]);
   const dataRange = useSelector((state) => state.process.dataRange.data);
 
-
-
-
   var bigList = null;
-  
+
   bigList = dataRange?.map((element) => (
-    <Reusable_H_OP310
+    <Reusable_B_OP235
       key={element[1]}
       serialNo={element[1]}
       data={element[0]}
@@ -28,7 +25,11 @@ function H_OP_310() {
     />
   ));
 
-  return <div className="" style={{height:"80vh", overflowY:"auto", overflowX:"hidden", width:"max-content"}}>{bigList}</div>;
+  return (
+    <div className="" style={{ height: "80vh" , width:"max-content", overflowX:"hidden",overflowY:"auto"}}>
+      {bigList}
+    </div>
+  );
 }
 
-export default H_OP_310;
+export default B_OP_235;

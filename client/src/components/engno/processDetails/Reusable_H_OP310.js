@@ -19,14 +19,14 @@ if(correctList != undefined && correctList.length>1){
   console.log("correctLIst")
   console.log(correctList)
   display = (
-    <div className="d-flex flex-wrap gap-0 deta " style={{width:"89vw"}}>
-      <div className="text-center font-weight-bold flex-1-mod">{serialNo}</div>   
-      <div className="text-center font-weight-bold flex-1-mod">
+    <div className="d-flex  gap-0 hB " >
+      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:130}}>{serialNo}</div>   
+      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:140}}>
         {moment(date).format("DD-MM-YYYY HH:mm:ss")}
       </div>
 
    
-      <div className="text-center font-weight-bold flex-1-mod">
+      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>
                         {f1 == "1"
                           ? "LL NG"
                           : f1 == "2"
@@ -39,11 +39,11 @@ if(correctList != undefined && correctList.length>1){
                           ? "ERR"
                           : ""}
                       </div>
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[1]}</div>   
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[4]}</div>  
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[5]}</div>  
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[6]}</div> 
-                      <div className="text-center font-weight-bold flex-1-mod">
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[1]}</div>   
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[4]}</div>  
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[5]}</div>  
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[6]}</div> 
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>
                         {correctList[7].toString() == "1"
                           ? "LL NG"
                           : correctList[7].toString() == "2"
@@ -57,11 +57,11 @@ if(correctList != undefined && correctList.length>1){
                           : ""}
                       </div>
 
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[8]}</div>  
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[11]}</div>
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[12]}</div>
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[13]}</div>
-                      <div className="text-center font-weight-bold flex-1-mod">  {correctList[14].toString() == "1"
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[8]}</div>  
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[11]}</div>
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[12]}</div>
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[13]}</div>
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>  {correctList[14].toString() == "1"
                           ? "LL NG"
                           : correctList[14].toString() == "2"
                           ? "OK"
@@ -73,11 +73,11 @@ if(correctList != undefined && correctList.length>1){
                           ? "ERR"
                           : ""}</div>
 
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[15]}</div>  
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[18]}</div>
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[19]}</div>
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[20]}</div>
-                      <div className="text-center font-weight-bold flex-1-mod">  {correctList[21].toString() == "1"
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[15]}</div>  
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[18]}</div>
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[19]}</div>
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[20]}</div>
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>  {correctList[21].toString() == "1"
                           ? "LL NG"
                           : correctList[21].toString() == "2"
                           ? "OK"
@@ -88,21 +88,21 @@ if(correctList != undefined && correctList.length>1){
                           : correctList[21].toString() == "D"
                           ? "ERR"
                           : ""}</div>
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[22]}</div>  
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[25]}</div>
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[26]}</div>
-                      <div className="text-center font-weight-bold flex-1-mod">{correctList[27]}</div>
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[22]}</div>  
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[25]}</div>
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[26]}</div>
+                      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:85}}>{correctList[27]}</div>
                    
 
 
                     
   
       {/* <div className="text-center font-weight-bold flex-1-mod">{moment(date).format("DD-MM-YYYY HH:mm:ss")}</div> */}
-      <div className="text-center font-weight-bold flex-1-mod">{engineNo}</div>
-      <div className="text-center font-weight-bold flex-1-mod">
+      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:100}}>{engineNo}</div>
+      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:100}}>
         {engineNo != "-" ? "Dispatched" : null}
       </div>
-      <div className="text-center font-weight-bold flex-1-mod">
+      <div className="text-center font-weight-bold flex-1-mod"  style={{minWidth:140}}>
         {engineNo != "-"
           ? moment(dispatchedDate).format("DD-MM-YYYY HH:mm:ss")
           : null}

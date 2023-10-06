@@ -25,7 +25,7 @@ function C_OP_220() {
     />
   ));
 
-  return <div className="overflow-auto" style={{height:"80vh"}}>{bigList}</div>;
+  return <div style={{height:"80vh", overflowY:"auto", overflowX:"hidden", width:"max-content"}}>{bigList}</div>;
 }
 
 export default C_OP_220;

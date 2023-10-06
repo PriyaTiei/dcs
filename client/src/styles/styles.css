@@ -80,21 +80,34 @@
    
 }
 
-/* .deta {
-   width:90vw
-}
-.deta div {   
-   width:10vw;
-   border: 1px solid grey;    
-   
-} */
-
 .deta {
    width:90vw
 }
 .deta div {   
+   /* width:10vw; */
    flex:1;
    border: 1px solid grey;    
+   
+}
+.hB div {   
+   
+   border: 1px solid grey;    
+   
+}
+
+/* .deta {
+   width:90vw
+}
+.deta div {   
+   border: 1px solid grey;    
+   
+} */
+.detaBOP235 {
+   
+}
+.detaBOP235 div {   
+  
+   border: 1px solid grey;   
    
 }
 

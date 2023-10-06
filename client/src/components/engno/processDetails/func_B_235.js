@@ -156,10 +156,10 @@ export const decodeBlock235 = function (B3) {
       if (value2 == 1 && value6 == 0) {
         value8 = "-0";
       } else {
-        value8 = value6;
+        value8 = value6.toFixed(3);
       }
     } else {
-      value8 = value5;
+      value8 = value5.toFixed(3);
     }
 
     result.push(value8);

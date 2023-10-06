@@ -47,6 +47,7 @@ exports.getEngineData = catchAsyncError(async (req, res, next) => {
 exports.getPartData = catchAsyncError(async (req, res, next) => {
   let partNo = req.params.partNo;
   partNo = partNo + "    ";
+  console.log(req.params.partNo)
 
   const con = await oracleDBConnection();
 
@@ -217,14 +218,14 @@ exports.getCastNoDateRangeData = catchAsyncError(async (req, res, next) => {
     return next(new ErrorHandler("Engine no. do not exist", 401));
   }
 
-  console.log("result from casting");
-  console.log(result);
+  // console.log("result from casting");
+  // console.log(result);
   let serialNoList = result.rows.map((item) => item[1].trim());
-  console.log("serialNoList");
-  console.log(serialNoList);
+  // console.log("serialNoList");
+  // console.log(serialNoList);
   const placeholders = serialNoList.map((_, i) => `:value${i}`).join(", ");
-  console.log("palceholders");
-  console.log(placeholders);
+  // console.log("palceholders");
+  // console.log(placeholders);
 
   const result2 = await con.execute(
     // `select * from todoitem`,
@@ -234,8 +235,8 @@ exports.getCastNoDateRangeData = catchAsyncError(async (req, res, next) => {
       // maxRows: 2
     }
   );
-  console.log("result2");
-  console.log(result2);
+  // console.log("result2");
+  // console.log(result2);
   if (result2.rows.length == 0) {
     console.log("Serial no. do not exist & Engine can not be found");
     return next(new ErrorHandler("Serial no. do not exist", 401));
@@ -244,7 +245,7 @@ exports.getCastNoDateRangeData = catchAsyncError(async (req, res, next) => {
   let engineNoList = result2.rows.map((item) => item[1]);
   const placeholders2 = engineNoList.map((_, i) => `:value${i}`).join(", ");
   engineNoList.push("200");
-  console.log(engineNoList);
+  // console.log(engineNoList);
 
   const result3 = await con.execute(
     `SELECT EGNO, JSSKIDTTM FROM KTTMSYS.T_SISNJSSKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
@@ -280,6 +281,7 @@ exports.getCastNoDateRangeData = catchAsyncError(async (req, res, next) => {
   // console.log(resultList2[0])
 
   const resultList1 = [];
+ 
 
   result.rows.forEach((a) => {
     let flag1 = false;
@@ -299,6 +301,10 @@ exports.getCastNoDateRangeData = catchAsyncError(async (req, res, next) => {
   // const allColumnNames = result.metaData.map((item) => item.name);
   resultList1.sort((a, b) => a[1] - b[1]);
 
+
+  console.log("result list")
+  console.log(resultList1)
+  
   res.status(200).json({
     // coloumns: allColumnNames,
     data: resultList1,

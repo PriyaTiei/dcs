@@ -10,6 +10,8 @@ function CastingInformation_H({ castingNo }) {
   var castingMonth;
   var castingYear;
   var castingDate;
+  console.log("casting data");
+  console.log(castingNo);
 
   if (castingNo != null) {
     castingYear = `20${castingNo.slice(8, 10)}`;
@@ -56,6 +58,8 @@ function CastingInformation_H({ castingNo }) {
         castingMonth = ``;
         break;
     }
+    console.log("casting date in head cylinder");
+    console.log(`${castingYear}-${castingMonth}-${castingDayOfMonth}`);
     castingDate = new Date(
       `${castingYear}-${castingMonth}-${castingDayOfMonth}`
     ).toISOString();
@@ -141,7 +145,7 @@ function CastingInformation_H({ castingNo }) {
             </div>
           </div> */}
 
-<div className="d-flex flex-column gap-1">
+          <div className="d-flex flex-column gap-1">
             <div className="border border-dark p-2 bg-dark text-light  text-center">
               Die No.
             </div>
@@ -172,7 +176,6 @@ function CastingInformation_H({ castingNo }) {
               className="text-center"
             />
           </div>
-        
 
           <div className="d-flex flex-column gap-1">
             <div className="border border-dark p-2 bg-dark text-light text-center">

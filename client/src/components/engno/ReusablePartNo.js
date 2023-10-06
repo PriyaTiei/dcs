@@ -17,6 +17,8 @@ function ReusablePartNo() {
 
   // dispatch & also set local state
   const dispatchAndLocalState = () => {
+    console.log("from reusablePartNo.js")
+    console.log(filteredDataList )
     if (data != null && filteredDataList.length > 0) {
       setPartNo(filteredDataList[0][1]);
      
