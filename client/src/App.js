@@ -13,7 +13,7 @@ import Loading from "./components/engno/Loading";
 export default function App() {
   return (
     <>
-      <ToastContainer />
+      <ToastContainer  autoClose={500}/>
       <AppSidebar>
         <ContentWrapper>
           <Routes>

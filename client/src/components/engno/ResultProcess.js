@@ -11,6 +11,7 @@ import {
 import CastingInformation from "./casting/CastingInformation";
 import CastingInformation_H from "./casting/CastingInformation_H";
 import { decodeBlock235 } from "./processDetails/func_B_235";
+import { decodeHead50 } from "./processDetails/func_H_50";
 
 function ResultProcess() {
   const dispatch = useDispatch();
@@ -357,52 +358,107 @@ function ResultProcess() {
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "H2_OP050"
           );
-
+          if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+            let result = decodeHead50(processNoFiltered[0][1]);
+            var headOP50Elements = [];
+            if (result.length > 0) {
+              for (let i = 22; i < 30; i++) {
+                headOP50Elements.push(
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">
+                      T{i - 21} (0.001g/sec)
+                    </div>
+                    <div>{result[i]}</div>
+                  </div>
+                );
+              }
+            }
+          }
           display =
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
-              <div className="d-flex flex-column">
-                <div className="d-flex gap-2">
-                  <div>name</div> <div>{processNoFiltered[0][5]}</div>
+              <div className="d-flex flex-column gap-3">
+                <div className="d-flex flex-column">
+                  <div className="h6 mb-2">Lazer Clading</div>
+                  <div className="d-flex flex-row flex-wrap">
+                    <div className="d-flex flex-column flex-wrap dt3">
+                      <div>Process Name</div>{" "}
+                      <div>{processNoFiltered[0][5]}</div>
+                    </div>
+
+                    <div className="d-flex flex-column flex-wrap dt3">
+                      <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+                    </div>
+                  </div>
                 </div>
-                <div className="d-flex gap-2">
-                  <div>Data</div> <div>{processNoFiltered[0][1]}</div>
-                </div>
-                <div className="d-flex gap-2">
-                  <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+                <div className="gap-0 d-flex flex-column ">
+                  <div className="border border-dark gap-0 font-weight-bold text-center p-1">
+                    Sheet powder flow rate
+                  </div>
+                  <div className="d-flex flex-row flex-wrap">
+                    {headOP50Elements}
+                  </div>
                 </div>
               </div>
             );
           break;
-        case "OP55":
+          case "OP55":
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "H3_OP055"
           );
-
+          if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+            let result = decodeHead50(processNoFiltered[0][1]);
+            var headOP50Elements = [];
+            if (result.length > 0) {
+              for (let i = 22; i < 30; i++) {
+                headOP50Elements.push(
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">
+                      T{i - 21} (0.001g/sec)
+                    </div>
+                    <div>{result[i]}</div>
+                  </div>
+                );
+              }
+            }
+          }
           display =
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
-              <div className="d-flex flex-column">
-                <div className="d-flex gap-2">
-                  <div>name</div> <div>{processNoFiltered[0][5]}</div>
+              <div className="d-flex flex-column gap-3">
+                <div className="d-flex flex-column">
+                  <div className="h6 mb-2">Lazer Clading</div>
+                  <div className="d-flex flex-row flex-wrap">
+                    <div className="d-flex flex-column flex-wrap dt3">
+                      <div>Process Name</div>{" "}
+                      <div>{processNoFiltered[0][5]}</div>
+                    </div>
+
+                    <div className="d-flex flex-column flex-wrap dt3">
+                      <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+                    </div>
+                  </div>
                 </div>
-                <div className="d-flex gap-2">
-                  <div>Data</div> <div>{processNoFiltered[0][1]}</div>
-                </div>
-                <div className="d-flex gap-2">
-                  <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+                <div className="gap-0 d-flex flex-column ">
+                  <div className="border border-dark gap-0 font-weight-bold text-center p-1">
+                    Sheet powder flow rate
+                  </div>
+                  <div className="d-flex flex-row flex-wrap">
+                    {headOP50Elements}
+                  </div>
                 </div>
               </div>
             );
           break;
+
 
         case "OP310":
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "H5_OP310"
           );
           if (processNoFiltered != undefined || processNoFiltered.length > 0) {
-           var H_OP310_list = processNoFiltered[0][1].split(",");
-           var f1,correctList 
+            var H_OP310_list = processNoFiltered[0][1].split(",");
+            var f1, correctList;
             if (H_OP310_list.length >= 29) {
               f1 = H_OP310_list[0].slice(16, 17);
               // H_OP310_list.forEach((item) => console.log(item));
@@ -431,7 +487,7 @@ function ResultProcess() {
                       {/* <div>{correctList[1]}</div> */}
                     </div>
                     <div className="d-flex flex-column dt3">
-                      <div className="bg-dark text-light">Judgment</div>{" "}
+                      <div className="d-flex flex-column dt3">Judgment</div>{" "}
                       <div>
                         {f1 == "1"
                           ? "LL NG"

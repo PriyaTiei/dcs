@@ -61,6 +61,8 @@ import B_OP_05 from "./processDetails/B_OP_05";
 import Heading_B_OP235 from "./processDetails/Heading_B_OP235";
 import B_OP_235 from "./processDetails/B_OP_235";
 import Loading from "./Loading";
+import Heading_H_OP50 from "./processDetails/Heading_H_OP50";
+import H_OP_50 from "./processDetails/H_OP_50";
 
 function DeatialTraceability() {
   // formating date
@@ -351,17 +353,16 @@ function DeatialTraceability() {
           </div>
 
           {/* Process data [Machining or Maching]  */}
-         
+
           <ProcessNumbers
             processNoListInitial={
               sectionData[indexI]["subSection"][indexJ]["processNo"]
             }
           />
-      
         </div>
         {/*Results */}
         <div className="d-flex align-items-start flex-row gap-3 mt-4">
-          <ReusablePartNo />          
+          <ReusablePartNo />
           <ResultProcess />
         </div>
 
@@ -461,141 +462,150 @@ function DeatialTraceability() {
           </div>
         )} */}
 
-        {loading===true?<Loading />:
-        <>
+        {loading === true ? (
+          <Loading />
+        ) : (
+          <>
+            {/* ************************  Block process */}
+            {section === "Machining" &&
+              subSection === "Block Cylinder" &&
+              processNo == "OP5" && (
+                <div>
+                  <Heading_B_OP05 />
+                  <B_OP_05 />
+                </div>
+              )}
+            {processName == "B3_OP190" && (
+              <div>
+                <Heading_B_OP190 />
+                <B_OP_190 />
+              </div>
+            )}
+            {processName == "B4_Finishing gantry" && (
+              <div>
+                <Heading_B_OP195 />
+                <B_OP_195 />
+              </div>
+            )}
+            {processName == "B5_OP235" && (
+              <div className="" style={{ width: "90vw", overflowX: "auto" }}>
+                <Heading_B_OP235 />
+                <B_OP_235 />
+              </div>
+            )}
+            {processName == "B7_OP990" && (
+              <div>
+                <Heading_B_FG />
+                <B_OP_FG />
+              </div>
+            )}
 
-        {/* ************************  Block process */}
-        {section === "Machining" &&
-          subSection === "Block Cylinder" &&
-          processNo == "OP5" && (
-            <div>
-              <Heading_B_OP05 />
-              <B_OP_05 />
-            </div>
-          )}
-        {processName == "B3_OP190" && (
-          <div>
-            <Heading_B_OP190 />
-            <B_OP_190 />
-          </div>
-        )}
-        {processName == "B4_Finishing gantry" && (
-          <div>
-            <Heading_B_OP195 />
-            <B_OP_195 />
-          </div>
-        )}
-        {processName == "B7_OP990" && (
-          <div>
-            <Heading_B_FG />
-            <B_OP_FG />
-          </div>
-        )}
+            {/* ****************** Head process */}
+            {processName == "H1_Material input/engraving" && (
+              <div>
+                <Heading_H_OP05 />
+                <H_OP_05 />
+              </div>
+            )}
 
-        {/* ****************** Head process */}
-        {processName == "H1_Material input/engraving" && (
-          <div>
-            <Heading_H_OP05 />
-            <H_OP_05 />
-          </div>
-        )}
-        {processName == "B5_OP235" && (
-          <div className="" style={{width:"90vw", overflowX:"auto"}}>
-            <Heading_B_OP235 />
-            <B_OP_235 />
-          </div>
-        )}
-        {processName == "H5_OP310" && (
-          <div className="" style={{ width: "90vw",overflowX:"auto" }}>
-            <Heading_H_OP310 />
-            <H_OP_310 />
-          </div>
-        )}
+            {(processName == "H2_OP050" || processName == "H3_OP055") && (
+              <div className="" style={{ width: "90vw", overflowX: "auto" }}>
+                <Heading_H_OP50 />
+                <H_OP_50 />
+              </div>
+            )}
+            {processName == "H5_OP310" && (
+              <div className="" style={{ width: "90vw", overflowX: "auto" }}>
+                <Heading_H_OP310 />
+                <H_OP_310 />
+              </div>
+            )}
 
-        {processName == "H12_OP990" && (
-          <div>
-            <Heading_H_FG />
-            <H_OP_FG />
-          </div>
-        )}
+            {processName == "H12_OP990" && (
+              <div>
+                <Heading_H_FG />
+                <H_OP_FG />
+              </div>
+            )}
 
-        {/* **************Crank process */}
+            {/* **************Crank process */}
 
-        {processName == "C8_OP990" && (
-          <div>
-            <Heading_C_FG />
-            <C_OP_FG />
-          </div>
-        )}
+            {processName == "C8_OP990" && (
+              <div>
+                <Heading_C_FG />
+                <C_OP_FG />
+              </div>
+            )}
 
-        {processName == "C4_OP220" && (
-          <div style={{ width: "90vw", overflowX: "auto" }}>
-            <Heading_C_OP220 />
-            <C_OP_220 />
-          </div>
-        )}
-        {processName == "C1_Comaterial" && (
-          <div>
-            <Heading_C_OP02 />
-            <C_OP_02 />
-          </div>
-        )}
-        {processName == "C7_Gantry after OP140" && (
-          <div>
-            <Heading_C_OP140 />
-            <C_OP_140 />
-          </div>
-        )}
-        {processName == "C6_OP170 front gantry" && (
-          <div>
-            <Heading_Timing line="Crank" op="OP170" />
-            <Timing selectedProcessName="C6_OP170 front gantry" />
-          </div>
-        )}
-        {(processName == "FuelLeak" ||
-          processName == "WalterLeak" ||
-          processName == "OileLeak") && (
-          <div>
-            <Heading_A_LeakTest />
-            <A_OP_LeakTest />
-            {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
-          </div>
-        )}
+            {processName == "C4_OP220" && (
+              <div style={{ width: "90vw", overflowX: "auto" }}>
+                <Heading_C_OP220 />
+                <C_OP_220 />
+              </div>
+            )}
+            {processName == "C1_Comaterial" && (
+              <div>
+                <Heading_C_OP02 />
+                <C_OP_02 />
+              </div>
+            )}
+            {processName == "C7_Gantry after OP140" && (
+              <div>
+                <Heading_C_OP140 />
+                <C_OP_140 />
+              </div>
+            )}
+            {processName == "C6_OP170 front gantry" && (
+              <div>
+                <Heading_Timing line="Crank" op="OP170" />
+                <Timing selectedProcessName="C6_OP170 front gantry" />
+              </div>
+            )}
+            {(processName == "FuelLeak" ||
+              processName == "WalterLeak" ||
+              processName == "OileLeak") && (
+              <div>
+                <Heading_A_LeakTest />
+                <A_OP_LeakTest />
+                {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
+              </div>
+            )}
 
-        {processName == "Engine quality information" && (
-          <div>
-            <Heading_A_Information />
-            <A_OP_Information />
-            {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
-          </div>
+            {processName == "Engine quality information" && (
+              <div>
+                <Heading_A_Information />
+                <A_OP_Information />
+                {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
+              </div>
+            )}
+            {(processName == "TEST_ON" ||
+              processName == "MAIN_ON" ||
+              processName == "CRANK_ON" ||
+              processName == "HEADSUB_OFF" ||
+              processName == "CAMHOUSINGSIB_OFF" ||
+              processName == "BLOCKSUB_ON") && (
+              <div>
+                <Heading_A_ONTime />
+                <A_OP_ONTime />
+                {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
+              </div>
+            )}
+            {/* "Head S / N" */}
+            {(processName == "EX cam S / N" ||
+              processName == "IN cam S / N" ||
+              processName == "CamHousing S/N" ||
+              processName == "Head S / N" ||
+              processName == "Crank S / N" ||
+              processName == "Block S / N") && (
+              <div>
+                {console.log("test ex")}
+                <Heading_A_INTime />
+                <A_OP_INTime />
+                {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
+              </div>
+            )}
+          </>
         )}
-        {(processName == "TEST_ON" ||
-          processName == "MAIN_ON" ||
-          processName == "CRANK_ON" ||
-          processName == "HEADSUB_OFF" ||
-          processName == "CAMHOUSINGSIB_OFF" ||
-          processName == "BLOCKSUB_ON") && (
-          <div>
-            <Heading_A_ONTime />
-            <A_OP_ONTime />
-            {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
-          </div>
-        )}
-        {/* "Head S / N" */}
-        {(processName == "EX cam S / N" ||
-          processName == "IN cam S / N" ||
-          processName == "CamHousing S/N" ||
-          processName == "Head S / N" ||
-          processName == "Crank S / N" ||
-          processName == "Block S / N") && (
-          <div>
-            {console.log("test ex")}
-            <Heading_A_INTime />
-            <A_OP_INTime />
-            {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
-          </div>
-        )}
-      </>}
       </fieldset>
     </div>
   );
