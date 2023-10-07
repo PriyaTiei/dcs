@@ -165,7 +165,7 @@ function ProcessData({ processNoListInitial }) {
   return (
     <div>
       <div className="h5">Process Numbers </div>
-      <div className="d-flex flex-wrap gap-1 prosMach " style={{minWidth:"900px"}}>
+      <div className="d-flex flex-wrap gap-1 prosMach " style={{minWidth:"800px"}}>
         {machiningDataLoading?<Loading />:processNoElements}
       </div>
     </div>
