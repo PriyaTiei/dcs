@@ -2,7 +2,7 @@ import React from "react";
 import moment from "moment";
 
 function Reusable_A_Information({ data, date, engineNo, dispatchedDate }) {
-  let code = data.slice(38, 41);
+  let code = data?.slice(38, 41);
   let lts;
   let customer;
   switch (code) {

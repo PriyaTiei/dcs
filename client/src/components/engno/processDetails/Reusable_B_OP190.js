@@ -2,7 +2,7 @@ import React from "react";
 import moment from "moment";
 
 function Reusable_B_OP190({ data, date, engineNo, dispatchedDate }) {
-  var dataList = data.split(",");
+  var dataList = data?.split(",");
   var display = null;
   if (dataList.length >= 11) {
     display = (
