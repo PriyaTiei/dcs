@@ -15,6 +15,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { getEngineData } from "../../redux/slices/egNo/egNoActions.js";
 import { Search } from "bootstrap-icons-react";
 import { processDataClear } from "../../redux/slices/processData/processActions.js";
+import Loading from "./Loading.js";
 
 function EngNo() {
   const [engineNo, setEngineNo] = useState("");
@@ -26,6 +27,7 @@ function EngNo() {
   const [leakData, setLeakData] = useState();
 
   const dispatch = useDispatch();
+  const loading = useSelector((state) => state.engine.loading);
 
   const detail1 = "details";
 
@@ -178,7 +180,7 @@ function EngNo() {
                 DATE & TIME
               </div>
             </div>
-            {fullHistory}
+            {loading ? <Loading /> : fullHistory}
           </div>
 
           {/*  */}

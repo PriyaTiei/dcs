@@ -11,6 +11,7 @@ import {
   setProcessNo,
   getProcessRangeDetailsAssy,
 } from "../../redux/slices/processData/processActions";
+import Loading from "./Loading";
 
 function ProcessData({ processNoListInitial }) {
   const data = useSelector((state) => state.engine.engineData.data);
@@ -20,6 +21,7 @@ function ProcessData({ processNoListInitial }) {
   const processName = useSelector((state) => state.process.processName);
   const processNoALCData = useSelector((state) => state.process.data.data);
   const dataOneDay = useSelector((state) => state.process.dataOneDay.data);
+  const machiningDataLoading = useSelector((state) => state.process.machiningDataLoading);
   const [indexButton, setIndexButton]=useState("")
   var processEngineData = useSelector(
     (state) => state.process.processEngine.data
@@ -163,8 +165,8 @@ function ProcessData({ processNoListInitial }) {
   return (
     <div>
       <div className="h5">Process Numbers </div>
-      <div className="d-flex flex-wrap gap-1 prosMach ">
-        {processNoElements}
+      <div className="d-flex flex-wrap gap-1 prosMach " style={{minWidth:"900px"}}>
+        {machiningDataLoading?<Loading />:processNoElements}
       </div>
     </div>
   );

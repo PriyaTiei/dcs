@@ -8,6 +8,7 @@ import ChangePoints from "./components/changePoints/ChangePoints";
 import MainPage from "./components/engno/MainPage";
 import SupplierPartDeatils from "./components/engno/DetailTraceability.js";
 import SearchReworkImages from "./components/reworkImage/SearchReworkImages";
+import Loading from "./components/engno/Loading";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <ContentWrapper>
           <Routes>
             <Route path="/" element={<MainPage />} />
+         
             <Route
               path="/supplierPartDeatils"
               element={<SupplierPartDeatils />}

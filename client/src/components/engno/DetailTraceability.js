@@ -60,6 +60,7 @@ import A_OP_INTime from "./processDetails/A_OP_INTime";
 import B_OP_05 from "./processDetails/B_OP_05";
 import Heading_B_OP235 from "./processDetails/Heading_B_OP235";
 import B_OP_235 from "./processDetails/B_OP_235";
+import Loading from "./Loading";
 
 function DeatialTraceability() {
   // formating date
@@ -87,6 +88,7 @@ function DeatialTraceability() {
   );
   const fromDateState = useSelector((state) => state.process.fromDate);
   const toDateState = useSelector((state) => state.process.toDate);
+  const loading = useSelector((state) => state.process.loading);
 
   // console.log(fromDateState.slice(0, 10));
 
@@ -349,16 +351,17 @@ function DeatialTraceability() {
           </div>
 
           {/* Process data [Machining or Maching]  */}
+         
           <ProcessNumbers
             processNoListInitial={
               sectionData[indexI]["subSection"][indexJ]["processNo"]
             }
           />
+      
         </div>
         {/*Results */}
         <div className="d-flex align-items-start flex-row gap-3 mt-4">
-          <ReusablePartNo />
-          {console.log("called")}
+          <ReusablePartNo />          
           <ResultProcess />
         </div>
 
@@ -457,6 +460,9 @@ function DeatialTraceability() {
             {valuesTable2}
           </div>
         )} */}
+
+        {loading===true?<Loading />:
+        <>
 
         {/* ************************  Block process */}
         {section === "Machining" &&
@@ -589,6 +595,7 @@ function DeatialTraceability() {
             {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
           </div>
         )}
+      </>}
       </fieldset>
     </div>
   );

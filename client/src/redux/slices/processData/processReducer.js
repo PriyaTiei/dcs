@@ -38,6 +38,7 @@ tempToDate.setSeconds(59);
 
 const initialStateProcess = {
   loading: false,
+  machiningDataLoading: false,
   error: "",
   processNo: "",
   processName: "",
@@ -61,19 +62,19 @@ const processReducer = (state = initialStateProcess, action) => {
     case PROCESS_FETCH:
       return {
         ...state,
-        loading: true,
+        machiningDataLoading: true,
       };
     case PROCESS_SUCCESS:
       return {
         ...state,
-        loading: false,
+        machiningDataLoading: false,
         data: action.payload,
         error: "",
       };
     case PROCESS_FAILURE:
       return {
         ...state,
-        loading: false,
+        machiningDataLoading: false,
         data: [],
         error: action.error,
       };
