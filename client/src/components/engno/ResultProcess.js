@@ -12,6 +12,7 @@ import CastingInformation from "./casting/CastingInformation";
 import CastingInformation_H from "./casting/CastingInformation_H";
 import { decodeBlock235 } from "./processDetails/func_B_235";
 import { decodeHead50 } from "./processDetails/func_H_50";
+import { decodeAssyHeadBoltNR } from "./processDetails/func_A_HeadBoltNR";
 
 function ResultProcess() {
   const dispatch = useDispatch();
@@ -1286,6 +1287,60 @@ function ResultProcess() {
           </div>
         );
       }
+    } else if (
+      processName == "HeadboltNR"
+    ) {
+      processNoFiltered = data?.filter(
+        (elements) => elements[17] === processName
+      );
+      if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+        let result = decodeAssyHeadBoltNR(processNoFiltered[0][1])
+        var headNRElements = [];
+        if (result.length > 0) {
+          for (let i = 0; i < 10; i++) {
+            headNRElements.push(
+              <div className="d-flex flex-column dt3 ">
+                <div className="bg-dark text-light text-center">
+                  Torque #{i + 1} 
+                </div>
+                <div className="text-center">{result[i]}</div>
+              </div>
+            );
+          }
+        }
+      }
+      display =
+        processNoFiltered == undefined ||
+        processNoFiltered.length == 0 ? null : (
+          <div className="d-flex flex-row gap-3">
+            <div className="d-flex flex-column">
+              {/* <div className="h6 mb-2">Head Bolt Nutrunner</div> */}
+              <div className="d-flex flex-row flex-wrap">
+                <div className="d-flex flex-column flex-wrap dt3">
+                  <div>Process Name</div>{" "}
+                  <div className="text-start">Date</div>  
+                </div>
+
+                <div className="d-flex flex-column flex-wrap dt3">
+                 <div className=" ">Head Bolt Nutrunner</div><div>{moment(processNoFiltered[0][21]).format(
+                  "DD-MMMM-YYYY HH:mm:ss"
+                )}</div>
+                </div>
+              </div>
+            </div>
+            <div className="gap-0 d-flex flex-column ">
+              <div className="border border-dark gap-0 font-weight-bold text-center p-1">
+                Nutrunner Torque data
+              </div>
+              <div className="d-flex flex-row flex-wrap">
+                {headNRElements}
+              </div>
+            </div>
+          </div>
+        );
+
+
+
     } else if ("p" == "p") {
       processNoFiltered = data?.filter(
         (elements) => elements[17] === processName

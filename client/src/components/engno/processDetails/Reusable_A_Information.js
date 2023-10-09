@@ -44,10 +44,10 @@ function Reusable_A_Information({ data, date, engineNo, dispatchedDate }) {
       {/* <div className="text-center font-weight-bold flex-1">{moment(date).format("DD-MM-YYYY HH:mm:ss")}</div> */}
 
       <div className="text-center font-weight-bold flex-1">
-        {engineNo != "-" ? "Dispatched" : null}
+        {engineNo != "-" && dispatchedDate != "-" ? "Dispatched" : null}
       </div>
       <div className="text-center font-weight-bold flex-1">
-        {engineNo != "-"
+        {engineNo != "-" && dispatchedDate != "-"
           ? moment(dispatchedDate).format("DD-MM-YYYY HH:mm:ss")
           : null}
       </div>

@@ -1,15 +1,15 @@
 import React from "react";
 import moment from "moment";
-import { decodeHead50 } from "./func_H_50";
+import { decodeAssyHeadBoltNR } from "./func_A_HeadBoltNR";
 
-function Reusable_H_OP50({ serialNo, data, date, engineNo, dispatchedDate }) {
+function Reusable_A_HeadNR({ serialNo, data, date, engineNo, dispatchedDate }) {
   var display = null;
 
-  let result = decodeHead50(data);
-  var headOP50Elements = [];
+  let result = decodeAssyHeadBoltNR(data);
+  var assemblyHeadNRElements = [];
   if (result.length > 0) {
-    for (let i = 22; i < 30; i++) {
-      headOP50Elements.push(
+    for (let i = 0; i < 10; i++) {
+      assemblyHeadNRElements.push(
         <div
           className="text-center font-weight-bold flex-1-mod"
           style={{ minWidth: 85 }}
@@ -24,10 +24,11 @@ function Reusable_H_OP50({ serialNo, data, date, engineNo, dispatchedDate }) {
     <div className="d-flex  gap-0 hB ">
       <div
         className="text-center font-weight-bold flex-1-mod"
-        style={{ minWidth: 130 }}
+        style={{ minWidth: 100 }}
       >
-        {serialNo}
+        {engineNo}
       </div>
+
       <div
         className="text-center font-weight-bold flex-1-mod"
         style={{ minWidth: 140 }}
@@ -35,26 +36,29 @@ function Reusable_H_OP50({ serialNo, data, date, engineNo, dispatchedDate }) {
         {moment(date).format("DD-MM-YYYY HH:mm:ss")}
       </div>
 
-      {headOP50Elements}
+      {assemblyHeadNRElements}
 
       {/* <div className="text-center font-weight-bold flex-1-mod">{moment(date).format("DD-MM-YYYY HH:mm:ss")}</div> */}
+
       <div
         className="text-center font-weight-bold flex-1-mod"
         style={{ minWidth: 100 }}
       >
-        {engineNo}
-      </div>
-      <div
-        className="text-center font-weight-bold flex-1-mod"
-        style={{ minWidth: 100 }}
-      >
-        {engineNo != "-" && dispatchedDate != "-" ? "Dispatched" : null}
+        {dispatchedDate != "-" &&
+        dispatchedDate != undefined &&
+        dispatchedDate != "" &&
+        dispatchedDate != null
+          ? "Dispatched te"
+          : "fsdf"}
       </div>
       <div
         className="text-center font-weight-bold flex-1-mod"
         style={{ minWidth: 140 }}
       >
-        {engineNo != "-" && dispatchedDate != "-"
+        {dispatchedDate != "-"  &&
+        dispatchedDate != undefined &&
+        dispatchedDate != "" &&
+        dispatchedDate != null
           ? moment(dispatchedDate).format("DD-MM-YYYY HH:mm:ss")
           : null}
       </div>
@@ -64,4 +68,4 @@ function Reusable_H_OP50({ serialNo, data, date, engineNo, dispatchedDate }) {
   return <>{display}</>;
 }
 
-export default Reusable_H_OP50;
+export default Reusable_A_HeadNR;

@@ -63,6 +63,8 @@ import B_OP_235 from "./processDetails/B_OP_235";
 import Loading from "./Loading";
 import Heading_H_OP50 from "./processDetails/Heading_H_OP50";
 import H_OP_50 from "./processDetails/H_OP_50";
+import Heading_A_HeadNR from "./processDetails/Heading_A_HeadNR";
+import A_OP_HeadNR from "./processDetails/A_OP_HeadNR";
 
 function DeatialTraceability() {
   // formating date
@@ -367,7 +369,7 @@ function DeatialTraceability() {
         </div>
 
         <div className="d-flex justify-content-start  mt-5">
-          Radio button
+          
           <form onChange={radioHandler} className="form-group gap-3">
             <div className="d-flex gap-3">
               <label htmlFor="oneDay">One Day </label>
@@ -598,10 +600,18 @@ function DeatialTraceability() {
               processName == "Crank S / N" ||
               processName == "Block S / N") && (
               <div>
-                {console.log("test ex")}
+
                 <Heading_A_INTime />
                 <A_OP_INTime />
-                {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
+               
+              </div>
+            )}
+                 {(processName == "HeadboltNR") && (
+         <div className="" style={{ width: "90vw", overflowX: "auto" }}>
+               
+                <Heading_A_HeadNR />
+                <A_OP_HeadNR />
+             
               </div>
             )}
           </>
