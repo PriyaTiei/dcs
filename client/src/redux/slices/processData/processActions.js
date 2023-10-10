@@ -222,11 +222,7 @@ export const getProcessOneDayDetails = (partNo, fromDate, toDate) => {
 };
 
 export const getProcessRangeDetails = (partNo, fromDate, toDate) => {
-  console.log("getprocessRangeDetails")
-  console.log(partNo)
-  console.log(fromDate)
-  console.log(toDate)
- 
+
   if(partNo==="H1_Material input/engraving"){
     partNo="H1_Material_input_engraving"
   }
@@ -248,10 +244,7 @@ export const getProcessRangeDetails = (partNo, fromDate, toDate) => {
 };
 
 export const getProcessRangeDetailsAssy = (partNo, fromDate, toDate) => {
-  console.log("getprocessRangeDetailsAssy")
-  console.log(partNo)
-  console.log(fromDate)
-  console.log(toDate)
+
  
   if(partNo==="H1_Material input/engraving"){
     partNo="H1_Material_input_engraving"

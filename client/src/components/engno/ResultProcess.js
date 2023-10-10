@@ -49,7 +49,7 @@ function ResultProcess() {
 
   const dateHandler = (e) => {
     setSelectedDate(e.target.value);
-    console.log(e.target.value);
+
   };
 
   // ******** check conditions ********
@@ -462,8 +462,7 @@ function ResultProcess() {
             var f1, correctList;
             if (H_OP310_list.length >= 29) {
               f1 = H_OP310_list[0].slice(16, 17);
-              // H_OP310_list.forEach((item) => console.log(item));
-              correctList = H_OP310_list.map((item) => parseFloat(item));
+                 correctList = H_OP310_list.map((item) => parseFloat(item));
             }
 
             display =
@@ -844,7 +843,7 @@ function ResultProcess() {
 
           let C_OP220_list = processNoFiltered[0][1].split(",");
           // console.log(C_OP220_list)
-          C_OP220_list.forEach((item) => console.log(item));
+      
 
           let correctList = C_OP220_list.map((item) => {
             let newItem = item.split("-");
@@ -855,8 +854,7 @@ function ResultProcess() {
               return parseInt(newItem[0]);
             }
           });
-
-          console.log(correctList);
+         
 
           var tt;
           var ttString = (tt = correctList[39]
@@ -1199,21 +1197,19 @@ function ResultProcess() {
           <div className="d-flex flex-column">
             <div className="h6 mb-2">Engine quality information</div>
             <div className="d-flex dt2">
-              <div className="dt1f1">Code</div>{" "}
-              {console.log(processNoFiltered[0][1])}
+              <div className="dt1f1">Code</div>              
               <div className="dt1f2">{code}</div>
             </div>
             <div className="d-flex dt2">
-              <div className="dt1f1">Engine Type</div>{" "}
-              {console.log(processNoFiltered[0][1])}
+              <div className="dt1f1">Engine Type</div>              
               <div className="dt1f2">{lts}</div>
             </div>
             <div className="d-flex dt2">
-              <div className="dt1f1">Customer</div>{" "}
+              <div className="dt1f1">Customer</div>
               <div className="dt1f2">{customer}</div>
             </div>
             <div className="d-flex dt2">
-              <div className="dt1f1">Process Date</div>{" "}
+              <div className="dt1f1">Process Date</div>
               <div className="dt1f2">
                 {moment(processNoFiltered[0][21]).format(
                   "DD-MMMM-YYYY HH:mm:ss"
@@ -1240,7 +1236,7 @@ function ResultProcess() {
             <div className="h6 mb-2">Engine quality information</div>
             {/* <div className="d-flex dt2">
               <div className="dt1f1">Code</div>{" "}
-              {console.log(processNoFiltered[0][1])}
+          
               <div className="dt1f2">{processNoFiltered[0][1]}</div>
             </div> */}
 
@@ -1272,7 +1268,7 @@ function ResultProcess() {
             <div className="h6 mb-2">Engine quality information</div>
             <div className="d-flex dt2">
               <div className="dt1f1">Serial no.</div>{" "}
-              {console.log(processNoFiltered[0][1])}
+    
               <div className="dt1f2">{processNoFiltered[0][1]}</div>
             </div>
 
@@ -1350,13 +1346,13 @@ function ResultProcess() {
           <div className="d-flex flex-column">
             <div className="h6 mb-2">Engine quality information</div>
             <div className="d-flex dt2">
-              <div className="dt1f1">Code</div>{" "}
-              {console.log(processNoFiltered[0][1])}
+              <div className="dt1f1">Code</div>
+           
               <div className="dt1f2">{processNoFiltered[0][1]}</div>
             </div>
 
             <div className="d-flex dt2">
-              <div className="dt1f1">Process Date</div>{" "}
+              <div className="dt1f1">Process Date</div>
               <div className="dt1f2">
                 {moment(processNoFiltered[0][21]).format(
                   "DD-MMMM-YYYY HH:mm:ss"

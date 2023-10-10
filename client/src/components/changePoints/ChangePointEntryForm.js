@@ -75,8 +75,7 @@ function ChangePointEntryForm({setRefresh}) {
       return
     }
     axios.post(`${process.env.REACT_APP_BACKEND_URL}/changePoint/add`,formData)
-    .then(result=>{
-      console.log("Data posted successfully")
+    .then(result=>{   
       toast.success("save successfully")
       setRefresh(refresh=>!refresh)
    

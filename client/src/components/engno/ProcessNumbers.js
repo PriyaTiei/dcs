@@ -42,19 +42,9 @@ function ProcessData({ processNoListInitial }) {
         (elements) => elements[5] === processName
       );
       if (processNoFiltered == undefined || processNoFiltered.length == 0) {
-        console.log(
-          "processNoFiltered == undefined || processNoFiltered.length == 0"
-        );
-        console.log("processNoFiltered");
-        console.log(processNoFiltered);
-        console.log("processNoALCData");
-        console.log(processNoALCData);
+        
       } else {
-        console.log("processNoFiltered");
-        console.log(processNoFiltered);
-        console.log("processNoALCData");
-        console.log(processNoALCData);
-        console.log("entered if ");
+       
         var tempFromDate = new Date(processNoFiltered[0][8]);
         tempFromDate.setDate(tempFromDate.getDate() - 1);
         tempFromDate.setHours(23);
@@ -78,8 +68,7 @@ function ProcessData({ processNoListInitial }) {
     } else if (section === "Assembly") {
       filteredDataList = data?.filter((element) => element[17] === processName);
       if (filteredDataList != undefined && filteredDataList.length > 0) {
-        console.log("assembly filter");
-        console.log(filteredDataList);
+     
         var tempFromDate = new Date(filteredDataList[0][21]);
         tempFromDate.setDate(tempFromDate.getDate() - 1);
         tempFromDate.setHours(23);
@@ -89,7 +78,7 @@ function ProcessData({ processNoListInitial }) {
         tempToDate.setHours(23);
         tempToDate.setMinutes(59);
         tempToDate.setSeconds(59);
-        console.log(tempFromDate.toISOString());
+
         dispatch(newFromDate(tempFromDate.toISOString()));
         dispatch(newToDate(tempToDate.toISOString()));
         dispatch(
@@ -153,7 +142,7 @@ function ProcessData({ processNoListInitial }) {
 
   //dispatch process no & fetch the required data
   const processHandler = (processNo, processName, index) => {
-    console.log("button clicked");
+   
     dispatch(setProcessNo(processNo, processName));
     setIndexButton(index)
     setColorOfButtonClicked();

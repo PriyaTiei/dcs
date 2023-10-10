@@ -23,7 +23,6 @@ const upload = multer({
 }).single("image");
 
 const uploadImage = (req, res) => {
-  console.log("Image Called");
   upload(req, res, (err) => {
     if (err) {
       return res.status(400).json({ message: err.message });
@@ -44,7 +43,6 @@ const storage2 = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     let engineNo = req.body.engineNo;
-    console.log(req.body.engineNo);
     const ext = path.extname(file.originalname);
     const name = path.basename(file.originalname, ext);
     const dt = new Date(Date.now());
@@ -104,9 +102,7 @@ const uploadMultiple = multer({
 }).array("images");
 
 //handle single image
-const uploadImage2 = (req, res, next) => {
-  console.log("Image2 from phone Called");
-  console.log(req.body); //here it is not passing req.body
+const uploadImage2 = (req, res, next) => {  
   upload2(req, res, (err) => {
     if (err) {
       return res.status(400).json({ message: err.message });
@@ -122,7 +118,7 @@ const uploadImage2 = (req, res, next) => {
 
 // handle multiple images
 const uploadImageMultiple = (req, res, next) => {
-  console.log("Multiple images handler called from phone Called");
+ 
   //here it is not passing req.body
 
   uploadMultiple(req, res, (err) => {
@@ -159,8 +155,7 @@ const getImage = (req, res) => {
     "public",
     "reworkImages",
     imageName
-  );
-  console.log(imagePath);
+  ); 
   res.sendfile(imagePath);
 };
 

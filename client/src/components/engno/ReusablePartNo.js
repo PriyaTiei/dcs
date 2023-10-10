@@ -16,17 +16,14 @@ function ReusablePartNo() {
   var filteredDataList = []; // note its a list but contain only one element at 0th index
 
   // dispatch & also set local state
-  const dispatchAndLocalState = () => {
-    console.log("from reusablePartNo.js")
-    console.log(filteredDataList )
+  const dispatchAndLocalState = () => {   
     if (data != null && filteredDataList.length > 0) {
       setPartNo(filteredDataList[0][1]);
      
       dispatch(getProcessDetails(filteredDataList[0][1]));
     }
   };
-  const dispatchAndLocalStateAssy = () => {
-    console.log(filteredDataList )
+  const dispatchAndLocalStateAssy = () => {   
     if (data != null && filteredDataList.length > 0) {
       setPartNo(filteredDataList[0][17]);
      

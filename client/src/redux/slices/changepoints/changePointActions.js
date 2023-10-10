@@ -84,18 +84,18 @@ export const getChangePoints = (filtered,currentPage,docsPerPage) => {
   return (dispatch) => {
     dispatch(changePointFetch());
      if(filtered.startDate!=""){
-      console.log(typeof filtered.startDate.toLocaleDateString());
+    
       filtered.startDate = new Date(filtered.startDate.toString()).toLocaleDateString()
     }else{
       filtered.startDate = ""
     }
     if(filtered.endDate!=""){
-      console.log(filtered.endDate.toString());
+    
       filtered.endDate = new Date(filtered.endDate.toString()).toLocaleDateString()
     }else{
       filtered.endDate = ""
     }
-    console.log(filtered);
+
     Axios.get(`/changePoint/getAllChangePoints`,{
       params:{
         filtered:filtered,

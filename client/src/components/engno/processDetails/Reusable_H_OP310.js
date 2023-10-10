@@ -2,19 +2,15 @@ import React from "react";
 import moment from "moment";
 
 function Reusable_H_OP310({ serialNo, data, date, engineNo, dispatchedDate }) {
-  let H_OP310_list = data.split(",");
-  console.log("H_OP310_list");
-  console.log(H_OP310_list);
-  // H_OP310_list.forEach((item) => console.log(item));
+  let H_OP310_list = data.split(",");  
+ 
   let f1 = H_OP310_list[0]?.slice(16, 17);
-  console.log("f1");
-  console.log(f1);
+
   let correctList = H_OP310_list?.map((item) => parseFloat(item));
 
   var display = null;
   if (correctList != undefined && correctList.length > 1) {
-    console.log("correctLIst");
-    console.log(correctList);
+
     display = (
       <div className="d-flex  gap-0 hB ">
         <div

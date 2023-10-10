@@ -113,8 +113,6 @@ const storeImageFileName = catchAsyncError(async (req, res, next) => {
   const engineNo = req.body.engineNo;
   const imageName = req.body.imageName;
 
-  console.log(engineNo, "engineNO");
-  console.log(imageName, "imageName");
 
   const reworkNumber = await ReworkNumber.create({ engineNo, imageName });
   if (!reworkNumber) {
@@ -127,9 +125,7 @@ const storeImageFileName = catchAsyncError(async (req, res, next) => {
 const storeImageFileNameMultiple = catchAsyncError(async (req, res, next) => {
   const { engineNo, imagesNameList, checkedBy, commonRemarks } = req.body;
 
-  console.log(engineNo, "engineNO");
-  console.log(imagesNameList, "imagesNameList in controller");
-  console.log(req.body);
+
   imagesNameList.forEach(async (element) => {
     const reworkNumber = await ReworkNumber.create({
       engineNo,
@@ -147,7 +143,7 @@ const storeImageFileNameMultiple = catchAsyncError(async (req, res, next) => {
 // ***************send list of rework numbers*******
 const reworkNumber = catchAsyncError(async (req, res, next) => {
   const engineNo = req.params.engineNo;
-  console.log(engineNo);
+ 
   const result = await ReworkNumber.find({ engineNo });
   if (result.length == 0) {
     console.log("not found");

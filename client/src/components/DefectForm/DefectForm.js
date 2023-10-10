@@ -70,7 +70,7 @@ export default function DefectForm() {
   };
 
   const handleBarCodeDetected = (code) => {
-    console.log("Barcode detected: ", code);
+    // console.log("Barcode detected: ", code);
   };
 
   const handleSubmit = async (event) => {

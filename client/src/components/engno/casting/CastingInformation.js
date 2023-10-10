@@ -10,8 +10,7 @@ function CastingInformation({ castingNo }) {
   var castingMonth;
   var castingYear;
   var castingDate;
-  console.log("casting data")
-  console.log(castingNo)
+
 
   if (castingNo != null) {
     castingYear = `20${castingNo.slice(6, 8)}`;
@@ -34,16 +33,11 @@ function CastingInformation({ castingNo }) {
         }
         break;
     }
-    console.log("casting date in Block cylinder")
-    console.log(`${castingYear}-${castingMonth}-${castingDayOfMonth}`)
+
     castingDate = new Date(
       `${castingYear}-${castingMonth}-${castingDayOfMonth}`
     ).toISOString();
-    // console.log(castingYear);
-    // console.log(castingMonth);
-    // console.log(castingDayOfMonth);
-    // console.log("casting date :");
-    // console.log(castingDate);
+   
   }
 
   const [castingMachineNo, setCastingMachineNo] = useState(

@@ -48,8 +48,7 @@ export default function DefectTraceabilityScreen() {
     
  
     if (selectedDate && !isSameDay(date, selectedDate)) {
-      console.log(selectedDate);
-      console.log(date)
+     
       return false;
     }
     const engineNo = defectForm.engineNo.toLowerCase() 

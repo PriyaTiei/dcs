@@ -10,8 +10,7 @@ function CastingInformation_H({ castingNo }) {
   var castingMonth;
   var castingYear;
   var castingDate;
-  console.log("casting data");
-  console.log(castingNo);
+
 
   if (castingNo != null) {
     castingYear = `20${castingNo.slice(8, 10)}`;
@@ -58,8 +57,7 @@ function CastingInformation_H({ castingNo }) {
         castingMonth = ``;
         break;
     }
-    console.log("casting date in head cylinder");
-    console.log(`${castingYear}-${castingMonth}-${castingDayOfMonth}`);
+   
     castingDate = new Date(
       `${castingYear}-${castingMonth}-${castingDayOfMonth}`
     ).toISOString();
