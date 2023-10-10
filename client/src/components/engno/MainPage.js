@@ -114,9 +114,9 @@ function EngNo() {
         <div className="p-2 border hist  ">SHIPMENT</div>
         <div className="p-2 border histValue ">
 
-          {shippingRow[3] ? moment(shippingRow[3]).format(
+          {shippingRow ?  (shippingRow[3]?moment(shippingRow[3]).format(
             "YYYY-MM-DD HH:mm:ss"
-          ) : null}
+          ) : null): null}
         </div>
       </div>
       <div className="d-flex gap-0">
