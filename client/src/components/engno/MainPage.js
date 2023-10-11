@@ -16,6 +16,8 @@ import { getEngineData } from "../../redux/slices/egNo/egNoActions.js";
 import { Search } from "bootstrap-icons-react";
 import { processDataClear } from "../../redux/slices/processData/processActions.js";
 import Loading from "./Loading.js";
+import EntireResultProcess from "./Entire.js";
+import { getProcess3Details} from "../../redux/slices/processData/processActions.js";
 
 function EngNo() {
   const [engineNo, setEngineNo] = useState("");
@@ -98,9 +100,15 @@ function EngNo() {
       // console.log(c3);
       c3.forEach((item) => {
         getPartData(item[1]);
+        console.log("3 c aba")
+        console.log(item[1])
+        
       });
+      dispatch(getProcess3Details(c3[0][1],c3[1][1],c3[2][1] ))
     }
   }, [oracleData]);
+
+
 
   const history = oracleData?.data?.map((item) =>
     item[17] != "EGNO" ? (
@@ -157,6 +165,8 @@ function EngNo() {
           <div>{leakData}</div>
         </div>
       </div>
+
+      <EntireResultProcess />
       {/* *****************Assembly fieldset */}
       <fieldset className="border p-3 mt-3 ">
         <legend

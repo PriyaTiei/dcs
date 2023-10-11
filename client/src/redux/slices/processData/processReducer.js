@@ -2,6 +2,9 @@ import {
   PROCESS_FETCH,
   PROCESS_SUCCESS,
   PROCESS_FAILURE,
+  PROCESS3_FETCH,
+  PROCESS3_SUCCESS,
+  PROCESS3_FAILURE,
   SET_PROCESS_NO,
   PROCESS_ONE_DAY_FETCH,
   PROCESS_ONE_DAY_SUCCESS,
@@ -39,12 +42,15 @@ tempToDate.setSeconds(59);
 const initialStateProcess = {
   loading: false,
   machiningDataLoading: false,
+  loading3: false,
   error: "",
+  error3: "",
   processNo: "",
   processName: "",
   fromDate: tempFromDate.toISOString(),
   toDate: tempToDate.toISOString(),
   data: {},
+  data3: {},
   dataOneDay: {},
   dataRange: {},
   processEngine: {},
@@ -78,6 +84,25 @@ const processReducer = (state = initialStateProcess, action) => {
         data: [],
         error: action.error,
       };
+      case PROCESS3_FETCH:
+        return {
+          ...state,
+         loading3: true,
+        };
+      case PROCESS3_SUCCESS:
+        return {
+          ...state,
+          loading3: false,
+          data3: action.payload,
+          error3: "",
+        };
+      case PROCESS3_FAILURE:
+        return {
+          ...state,
+          loading3: false,
+          data3: [],
+          error3: action.error,
+        };
     case PROCESS_ONE_DAY_FETCH:
       return {
         ...state,

@@ -2,6 +2,9 @@ import {
   PROCESS_FETCH,
   PROCESS_SUCCESS,
   PROCESS_FAILURE,
+  PROCESS3_FETCH,
+  PROCESS3_SUCCESS,
+  PROCESS3_FAILURE,
   SET_PROCESS_NO,
   PROCESS_ONE_DAY_FETCH,
   PROCESS_ONE_DAY_SUCCESS,
@@ -50,6 +53,26 @@ export const processSuccess = (data) => {
 export const processFailure = (error) => {
   return {
     type: PROCESS_FAILURE,
+    error: error,
+  };
+};
+
+export const process3Fetch = () => {
+  return {
+    type: PROCESS3_FETCH,
+  };
+};
+
+export const process3Success = (data) => {
+  return {
+    type: PROCESS3_SUCCESS,
+    payload: data,
+  };
+};
+
+export const process3Failure = (error) => {
+  return {
+    type: PROCESS3_FAILURE,
     error: error,
   };
 };
@@ -199,6 +222,23 @@ export const getProcessDetails = (partNo) => {
   };
 };
 
+
+export const getProcess3Details = (partNo1, partNo2, partNo3) => {
+  return (dispatch) => {
+    // console.log("inside dispatch");
+    dispatch(process3Fetch());
+    axios
+      .get(`${process.env.REACT_APP_BACKEND_URL}/oracle/partNo1/${partNo1}/partNo2/${partNo2}/partNo3/${partNo3}`)
+      .then((response) => {
+        dispatch(process3Success(response.data));
+        toast.success("All 3C Part information obtained Successfully")
+      })
+      .catch((err) => {
+        dispatch(process3Failure(err.message));
+        toast.error(err.message)
+      });
+  };
+};
 export const getProcessOneDayDetails = (partNo, fromDate, toDate) => {
  
   if(partNo==="H1_Material input/engraving"){

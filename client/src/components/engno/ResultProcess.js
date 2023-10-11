@@ -60,7 +60,7 @@ function ResultProcess() {
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "B1_ENGRAVED"
           );
-          console.log("hfsh");
+        
           display =
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
@@ -457,7 +457,7 @@ function ResultProcess() {
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "H5_OP310"
           );
-          if (processNoFiltered != undefined || processNoFiltered.length > 0) {
+          if (processNoFiltered != undefined && processNoFiltered.length > 0) {
             var H_OP310_list = processNoFiltered[0][1].split(",");
             var f1, correctList;
             if (H_OP310_list.length >= 29) {

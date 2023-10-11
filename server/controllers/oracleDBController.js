@@ -64,9 +64,41 @@ exports.getPartData = catchAsyncError(async (req, res, next) => {
     console.log("Machining Parts not found");
     return next(new ErrorHandler("Machining Parts do not exist", 401));
   }
-  console.table(Object.keys(result));
+  // console.table(Object.keys(result));
   const allColumnNames = result.metaData.map((item) => item.name);
   res.status(200).json({ coloumns: allColumnNames, data: result.rows });
+});
+
+exports.getPart3Data = catchAsyncError(async (req, res, next) => { 
+
+  let partNo1 = req.params.partNo1;
+  let partNo2 = req.params.partNo2;
+  let partNo3 = req.params.partNo3;
+  partNo1 = partNo1 + "    ";
+  partNo2 = partNo2 + "    ";
+  partNo3 = partNo3 + "    ";
+  let partNos= [partNo1, partNo2, partNo3]
+ 
+  
+
+  const con = await oracleDBConnection();
+
+  const result = await con.execute(
+    // `select * from todoitem`,s
+    "select * from KTTMSYS.T_MCHNSTJHO WHERE SRALNO in (:value0,:value1, :value2 )" ,
+    partNos,
+    {
+      // maxRows: 2
+    }
+  );
+
+  if (result.rows.length == 0) {
+    console.log("Machining Parts not found");
+    return next(new ErrorHandler("Machining Parts do not exist", 401));
+  }
+  // console.table(Object.keys(result));
+  // const allColumnNames = result.metaData.map((item) => item.name);
+  res.status(200).json({  data: result.rows });
 });
 
 // get shippment history for Single engine
@@ -88,7 +120,7 @@ exports.getDateData = catchAsyncError(async (req, res, next) => {
     console.log("Engine not found");
     return next(new ErrorHandler("Engine no. do not exist", 401));
   }
-  console.table(Object.keys(result));
+  // console.table(Object.keys(result));
   const allColumnNames = result.metaData.map((item) => item.name);
 
   res
