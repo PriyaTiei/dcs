@@ -974,7 +974,7 @@ function EntireResultProcess() {
               <div>Process No</div> <div>{result[1]}</div>
             </div>
             <div className="d-flex flex-column flex-wrap dt3">
-              <div>Model</div> <div>{result[1]}</div>
+              <div>Model</div> <div>{result[2]}</div>
             </div>
           </div>
         </div>
