@@ -13,6 +13,7 @@ import CastingInformation_H from "./casting/CastingInformation_H";
 import { decodeBlock235 } from "./processDetails/func_B_235";
 import { decodeHead50 } from "./processDetails/func_H_50";
 import { decodeAssyHeadBoltNR } from "./processDetails/func_A_HeadBoltNR";
+import { decode_C_150_170 } from "./processDetails/func_C_150_170";
 
 function ResultProcess() {
   const dispatch = useDispatch();
@@ -49,7 +50,6 @@ function ResultProcess() {
 
   const dateHandler = (e) => {
     setSelectedDate(e.target.value);
-
   };
 
   // ******** check conditions ********
@@ -60,7 +60,7 @@ function ResultProcess() {
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "B1_ENGRAVED"
           );
-        
+
           display =
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
@@ -77,7 +77,7 @@ function ResultProcess() {
                   </div>
                 </div>
                 <div className="d-flex ">
-                  <div className="dt1f1">Engraving Date</div>{" "}
+                  <div className="dt1f1">Engraving Date & Time</div>{" "}
                   <div className="dt1f2">
                     {moment(processNoFiltered[0][8]).format(
                       "DD-MMMM-YYYY HH:mm:ss"
@@ -185,7 +185,7 @@ function ResultProcess() {
                   </div>
                 </div>
                 <div className="d-flex  dt2">
-                  <div className="dt1f1">Date</div>{" "}
+                  <div className="dt1f1">Date & Time</div>{" "}
                   <div className="dt1f2">
                     {moment(processNoFiltered[0][8]).format(
                       "DD-MMMM-YYYY HH:mm:ss"
@@ -308,7 +308,7 @@ function ResultProcess() {
                       <div className="dt1f2">{processNoFiltered[0][1]}</div>
                     </div> */}
                 <div className="d-flex dt2">
-                  <div className="dt1f1">FG Date</div>{" "}
+                  <div className="dt1f1">FG Date & Time</div>{" "}
                   <div className="dt1f2">
                     {moment(processNoFiltered[0][8]).format(
                       "DD-MMMM-YYYY HH:mm:ss"
@@ -345,7 +345,7 @@ function ResultProcess() {
                   </div>
                 </div>
                 <div className="d-flex ">
-                  <div className="dt1f1">Engraving Date</div>{" "}
+                  <div className="dt1f1">Engraving Date & Time</div>{" "}
                   <div className="dt1f2">
                     {moment(processNoFiltered[0][8]).format(
                       "DD-MMMM-YYYY HH:mm:ss"
@@ -388,7 +388,13 @@ function ResultProcess() {
                     </div>
 
                     <div className="d-flex flex-column flex-wrap dt3">
-                      <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+                      <div>Date & Time</div>{" "}
+                      <div>
+                        {" "}
+                        {moment(processNoFiltered[0][8]).format(
+                          "DD-MMMM-YYYY HH:mm:ss"
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -403,7 +409,7 @@ function ResultProcess() {
               </div>
             );
           break;
-          case "OP55":
+        case "OP55":
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "H3_OP055"
           );
@@ -436,7 +442,13 @@ function ResultProcess() {
                     </div>
 
                     <div className="d-flex flex-column flex-wrap dt3">
-                      <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+                      <div>Date & Time</div>{" "}
+                      <div>
+                        {" "}
+                        {moment(processNoFiltered[0][8]).format(
+                          "DD-MMMM-YYYY HH:mm:ss"
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -452,7 +464,6 @@ function ResultProcess() {
             );
           break;
 
-
         case "OP310":
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "H5_OP310"
@@ -462,7 +473,7 @@ function ResultProcess() {
             var f1, correctList;
             if (H_OP310_list.length >= 29) {
               f1 = H_OP310_list[0].slice(16, 17);
-                 correctList = H_OP310_list.map((item) => parseFloat(item));
+              correctList = H_OP310_list.map((item) => parseFloat(item));
             }
 
             display =
@@ -477,7 +488,13 @@ function ResultProcess() {
                     </div>
 
                     <div className="d-flex flex-column flex-wrap dt3">
-                      <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+                      <div>Date & Time</div>{" "}
+                      <div>
+                        {" "}
+                        {moment(processNoFiltered[0][8]).format(
+                          "DD-MMMM-YYYY HH:mm:ss"
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -723,7 +740,7 @@ function ResultProcess() {
                       <div className="dt1f2">{processNoFiltered[0][1]}</div>
                     </div> */}
                 <div className="d-flex dt2">
-                  <div className="dt1f1">FG Date</div>{" "}
+                  <div className="dt1f1">FG Date & Time</div>{" "}
                   <div className="dt1f2">
                     {moment(processNoFiltered[0][8]).format(
                       "DD-MMMM-YYYY HH:mm:ss"
@@ -754,7 +771,7 @@ function ResultProcess() {
                   <div className="dt1f2">{processNoFiltered[0][5]}</div>
                 </div>
                 <div className="d-flex dt2">
-                  <div className="dt1f1">FG Date</div>{" "}
+                  <div className="dt1f1">FG Date & Time</div>{" "}
                   <div className="dt1f2">
                     {moment(processNoFiltered[0][8]).format(
                       "DD-MMMM-YYYY HH:mm:ss"
@@ -779,7 +796,7 @@ function ResultProcess() {
                   <div className="dt1f2">{processNoFiltered[0][5]}</div>
                 </div>
                 <div className="d-flex dt2">
-                  <div className="dt1f1">FG Date</div>{" "}
+                  <div className="dt1f1">FG Date & Time</div>{" "}
                   <div className="dt1f2">
                     {moment(processNoFiltered[0][8]).format(
                       "DD-MMMM-YYYY HH:mm:ss"
@@ -789,48 +806,145 @@ function ResultProcess() {
               </div>
             );
           break;
-        case "OP150 & 170":
+
+        case "OP150_170":
           processNoFiltered = processNoALCData?.filter(
             (elements) => elements[5] === "C3_OP150_170"
           );
+          if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+            var result = decode_C_150_170(processNoFiltered[0][1]);
 
-          display =
-            processNoFiltered == undefined ||
-            processNoFiltered.length == 0 ? null : (
-              <div className="d-flex flex-column">
-                <div className="d-flex gap-2 ">
-                  <div>name</div> <div>{processNoFiltered[0][5]}</div>
-                </div>
-                <div className="d-flex gap-2">
-                  <div>Data</div> <div>{processNoFiltered[0][1]}</div>
-                </div>
-                <div className="d-flex gap-2">
-                  <div>Date</div> <div>{processNoFiltered[0][8]}</div>
-                </div>
-              </div>
-            );
-          break;
-        case "170 front Gantry":
-          processNoFiltered = processNoALCData?.filter(
-            (elements) => elements[5] === "C6_OP170 front gantry"
-          );
-
-          display =
-            processNoFiltered == undefined ||
-            processNoFiltered.length == 0 ? null : (
-              <div className="d-flex flex-column">
-                <div className="h6 mb-2">OP170 Time Details</div>
-                <div className="d-flex dt2">
-                  <div className="dt1f1">Process Name</div>{" "}
-                  <div className="dt1f2">{processNoFiltered[0][5]}</div>
-                </div>
-                <div className="d-flex dt2">
-                  <div className="dt1f1">FG Date</div>{" "}
-                  <div className="dt1f2">
-                    {moment(processNoFiltered[0][8]).format(
-                      "DD-MMMM-YYYY HH:mm:ss"
-                    )}
+            var crankOP150_170_Elements = [];
+            var PLabel = [
+              "1st CW",
+              "2nd CW",
+              "3rd CW",
+              "4th CW",
+              "5th CW",
+              "6th CW",
+              "7th CW",
+              "8th CW",
+              "Initial",
+              "Final",
+            ];
+            for (let i = 0; i < 32; i += 4) {
+              let el = (
+                <div className="d-flex flex-row flex-wrap mt-2">
+                  <div className="d-flex flex-column dt3">
+                    <div
+                      className="bg-warning text-light"
+                      style={{ minWidth: "70px" }}
+                    >
+                      {PLabel[i / 4]}
+                    </div>{" "}
+                    {/* <div>{correctList[1]}</div> */}
                   </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">
+                      1st hole Hole angle (0.1 °)
+                    </div>{" "}
+                    <div>{result[i + 3]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">
+                      1st hole Hole depth (0.1mm)
+                    </div>{" "}
+                    <div>{result[i + 4]}</div>
+                  </div>
+
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">
+                      1st hole Hole depth (0.1mm)
+                    </div>{" "}
+                    <div>{result[i + 5]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">
+                      2nd hole Hole depth (0.1mm)
+                    </div>{" "}
+                    <div>{result[i + 6]}</div>
+                  </div>
+                </div>
+              );
+              crankOP150_170_Elements.push(el);
+            }
+
+            for (let i = 32; i < 40; i += 4) {
+              let el = (
+                <div className="d-flex flex-row flex-wrap mt-2">
+                  <div className="d-flex flex-column dt3">
+                    <div
+                      className="bg-warning text-light"
+                      style={{ minWidth: "70px" }}
+                    >
+                      {PLabel[i / 4]}
+                    </div>{" "}
+                    {/* <div>{correctList[1]}</div> */}
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">
+                      1-sided measure (0.1 gcm)
+                    </div>{" "}
+                    <div>{result[i + 3]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">
+                      two-sided measure (0.1 gcm)
+                    </div>{" "}
+                    <div>{result[i + 4]}</div>
+                  </div>
+
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">
+                      1-sided measurement angle (0.1 °)
+                    </div>{" "}
+                    <div>{result[i + 5]}</div>
+                  </div>
+                  <div className="d-flex flex-column dt3">
+                    <div className="bg-dark text-light">
+                      two-sided measurement angle (0.1 °)
+                    </div>{" "}
+                    <div>{result[i + 6]}</div>
+                  </div>
+                </div>
+              );
+              crankOP150_170_Elements.push(el);
+            }
+          }
+
+          display =
+            processNoFiltered == undefined ||
+            processNoFiltered.length == 0 ? null : (
+              <div className="d-flex flex-column gap-3">
+                <div className="d-flex flex-column">
+                  <div className="h6 mb-2">Crank OP 150 _ 170</div>
+                  <div className="d-flex flex-row flex-wrap">
+                    <div className="d-flex flex-column flex-wrap dt3">
+                      <div>Process Name</div>{" "}
+                      <div>{processNoFiltered[0][5]}</div>
+                    </div>
+
+                    <div className="d-flex flex-column flex-wrap dt3">
+                      <div>Date & Time</div>{" "}
+                      <div>
+                        {" "}
+                        {moment(processNoFiltered[0][8]).format(
+                          "DD-MMMM-YYYY HH:mm:ss"
+                        )}
+                      </div>
+                    </div>
+                    <div className="d-flex flex-column flex-wrap dt3">
+                      <div>Process No</div> <div>{result[1]}</div>
+                    </div>
+                    <div className="d-flex flex-column flex-wrap dt3">
+                      <div>Model</div> <div>{result[1]}</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="gap-0 d-flex flex-column ">
+                  {/* <div className="d-flex flex-row flex-wrap"> */}
+                  {crankOP150_170_Elements}
+                  {/* </div> */}
                 </div>
               </div>
             );
@@ -843,7 +957,6 @@ function ResultProcess() {
 
           let C_OP220_list = processNoFiltered[0][1].split(",");
           // console.log(C_OP220_list)
-      
 
           let correctList = C_OP220_list.map((item) => {
             let newItem = item.split("-");
@@ -854,7 +967,6 @@ function ResultProcess() {
               return parseInt(newItem[0]);
             }
           });
-         
 
           var tt;
           var ttString = (tt = correctList[39]
@@ -901,7 +1013,13 @@ function ResultProcess() {
                   </div>
 
                   <div className="d-flex flex-column flex-wrap dt3">
-                    <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+                    <div>Date & Time</div>{" "}
+                    <div>
+                      {" "}
+                      {moment(processNoFiltered[0][8]).format(
+                        "DD-MMMM-YYYY HH:mm:ss"
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -1086,7 +1204,7 @@ function ResultProcess() {
                   <div className="dt1f2">{processNoFiltered[0][5]}</div>
                 </div>
                 <div className="d-flex dt2">
-                  <div className="dt1f1">FG Date</div>{" "}
+                  <div className="dt1f1">FG Date & Time</div>{" "}
                   <div className="dt1f2">
                     {moment(processNoFiltered[0][8]).format(
                       "DD-MMMM-YYYY HH:mm:ss"
@@ -1153,7 +1271,7 @@ function ResultProcess() {
               </div>
             </div>
             <div className="d-flex dt2">
-              <div className="dt1f1">Process Date</div>{" "}
+              <div className="dt1f1">Process Date & Time</div>{" "}
               <div className="dt1f2">
                 {moment(processNoFiltered[0][21]).format(
                   "DD-MMMM-YYYY HH:mm:ss"
@@ -1197,11 +1315,11 @@ function ResultProcess() {
           <div className="d-flex flex-column">
             <div className="h6 mb-2">Engine quality information</div>
             <div className="d-flex dt2">
-              <div className="dt1f1">Code</div>              
+              <div className="dt1f1">Code</div>
               <div className="dt1f2">{code}</div>
             </div>
             <div className="d-flex dt2">
-              <div className="dt1f1">Engine Type</div>              
+              <div className="dt1f1">Engine Type</div>
               <div className="dt1f2">{lts}</div>
             </div>
             <div className="d-flex dt2">
@@ -1209,7 +1327,7 @@ function ResultProcess() {
               <div className="dt1f2">{customer}</div>
             </div>
             <div className="d-flex dt2">
-              <div className="dt1f1">Process Date</div>
+              <div className="dt1f1">Process Date & Time</div>
               <div className="dt1f2">
                 {moment(processNoFiltered[0][21]).format(
                   "DD-MMMM-YYYY HH:mm:ss"
@@ -1241,7 +1359,7 @@ function ResultProcess() {
             </div> */}
 
             <div className="d-flex dt2">
-              <div className="dt1f1">Process Date</div>{" "}
+              <div className="dt1f1">Process Date & Time</div>{" "}
               <div className="dt1f2">
                 {moment(processNoFiltered[0][21]).format(
                   "DD-MMMM-YYYY HH:mm:ss"
@@ -1268,12 +1386,11 @@ function ResultProcess() {
             <div className="h6 mb-2">Engine quality information</div>
             <div className="d-flex dt2">
               <div className="dt1f1">Serial no.</div>{" "}
-    
               <div className="dt1f2">{processNoFiltered[0][1]}</div>
             </div>
 
             <div className="d-flex dt2">
-              <div className="dt1f1">Process Date</div>{" "}
+              <div className="dt1f1">Process Date & Time</div>{" "}
               <div className="dt1f2">
                 {moment(processNoFiltered[0][21]).format(
                   "DD-MMMM-YYYY HH:mm:ss"
@@ -1283,21 +1400,19 @@ function ResultProcess() {
           </div>
         );
       }
-    } else if (
-      processName == "HeadboltNR"
-    ) {
+    } else if (processName == "HeadboltNR") {
       processNoFiltered = data?.filter(
         (elements) => elements[17] === processName
       );
       if (processNoFiltered != undefined && processNoFiltered.length > 0) {
-        let result = decodeAssyHeadBoltNR(processNoFiltered[0][1])
+        let result = decodeAssyHeadBoltNR(processNoFiltered[0][1]);
         var headNRElements = [];
         if (result.length > 0) {
           for (let i = 0; i < 10; i++) {
             headNRElements.push(
               <div className="d-flex flex-column dt3 ">
                 <div className="bg-dark text-light text-center">
-                  Torque #{i + 1} 
+                  Torque #{i + 1}
                 </div>
                 <div className="text-center">{result[i]}</div>
               </div>
@@ -1314,13 +1429,16 @@ function ResultProcess() {
               <div className="d-flex flex-row flex-wrap">
                 <div className="d-flex flex-column flex-wrap dt3">
                   <div>Process Name</div>{" "}
-                  <div className="text-start">Date</div>  
+                  <div className="text-start">Date & Time</div>
                 </div>
 
                 <div className="d-flex flex-column flex-wrap dt3">
-                 <div className=" ">Head Bolt Nutrunner</div><div>{moment(processNoFiltered[0][21]).format(
-                  "DD-MMMM-YYYY HH:mm:ss"
-                )}</div>
+                  <div className=" ">Head Bolt Nutrunner</div>
+                  <div>
+                    {moment(processNoFiltered[0][21]).format(
+                      "DD-MMMM-YYYY HH:mm:ss"
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -1328,15 +1446,10 @@ function ResultProcess() {
               <div className="border border-dark gap-0 font-weight-bold text-center p-1">
                 Nutrunner Torque data
               </div>
-              <div className="d-flex flex-row flex-wrap">
-                {headNRElements}
-              </div>
+              <div className="d-flex flex-row flex-wrap">{headNRElements}</div>
             </div>
           </div>
         );
-
-
-
     } else if ("p" == "p") {
       processNoFiltered = data?.filter(
         (elements) => elements[17] === processName
@@ -1347,12 +1460,12 @@ function ResultProcess() {
             <div className="h6 mb-2">Engine quality information</div>
             <div className="d-flex dt2">
               <div className="dt1f1">Code</div>
-           
+
               <div className="dt1f2">{processNoFiltered[0][1]}</div>
             </div>
 
             <div className="d-flex dt2">
-              <div className="dt1f1">Process Date</div>
+              <div className="dt1f1">Process Date & Time</div>
               <div className="dt1f2">
                 {moment(processNoFiltered[0][21]).format(
                   "DD-MMMM-YYYY HH:mm:ss"

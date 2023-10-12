@@ -12,6 +12,7 @@ import CastingInformation_B3 from "./casting/CastingInformation_B3";
 import CastingInformation_H3 from "./casting/CastingInformation_H3";
 import { decodeBlock235 } from "./processDetails/func_B_235";
 import { decodeHead50 } from "./processDetails/func_H_50";
+import { decode_C_150_170 } from "./processDetails/func_C_150_170";
 import { decodeAssyHeadBoltNR } from "./processDetails/func_A_HeadBoltNR";
 
 function EntireResultProcess() {
@@ -820,26 +821,7 @@ function EntireResultProcess() {
       </div>
     );
   // break;
-  // case "OP150 & 170":
-  processNoFiltered = processNoALCData?.filter(
-    (elements) => elements[5] === "C3_OP150_170"
-  );
-
-  display_C3_OP150_170 =
-    processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
-      <div className="d-flex flex-column">
-        <div className="d-flex gap-2 ">
-          <div>name</div> <div>{processNoFiltered[0][5]}</div>
-        </div>
-        <div className="d-flex gap-2">
-          <div>Data</div> <div>{processNoFiltered[0][1]}</div>
-        </div>
-        <div className="d-flex gap-2">
-          <div>Date</div> <div>{processNoFiltered[0][8]}</div>
-        </div>
-      </div>
-    );
-  // break;
+ 
   // case "170 front Gantry":
   processNoFiltered = processNoALCData?.filter(
     (elements) => elements[5] === "C6_OP170 front gantry"
@@ -862,7 +844,155 @@ function EntireResultProcess() {
       </div>
     );
   // break;
+  // case "OP150_170":
+  processNoFiltered = processNoALCData?.filter(
+    (elements) => elements[5] === "C3_OP150_170"
+  );
+  if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var result = decode_C_150_170(processNoFiltered[0][1]);
+
+    var crankOP150_170_Elements = [];
+    var PLabel = [
+      "1st CW",
+      "2nd CW",
+      "3rd CW",
+      "4th CW",
+      "5th CW",
+      "6th CW",
+      "7th CW",
+      "8th CW",
+      "Initial",
+      "Final",
+    ];
+    for (let i = 0; i < 32; i += 4) {
+      let el = (
+        <div className="d-flex flex-row flex-wrap mt-2">
+          <div className="d-flex flex-column dt3">
+            <div
+              className="bg-warning text-light"
+              style={{ minWidth: "70px" }}
+            >
+              {PLabel[i / 4]}
+            </div>{" "}
+            {/* <div>{correctList[1]}</div> */}
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              1st hole Hole angle (0.1 °)
+            </div>{" "}
+            <div>{result[i + 3]}</div>
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              1st hole Hole depth (0.1mm)
+            </div>{" "}
+            <div>{result[i + 4]}</div>
+          </div>
+
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              1st hole Hole depth (0.1mm)
+            </div>{" "}
+            <div>{result[i + 5]}</div>
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              2nd hole Hole depth (0.1mm)
+            </div>{" "}
+            <div>{result[i + 6]}</div>
+          </div>
+        </div>
+      );
+      crankOP150_170_Elements.push(el);
+    }
+
+    for (let i = 32; i < 40; i += 4) {
+      let el = (
+        <div className="d-flex flex-row flex-wrap mt-2">
+          <div className="d-flex flex-column dt3">
+            <div
+              className="bg-warning text-light"
+              style={{ minWidth: "70px" }}
+            >
+              {PLabel[i / 4]}
+            </div>{" "}
+            {/* <div>{correctList[1]}</div> */}
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              1-sided measure (0.1 gcm)
+            </div>{" "}
+            <div>{result[i + 3]}</div>
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              two-sided measure (0.1 gcm)
+            </div>{" "}
+            <div>{result[i + 4]}</div>
+          </div>
+
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              1-sided measurement angle (0.1 °)
+            </div>{" "}
+            <div>{result[i + 5]}</div>
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              two-sided measurement angle (0.1 °)
+            </div>{" "}
+            <div>{result[i + 6]}</div>
+          </div>
+        </div>
+      );
+      crankOP150_170_Elements.push(el);
+    }
+  }
+
+  display_C3_OP150_170 =
+    processNoFiltered == undefined ||
+    processNoFiltered.length == 0 ? null : (
+      <div className="d-flex flex-column gap-3">
+        <div className="d-flex flex-column">
+          <div className="h6 mb-2">Crank OP 150 _ 170</div>
+          <div className="d-flex flex-row flex-wrap">
+            <div className="d-flex flex-column flex-wrap dt3">
+              <div>Process Name</div>{" "}
+              <div>{processNoFiltered[0][5]}</div>
+            </div>
+
+            <div className="d-flex flex-column flex-wrap dt3">
+              <div>Date & Time</div>{" "}
+              <div>
+                {" "}
+                {moment(processNoFiltered[0][8]).format(
+                  "DD-MMMM-YYYY HH:mm:ss"
+                )}
+              </div>
+            </div>
+            <div className="d-flex flex-column flex-wrap dt3">
+              <div>Process No</div> <div>{result[1]}</div>
+            </div>
+            <div className="d-flex flex-column flex-wrap dt3">
+              <div>Model</div> <div>{result[1]}</div>
+            </div>
+          </div>
+        </div>
+        <div className="gap-0 d-flex flex-column ">
+          {/* <div className="d-flex flex-row flex-wrap"> */}
+          {crankOP150_170_Elements}
+          {/* </div> */}
+        </div>
+      </div>
+    );
+
+
+    // break;
+
   // case "OP220":
+
+
+
   processNoFiltered = processNoALCData?.filter(
     (elements) => elements[5] === "C4_OP220"
   );

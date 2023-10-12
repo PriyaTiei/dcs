@@ -65,6 +65,8 @@ import Heading_H_OP50 from "./processDetails/Heading_H_OP50";
 import H_OP_50 from "./processDetails/H_OP_50";
 import Heading_A_HeadNR from "./processDetails/Heading_A_HeadNR";
 import A_OP_HeadNR from "./processDetails/A_OP_HeadNR";
+import Heading_C_OP150_170 from "./processDetails/Heading_C_OP150_170";
+import C_OP_150_170 from "./processDetails/C_OP_150_170";
 
 function DeatialTraceability() {
   // formating date
@@ -536,6 +538,12 @@ function DeatialTraceability() {
               <div>
                 <Heading_C_FG />
                 <C_OP_FG />
+              </div>
+            )}
+             {processName == "C3_OP150_170" && (
+              <div className="" style={{ width: "90vw", overflowX: "auto" }}>
+                <Heading_C_OP150_170 />
+                <C_OP_150_170 />
               </div>
             )}
 
