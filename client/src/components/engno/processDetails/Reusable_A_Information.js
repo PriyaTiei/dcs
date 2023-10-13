@@ -3,6 +3,7 @@ import moment from "moment";
 
 function Reusable_A_Information({ data, date, engineNo, dispatchedDate }) {
   let code = data?.slice(38, 41);
+ 
   let lts;
   let customer;
   switch (code) {
@@ -26,6 +27,10 @@ function Reusable_A_Information({ data, date, engineNo, dispatchedDate }) {
       lts = "2.0 Lts. Conventional";
       customer = "TMMIN";
       break;
+      default:
+        lts = "null";
+      customer = "null";
+
   }
 
   var display = null;
@@ -33,7 +38,7 @@ function Reusable_A_Information({ data, date, engineNo, dispatchedDate }) {
   display = (
     <div className="d-flex flex-wrap gap-0 deta ">
       <div className="text-center font-weight-bold flex-1">{engineNo}</div>
-      <div className="text-center font-weight-bold flex-1">{code}</div>
+      <div className="text-center font-weight-bold flex-1">{code}--{data}</div>
       <div className="text-center font-weight-bold flex-1">{lts}</div>
       <div className="text-center font-weight-bold flex-1">{customer}</div>
 

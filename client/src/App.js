@@ -18,6 +18,7 @@ export default function App() {
         <ContentWrapper>
           <Routes>
             <Route path="/" element={<MainPage />} />
+      
          
             <Route
               path="/supplierPartDeatils"

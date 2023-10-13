@@ -13,7 +13,7 @@ function Heading_A_LeakTest() {
             Leak values
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
-            Judgment
+            Judgement
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
             Leak test Date & Time

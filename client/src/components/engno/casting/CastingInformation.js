@@ -82,7 +82,7 @@ function CastingInformation({ castingNo }) {
           className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-success"
           style={{ fontSize: "13px" }}
         >
-          Casting Details
+          Ahresty Casting Details
         </legend>
         <div className="d-flex gap-2">
           {/* <div className="d-flex flex-column gap-1">

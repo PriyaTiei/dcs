@@ -21,7 +21,7 @@ function Reusable_B_OP235({ serialNo, data, date, engineNo, dispatchedDate }) {
           className="text-center font-weight-bold flex-1-mod"
           style={{ minWidth: 85 }}
         >
-          {/* <div className="bg-dark text-light">Judgment</div>{" "} */}
+          {/* <div className="bg-dark text-light">Judgement</div>{" "} */}
           {result[i + 3]}
         </div>
         <div

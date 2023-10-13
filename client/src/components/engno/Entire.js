@@ -97,687 +97,654 @@ function EntireResultProcess() {
   // if (subSection === "Block Cylinder") {
   //   switch (processNo) {
   //     case "OP5":
-        processNoFiltered = processNoALCData?.filter(
-          (elements) => elements[5] === "B1_ENGRAVED"
-        );
+  processNoFiltered = processNoALCData?.filter(
+    (elements) => elements[5] === "B1_ENGRAVED"
+  );
 
-        display_B1_ENGRAVED =
-          processNoFiltered == undefined ||
-          processNoFiltered.length == 0 ? null : (
-            <div className="d-flex flex-column dt1">
-              <div className="h6 mb-2">Block Engraving Details</div>
-              <div className="d-flex ">
-                <div className="dt1f1">Name</div>{" "}
-                <div className="dt1f2">{processNoFiltered[0][5]}</div>
-              </div>
-              <div className="d-flex ">
-                <div className="dt1f1">Casting No.</div>{" "}
-                <div className="dt1f2">{processNoFiltered[0][1].slice(16)}</div>
-              </div>
-              <div className="d-flex ">
-                <div className="dt1f1">Engraving Date</div>{" "}
-                <div className="dt1f2" >
-                  {moment(processNoFiltered[0][8]).format(
-                    "DD-MMMM-YYYY HH:mm:ss"
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-      //   break;
-      // case "OP190":
-        processNoFiltered = processNoALCData?.filter(
-          (elements) => elements[5] === "B3_OP190"
-        );
-        if (processNoFiltered != undefined && processNoFiltered.length > 0) {
-          var op190Data = processNoFiltered[0][1].split(",");
-          // console.log(op190Data)
-          // console.log(op190Data[7])
-          // console.log(parseInt(op190Data[7].slice(0,6)))
-        }
-        display_B3_OP190 =
-          processNoFiltered == undefined ||
-          processNoFiltered.length == 0 ? null : (
-            <div className="d-flex flex-column">
-              
-              <div className="h6 mb-2">Block - Journal diameter in microns</div>
-              {/* <div className="d-flex ">
+  display_B1_ENGRAVED =
+    processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
+      <div className="d-flex flex-column dt1">
+        <div className="h6 mb-2">Cylinder Block Engraving Details</div>
+        <div className="d-flex ">
+          <div className="dt1f1">Process Name</div>{" "}
+          <div className="dt1f2">TIEI Engraving</div>
+        </div>
+        <div className="d-flex ">
+          <div className="dt1f1">Ahresty Casting No.</div>{" "}
+          <div className="dt1f2">{processNoFiltered[0][1].slice(16)}</div>
+        </div>
+        <div className="d-flex ">
+          <div className="dt1f1">Engraving Date & Time</div>{" "}
+          <div className="dt1f2">
+            {moment(processNoFiltered[0][8]).format("DD-MMMM-YYYY HH:mm:ss")}
+          </div>
+        </div>
+      </div>
+    );
+  //   break;
+  // case "OP190":
+  processNoFiltered = processNoALCData?.filter(
+    (elements) => elements[5] === "B3_OP190"
+  );
+  if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var op190Data = processNoFiltered[0][1].split(",");
+    // console.log(op190Data)
+    // console.log(op190Data[7])
+    // console.log(parseInt(op190Data[7].slice(0,6)))
+  }
+  display_B3_OP190 =
+    processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
+      <div className="d-flex flex-column">
+        <div className="h6 mb-2">
+          Block OP190 - Journal diameter Measurement in microns
+        </div>
+        {/* <div className="d-flex ">
                   <div className="dt1f1">Process No.</div>{" "}
                   <div className="dt1f2">{processNoFiltered[0][5]}</div>
                 </div> */}
-              <div className="d-flex  ">
-                <div className="d-flex flex-column dt2 ">
-                  <div className="dt1f1 text-center bg-dark text-light ">
-                    J1
-                  </div>{" "}
-                  <div className="dt1f1 text-center">
-                    {parseInt(op190Data[7].slice(0, 6))}
-                  </div>
-                </div>
-                <div className="d-flex flex-column dt2">
-                  <div className="dt1f1 text-center bg-dark text-light ">
-                    J2
-                  </div>{" "}
-                  <div className="dt1f1 text-center">
-                    {parseInt(op190Data[8].slice(0, 6))}
-                  </div>
-                </div>
-                <div className="d-flex flex-column dt2">
-                  <div className="dt1f1 text-center bg-dark text-light ">
-                    J3
-                  </div>{" "}
-                  <div className="dt1f1 text-center">
-                    {parseInt(op190Data[9].slice(0, 6))}
-                  </div>
-                </div>
-                <div className="d-flex flex-column dt2">
-                  <div className="dt1f1 text-center bg-dark text-light ">
-                    J4
-                  </div>{" "}
-                  <div className="dt1f1 text-center">
-                    {parseInt(op190Data[10].slice(0, 6))}
-                  </div>
-                </div>
-                <div className="d-flex flex-column dt2">
-                  <div className="dt1f1 text-center bg-dark text-light ">
-                    J5
-                  </div>{" "}
-                  <div className="dt1f1 text-center">
-                    {parseInt(op190Data[11].slice(0, 6))}
-                  </div>
-                </div>
-              </div>
-              {/* <div className="d-flex">
+        <div className="d-flex  ">
+          <div className="d-flex flex-column dt2 ">
+            <div className="dt1f1 text-center bg-dark text-light ">J1</div>{" "}
+            <div className="dt1f1 text-center">
+              {parseInt(op190Data[7].slice(0, 6))}
+            </div>
+          </div>
+          <div className="d-flex flex-column dt2">
+            <div className="dt1f1 text-center bg-dark text-light ">J2</div>{" "}
+            <div className="dt1f1 text-center">
+              {parseInt(op190Data[8].slice(0, 6))}
+            </div>
+          </div>
+          <div className="d-flex flex-column dt2">
+            <div className="dt1f1 text-center bg-dark text-light ">J3</div>{" "}
+            <div className="dt1f1 text-center">
+              {parseInt(op190Data[9].slice(0, 6))}
+            </div>
+          </div>
+          <div className="d-flex flex-column dt2">
+            <div className="dt1f1 text-center bg-dark text-light ">J4</div>{" "}
+            <div className="dt1f1 text-center">
+              {parseInt(op190Data[10].slice(0, 6))}
+            </div>
+          </div>
+          <div className="d-flex flex-column dt2">
+            <div className="dt1f1 text-center bg-dark text-light ">J5</div>{" "}
+            <div className="dt1f1 text-center">
+              {parseInt(op190Data[11].slice(0, 6))}
+            </div>
+          </div>
+        </div>
+        {/* <div className="d-flex">
                   <div className="dt1f1">Date</div>{" "}
                   <div className="dt1f2">{processNoFiltered[0][8]}</div>
                 </div> */}
+      </div>
+    );
+  //   break;
+  // case "OP195AB":
+  processNoFiltered = processNoALCData?.filter(
+    (elements) => elements[5] === "B4_Finishing gantry"
+  );
+  if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var op195Data = processNoFiltered[0][1].slice(16, 20);
+    // console.log(op190Data)
+    // console.log(op190Data[7])
+    // console.log(parseInt(op190Data[7].slice(0,6)))
+  }
+
+  display_B4_Finishing_gantry =
+    processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
+      <div>
+        <div className="h6 mb-2">OP-195A/B Machining Time </div>
+        <div className="d-flex flex-column">
+          <div className="d-flex  dt2">
+            <div className="dt1f1">Process Name</div>{" "}
+            <div className="dt1f2">Top Face/Datum Hole Machining</div>
+          </div>
+          <div className="d-flex  dt2">
+            <div className="dt1f1">Machine</div>{" "}
+            <div className="dt1f2">
+              {op195Data == "0011"
+                ? "OP195A"
+                : op195Data == "0012"
+                ? "OP195B"
+                : ""}
             </div>
-          );
-      //   break;
-      // case "OP195AB":
-        processNoFiltered = processNoALCData?.filter(
-          (elements) => elements[5] === "B4_Finishing gantry"
-        );
-        if (processNoFiltered != undefined && processNoFiltered.length > 0) {
-          var op195Data = processNoFiltered[0][1].slice(16, 20);
-          // console.log(op190Data)
-          // console.log(op190Data[7])
-          // console.log(parseInt(op190Data[7].slice(0,6)))
-        }
-
-        display_B4_Finishing_gantry =
-          processNoFiltered == undefined ||
-          processNoFiltered.length == 0 ? null : (
-            <div>
-               <div className="h6 mb-2">Finish Gantry </div>
-            <div className="d-flex flex-column">
-              <div className="d-flex  dt2">
-                <div className="dt1f1">Process Name</div>{" "}
-                <div className="dt1f2">{processNoFiltered[0][5]}</div>
-              </div>
-              <div className="d-flex  dt2">
-                <div className="dt1f1">Machine</div>{" "}
-                <div className="dt1f2">
-                  {op195Data == "0011"
-                    ? "OP195A"
-                    : op195Data == "0012"
-                    ? "OP195B"
-                    : ""}
-                </div>
-              </div>
-              <div className="d-flex  dt2">
-                <div className="dt1f1">Date & Time</div>{" "}
-                <div className="dt1f2">
-                  {moment(processNoFiltered[0][8]).format(
-                    "DD-MMMM-YYYY HH:mm:ss"
-                  )}
-                </div>
-              </div>
+          </div>
+          <div className="d-flex  dt2">
+            <div className="dt1f1">Date & Time</div>{" "}
+            <div className="dt1f2">
+              {moment(processNoFiltered[0][8]).format("DD-MMMM-YYYY HH:mm:ss")}
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  //   break;
+  // case "OP235":
+  processNoFiltered = processNoALCData?.filter(
+    (elements) => elements[5] === "B5_OP235"
+  );
+  if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var result = decodeBlock235(processNoFiltered[0][1]);
+    var plug2to5 = [];
+    var PLabel = ["Plug1 ", "Plug2 ", "Plug3 ", "Plug4 ", "Plug5 ", "Plug6 ", "", "ScrewPlug "];
+    for (let i = 0; i < 40; i += 5) {
+      if (i === 30) {
+        continue;
+      }
+      let el = (
+        <div className="d-flex flex-row flex-wrap mb-2">
+          <div className="d-flex flex-column dt3">
+            <div className="bg-warning text-light">{PLabel[i / 5]}<>&empty;</></div>{" "}
+            {/* <div>{correctList[1]}</div> */}
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">Judgement</div>{" "}
+            <div>{result[i + 3]}</div>
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              Measurement leak (mL / min)
+            </div>{" "}
+            <div>{result[i + 4]}</div>
+          </div>
+
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">Correction (mL / min)</div>{" "}
+            <div>{result[i + 5]}</div>
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
+            <div>{result[i + 6]}</div>
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
+            <div>{result[i + 7]}</div>
+          </div>
+        </div>
+      );
+      plug2to5.push(el);
+    }
+  }
+
+  display_B5_OP235 =
+    processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
+      <div>
+        <div className="h6 mb-2">Block OP235 - Leak Testing Details</div>
+        <div>
+          <div className="d-flex flex-row flex-wrap gap-2">
+            <div className="d-flex flex-column dt2 ">
+              <div className="dt1f1 text-center bg-dark text-light ">Model</div>{" "}
+              <div className="dt1f1 text-center">{result[1].model}</div>
             </div>
-          );
-      //   break;
-      // case "OP235":
-        processNoFiltered = processNoALCData?.filter(
-          (elements) => elements[5] === "B5_OP235"
-        );
-        if (processNoFiltered != undefined && processNoFiltered.length > 0) {
-          var result = decodeBlock235(processNoFiltered[0][1]);
-          var plug2to5 = [];
-          var PLabel = ["P1", "P2", "P3", "P4", "P5", "P6", "", "SP"];
-          for (let i = 0; i < 40; i += 5) {
-            if (i === 30) {
-              continue;
-            }
-            let el = (
-              <div className="d-flex flex-row flex-wrap mb-2">
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-warning text-light">{PLabel[i / 5]}</div>{" "}
-                  {/* <div>{correctList[1]}</div> */}
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">Judgment</div>{" "}
-                  <div>{result[i + 3]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">
-                    Measurement leak (mL / min)
-                  </div>{" "}
-                  <div>{result[i + 4]}</div>
-                </div>
 
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">
-                    Correction (mL / min)
-                  </div>{" "}
-                  <div>{result[i + 5]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
-                  <div>{result[i + 6]}</div>
-                </div>
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
-                  <div>{result[i + 7]}</div>
-                </div>
-              </div>
-            );
-            plug2to5.push(el);
-          }
-        }
+            <div className="d-flex flex-column dt2 ">
+              <div className="dt1f1 text-center bg-dark text-light ">
+                Variant
+              </div>{" "}
+              <div className="dt1f1 text-center">{result[1].lts}</div>
+            </div>
 
-        display_B5_OP235 =
-          processNoFiltered == undefined ||
-          processNoFiltered.length == 0 ? null : (
-            <div>
-            <div className="h6 mb-2">Block - OP235 Leak Testing Details</div>
-            <div>
-            <div className="d-flex flex-row flex-wrap gap-2">
-              <div className="d-flex flex-column dt2 ">
-                <div className="dt1f1 text-center bg-dark text-light ">
-                  Model
-                </div>{" "}
-                <div className="dt1f1 text-center">{result[1].model}</div>
-              </div>
-
-              <div className="d-flex flex-column dt2 ">
-                <div className="dt1f1 text-center bg-dark text-light ">
-                  Lts.
-                </div>{" "}
-                <div className="dt1f1 text-center">{result[1].lts}</div>
-              </div>
-
-              <div className="d-flex flex-column dt2 ">
-                <div className="dt1f1 text-center bg-dark text-light ">
-                  Judgment
-                </div>{" "}
-                <div className="dt1f1 text-center">{result[2]}</div>
-              </div>
+            <div className="d-flex flex-column dt2 ">
+              <div className="dt1f1 text-center bg-dark text-light ">
+                Judgement
+              </div>{" "}
+              <div className="dt1f1 text-center">{result[2]}</div>
+            </div>
+            <div
+              className="d-flex flex-column dt2 flex-1 "
+              style={{ width: "200px" }}
+            >
               <div
-                className="d-flex flex-column dt2 flex-1 "
+                className="dt1f1 text-center bg-dark text-light "
                 style={{ width: "200px" }}
               >
-                <div
-                  className="dt1f1 text-center bg-dark text-light "
-                  style={{ width: "200px" }}
-                >
-                  Process Date & Time
-                </div>{" "}
-                <div className="dt1f1 text-center" style={{ width: "200px" }}>
-                  {moment(processNoFiltered[0][8]).format(
-                    "DD-MMMM-YYYY HH:mm:ss"
-                  )}
-                </div>
+                Process Date & Time
+              </div>{" "}
+              <div className="dt1f1 text-center" style={{ width: "200px" }}>
+                {moment(processNoFiltered[0][8]).format(
+                  "DD-MMMM-YYYY HH:mm:ss"
+                )}
               </div>
+            </div>
+          </div>
+          <div className="mt-2 h6">Block Plug Leak Values</div>
+          <div className="mt-2 ">
+            {/* plug1~6 and SrewPlug */}
+            {plug2to5}
+          </div>
+        </div>
+      </div>
+    );
+  //   break;
+  // case "FG":
+  processNoFiltered = processNoALCData?.filter(
+    (elements) => elements[5] === "B7_OP990"
+  );
 
-              
-            
+  display_B7_OP990 =
+    processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
+      <div>
+        <div className="h6 mb-2">FG Date & Time</div>
+        <div className="d-flex flex-column">
+          <div className="d-flex dt2">
+            <div className="dt1f1">Process Name</div>{" "}
+            <div className="dt1f2" style={{ width: "150px" }}>
+              FG Scanning
             </div>
-            <div className="mt-2 ">
-              {/* plug1~6 and SrewPlug */}
-              {plug2to5}
-              </div>
-            </div>
-            </div>
-          );
-      //   break;
-      // case "FG":
-        processNoFiltered = processNoALCData?.filter(
-          (elements) => elements[5] === "B7_OP990"
-        );
-
-        display_B7_OP990 =
-          processNoFiltered == undefined ||
-          processNoFiltered.length == 0 ? null : (
-            <div>
-               <div className="h6 mb-2">FG Check </div>
-            <div className="d-flex flex-column">
-              <div className="d-flex dt2">
-                <div className="dt1f1">Process Name</div>{" "}
-                <div className="dt1f2" style={{width:"150px"}}>{processNoFiltered[0][5]}</div>
-              </div>
-              {/* <div className="d-flex dt2">
+          </div>
+          {/* <div className="d-flex dt2">
                       <div className="dt1f1">Data</div>{" "}
                       <div className="dt1f2">{processNoFiltered[0][1]}</div>
                     </div> */}
-              <div className="d-flex dt2">
-                <div className="dt1f1" >FG Date & Time</div>{" "}
-                <div className="dt1f2" style={{width:"150px"}}>
-                  {moment(processNoFiltered[0][8]).format(
-                    "DD-MMMM-YYYY HH:mm:ss"
-                  )}
-                </div>
-              </div>
+          <div className="d-flex dt2">
+            <div className="dt1f1">FG Date & Time</div>{" "}
+            <div className="dt1f2" style={{ width: "150px" }}>
+              {moment(processNoFiltered[0][8]).format("DD-MMMM-YYYY HH:mm:ss")}
             </div>
-            </div>
-          );
+          </div>
+        </div>
+      </div>
+    );
   //       break;
   //     default:
   //       display = null;
   //       break;
   //   }
-  // } 
+  // }
   // else if (subSection === "Head Cylinder") {
   //   switch (processNo) {
   //     case "OP05":
-        processNoFiltered = processNoALCData?.filter(
-          (elements) => elements[5] === "H1_Material input/engraving"
-        );
+  processNoFiltered = processNoALCData?.filter(
+    (elements) => elements[5] === "H1_Material input/engraving"
+  );
 
-        display_H1_Material_input_engraving =
-          processNoFiltered == undefined ||
-          processNoFiltered.length == 0 ? null : (
-            <div className="d-flex flex-column dt1">
-              <div className="h6 mb-2">H1_Material input/engraving - Engraving Details</div>
-              <div className="d-flex ">
-                <div className="dt1f1">Name</div>{" "}
-                <div className="dt1f2">{processNoFiltered[0][5]}</div>
+  display_H1_Material_input_engraving =
+    processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
+      <div className="d-flex flex-column dt1">
+        <div className="h6 mb-2">
+          H1_Material input/engraving - Engraving Details
+        </div>
+        <div className="d-flex ">
+          <div className="dt1f1">Name</div>{" "}
+          <div className="dt1f2">{processNoFiltered[0][5]}</div>
+        </div>
+        <div className="d-flex ">
+          <div className="dt1f1">Casting No.</div>{" "}
+          <div className="dt1f2">{processNoFiltered[0][1].slice(16)}</div>
+        </div>
+        <div className="d-flex ">
+          <div className="dt1f1">Engraving Date & Time</div>{" "}
+          <div className="dt1f2">
+            {moment(processNoFiltered[0][8]).format("DD-MMMM-YYYY HH:mm:ss")}
+          </div>
+        </div>
+      </div>
+    );
+  //   break;
+  // case "OP50":
+  processNoFiltered = processNoALCData?.filter(
+    (elements) => elements[5] === "H2_OP050"
+  );
+  if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    let result = decodeHead50(processNoFiltered[0][1]);
+    var headOP50Elements = [];
+    if (result.length > 0) {
+      for (let i = 22; i < 30; i++) {
+        headOP50Elements.push(
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">T{i - 21} (0.001g/sec)</div>
+            <div>{result[i]}</div>
+          </div>
+        );
+      }
+    }
+  }
+  display_H2_OP050 =
+    processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
+      <div>
+        <div className="h6 mb-2">H2_OP050-Lazer Clading</div>
+        <div className="d-flex flex-row gap-3">
+          <div className="d-flex flex-row">
+            <div className="d-flex flex-row flex-wrap">
+              <div className="d-flex flex-column flex-wrap dt3">
+                <div>Process Name</div> <div>{processNoFiltered[0][5]}</div>
               </div>
-              <div className="d-flex ">
-                <div className="dt1f1">Casting No.</div>{" "}
-                <div className="dt1f2">{processNoFiltered[0][1].slice(16)}</div>
-              </div>
-              <div className="d-flex ">
-                <div className="dt1f1">Engraving Date & Time</div>{" "}
-                <div className="dt1f2">
+
+              <div className="d-flex flex-column flex-wrap dt3">
+                <div>Date & Time</div>{" "}
+                <div>
                   {moment(processNoFiltered[0][8]).format(
                     "DD-MMMM-YYYY HH:mm:ss"
                   )}
                 </div>
               </div>
             </div>
-          );
-      //   break;
-      // case "OP50":
-        processNoFiltered = processNoALCData?.filter(
-          (elements) => elements[5] === "H2_OP050"
+          </div>
+          <div
+            className="gap-0 d-flex flex-column "
+            style={{ width: "max-content" }}
+          >
+            <div className="border border-dark gap-0 font-weight-bold text-center p-1 ">
+              Sheet powder flow rate
+            </div>
+            <div className="d-flex flex-row">{headOP50Elements}</div>
+          </div>
+        </div>
+      </div>
+    );
+  //   break;
+  // case "OP55":
+  processNoFiltered = processNoALCData?.filter(
+    (elements) => elements[5] === "H3_OP055"
+  );
+  if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    let result = decodeHead50(processNoFiltered[0][1]);
+    var headOP50Elements = [];
+    if (result.length > 0) {
+      for (let i = 22; i < 30; i++) {
+        headOP50Elements.push(
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">T{i - 21} (0.001g/sec)</div>
+            <div>{result[i]}</div>
+          </div>
         );
-        if (processNoFiltered != undefined && processNoFiltered.length > 0) {
-          let result = decodeHead50(processNoFiltered[0][1]);
-          var headOP50Elements = [];
-          if (result.length > 0) {
-            for (let i = 22; i < 30; i++) {
-              headOP50Elements.push(
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">
-                    T{i - 21} (0.001g/sec)
-                  </div>
-                  <div>{result[i]}</div>
-                </div>
-              );
-            }
-          }
-        }
-        display_H2_OP050 =
-          processNoFiltered == undefined ||
-          processNoFiltered.length == 0 ? null : (
-            <div>
-                 <div className="h6 mb-2">H2_OP050-Lazer Clading</div>
-            <div className="d-flex flex-row gap-3">
-           
-              <div className="d-flex flex-row">
-                
-                <div className="d-flex flex-row flex-wrap">
-                  <div className="d-flex flex-column flex-wrap dt3">
-                    <div>Process Name</div> <div>{processNoFiltered[0][5]}</div>
-                  </div>
+      }
+    }
+  }
+  display_H3_OP055 =
+    processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
+      <div>
+        <div className="h6 mb-2">H3_OP055-Lazer Clading</div>
+        <div className="d-flex flex-row gap-3">
+          <div className="d-flex flex-column">
+            <div className="d-flex flex-row flex-wrap">
+              <div className="d-flex flex-column flex-wrap dt3">
+                <div>Process Name</div> <div>{processNoFiltered[0][5]}</div>
+              </div>
 
-                  <div className="d-flex flex-column flex-wrap dt3">
-                    <div>Date & Time</div> <div>{moment(processNoFiltered[0][8]).format(
+              <div className="d-flex flex-column flex-wrap dt3">
+                <div>Date & Time</div>{" "}
+                <div>
+                  {moment(processNoFiltered[0][8]).format(
                     "DD-MMMM-YYYY HH:mm:ss"
-                  )}</div>
-                  </div>
-                </div>
-              </div>
-              <div className="gap-0 d-flex flex-column " style={{width:"max-content"}}>
-                <div className="border border-dark gap-0 font-weight-bold text-center p-1 ">
-                  Sheet powder flow rate
-                </div>
-                <div className="d-flex flex-row">
-                  {headOP50Elements}
+                  )}
                 </div>
               </div>
             </div>
+          </div>
+          <div
+            className="gap-0 d-flex flex-column  "
+            style={{ width: "max-content" }}
+          >
+            <div className="border border-dark gap-0 font-weight-bold text-center p-1">
+              Sheet powder flow rate
             </div>
-          );
-      //   break;
-      // case "OP55":
-        processNoFiltered = processNoALCData?.filter(
-          (elements) => elements[5] === "H3_OP055"
-        );
-        if (processNoFiltered != undefined && processNoFiltered.length > 0) {
-          let result = decodeHead50(processNoFiltered[0][1]);
-          var headOP50Elements = [];
-          if (result.length > 0) {
-            for (let i = 22; i < 30; i++) {
-              headOP50Elements.push(
-                <div className="d-flex flex-column dt3">
-                  <div className="bg-dark text-light">
-                    T{i - 21} (0.001g/sec)
-                  </div>
-                  <div>{result[i]}</div>
-                </div>
-              );
-            }
-          }
-        }
-        display_H3_OP055=
-          processNoFiltered == undefined ||
-          processNoFiltered.length == 0 ? null : (
-            <div>
-                  <div className="h6 mb-2">H3_OP055-Lazer Clading</div>
-            <div className="d-flex flex-row gap-3">
-              <div className="d-flex flex-column">
-            
-                <div className="d-flex flex-row flex-wrap">
-                  <div className="d-flex flex-column flex-wrap dt3">
-                    <div>Process Name</div> <div>{processNoFiltered[0][5]}</div>
-                  </div>
+            <div className="d-flex flex-row ">{headOP50Elements}</div>
+          </div>
+        </div>
+      </div>
+    );
+  //   break;
 
-                  <div className="d-flex flex-column flex-wrap dt3">
-                    <div>Date & Time</div> <div>{moment(processNoFiltered[0][8]).format(
-                    "DD-MMMM-YYYY HH:mm:ss"
-                  )}</div>
-                  </div>
-                </div>
-              </div>
-              <div className="gap-0 d-flex flex-column  "  style={{width:"max-content"}}>
-                <div className="border border-dark gap-0 font-weight-bold text-center p-1">
-                  Sheet powder flow rate
-                </div>
-                <div className="d-flex flex-row ">
-                  {headOP50Elements}
-                </div>
+  // case "OP310":
+  processNoFiltered = processNoALCData?.filter(
+    (elements) => elements[5] === "H5_OP310"
+  );
+  if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var H_OP310_list = processNoFiltered[0][1].split(",");
+    var f1, correctList;
+    if (H_OP310_list.length >= 29) {
+      f1 = H_OP310_list[0].slice(16, 17);
+      correctList = H_OP310_list.map((item) => parseFloat(item));
+    }
+
+    display_H5_OP310 =
+      processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
+        <div className="d-flex flex-column">
+          <div className="h6 mb-2">H5_OP310 - Leak Testing</div>
+          <div className="d-flex flex-row flex-wrap">
+            <div className="d-flex flex-column flex-wrap dt3">
+              <div>Process Name</div> <div>{processNoFiltered[0][5]}</div>
+            </div>
+
+            <div className="d-flex flex-column flex-wrap dt3">
+              <div>Date & Time</div>{" "}
+              <div>
+                {moment(processNoFiltered[0][8]).format(
+                  "DD-MMMM-YYYY HH:mm:ss"
+                )}
               </div>
             </div>
+          </div>
+
+          <div className="d-flex flex-row flex-wrap mt-2">
+            <div className="d-flex flex-column dt3">
+              <div className="bg-warning text-light">WJ</div>{" "}
+              {/* <div>{correctList[1]}</div> */}
             </div>
-          );
-      //   break;
-
-      // case "OP310":
-        processNoFiltered = processNoALCData?.filter(
-          (elements) => elements[5] === "H5_OP310"
-        );
-        if (processNoFiltered != undefined && processNoFiltered.length > 0) {
-          var H_OP310_list = processNoFiltered[0][1].split(",");
-          var f1, correctList;
-          if (H_OP310_list.length >= 29) {
-            f1 = H_OP310_list[0].slice(16, 17);
-            correctList = H_OP310_list.map((item) => parseFloat(item));
-          }
-
-          display_H5_OP310 =
-            processNoFiltered == undefined ||
-            processNoFiltered.length == 0 ? null : (
-              <div className="d-flex flex-column">
-                <div className="h6 mb-2">H5_OP310 - Leak Testing</div>
-                <div className="d-flex flex-row flex-wrap">
-                  <div className="d-flex flex-column flex-wrap dt3">
-                    <div>Process Name</div> <div>{processNoFiltered[0][5]}</div>
-                  </div>
-
-                  <div className="d-flex flex-column flex-wrap dt3">
-                    <div>Date & Time</div> <div>{moment(processNoFiltered[0][8]).format(
-                    "DD-MMMM-YYYY HH:mm:ss"
-                  )}</div>
-                  </div>
-                </div>
-
-                <div className="d-flex flex-row flex-wrap mt-2">
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-warning text-light">WJ</div>{" "}
-                    {/* <div>{correctList[1]}</div> */}
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="d-flex flex-column dt3 bg-dark text-light">Judgment</div>{" "}
-                    <div>
-                      {f1 == "1"
-                        ? "LL NG"
-                        : f1 == "2"
-                        ? "OK"
-                        : f1 == "4"
-                        ? "UL NG"
-                        : f1 == "9"
-                        ? "LL2 NG"
-                        : f1 == "D"
-                        ? "ERR"
-                        : ""}
-                    </div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">
-                      Measurement leak (mL / min)
-                    </div>{" "}
-                    <div>{correctList[1]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
-                    <div>{correctList[2]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
-                    <div>{correctList[3]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">
-                      Correction (mL / min)
-                    </div>{" "}
-                    <div>{correctList[4]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
-                    <div>{correctList[5]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
-                    <div>{correctList[6]}</div>
-                  </div>
-                </div>
-
-                <div className="d-flex flex-row flex-wrap mt-2">
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-warning text-light">OH</div>{" "}
-                    {/* <div>{correctList[1]}</div> */}
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">Judgment</div>{" "}
-                    <div>
-                      {correctList[7].toString() == "1"
-                        ? "LL NG"
-                        : correctList[7].toString() == "2"
-                        ? "OK"
-                        : correctList[7].toString() == "4"
-                        ? "UL NG"
-                        : correctList[7].toString() == "9"
-                        ? "LL2 NG"
-                        : correctList[7].toString() == "D"
-                        ? "ERR"
-                        : ""}
-                    </div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">
-                      Measurement leak (mL / min)
-                    </div>{" "}
-                    <div>{correctList[8]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
-                    <div>{correctList[9]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
-                    <div>{correctList[10]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">
-                      Correction (mL / min)
-                    </div>{" "}
-                    <div>{correctList[11]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
-                    <div>{correctList[12]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
-                    <div>{correctList[13]}</div>
-                  </div>
-                </div>
-
-                <div className="d-flex flex-row flex-wrap mt-2">
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-warning text-light">CC</div>{" "}
-                    {/* <div>{correctList[1]}</div> */}
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">Judgment</div>{" "}
-                    <div>
-                      {correctList[14].toString() == "1"
-                        ? "LL NG"
-                        : correctList[14].toString() == "2"
-                        ? "OK"
-                        : correctList[14].toString() == "4"
-                        ? "UL NG"
-                        : correctList[14].toString() == "9"
-                        ? "LL2 NG"
-                        : correctList[14].toString() == "D"
-                        ? "ERR"
-                        : ""}
-                    </div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">
-                      Measurement leak (mL / min)
-                    </div>{" "}
-                    <div>{correctList[15]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
-                    <div>{correctList[16]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
-                    <div>{correctList[17]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">
-                      Correction (mL / min)
-                    </div>{" "}
-                    <div>{correctList[18]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
-                    <div>{correctList[19]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
-                    <div>{correctList[20]}</div>
-                  </div>
-                </div>
-
-                <div className="d-flex flex-row flex-wrap mt-2">
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-warning text-light">EGR</div>{" "}
-                    {/* <div>{correctList[1]}</div> */}
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">Judgment</div>{" "}
-                    <div>
-                      {correctList[21].toString() == "1"
-                        ? "LL NG"
-                        : correctList[21].toString() == "2"
-                        ? "OK"
-                        : correctList[21].toString() == "4"
-                        ? "UL NG"
-                        : correctList[21].toString() == "9"
-                        ? "LL2 NG"
-                        : correctList[21].toString() == "D"
-                        ? "ERR"
-                        : ""}
-                    </div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">
-                      Measurement leak (mL / min)
-                    </div>{" "}
-                    <div>{correctList[22]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
-                    <div>{correctList[23]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
-                    <div>{correctList[24]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">
-                      Correction (mL / min)
-                    </div>{" "}
-                    <div>{correctList[25]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
-                    <div>{correctList[26]}</div>
-                  </div>
-                  <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
-                    <div>{correctList[27]}</div>
-                  </div>
-                </div>
+            <div className="d-flex flex-column dt3">
+              <div className="d-flex flex-column dt3 bg-dark text-light">
+                Judgement
+              </div>{" "}
+              <div>
+                {f1 == "1"
+                  ? "LL NG"
+                  : f1 == "2"
+                  ? "OK"
+                  : f1 == "4"
+                  ? "UL NG"
+                  : f1 == "9"
+                  ? "LL2 NG"
+                  : f1 == "D"
+                  ? "ERR"
+                  : ""}
               </div>
-            );
-        }
-      //   break;
-      // case "FG":
-        processNoFiltered = processNoALCData?.filter(
-          (elements) => elements[5] === "H12_OP990"
-        );
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">
+                Measurement leak (mL / min)
+              </div>{" "}
+              <div>{correctList[1]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
+              <div>{correctList[2]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
+              <div>{correctList[3]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Correction (mL / min)</div>{" "}
+              <div>{correctList[4]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
+              <div>{correctList[5]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
+              <div>{correctList[6]}</div>
+            </div>
+          </div>
 
-        display_H12_OP990 =
-          processNoFiltered == undefined ||
-          processNoFiltered.length == 0 ? null : (
-            <div className="d-flex flex-column">
-              <div className="h6 mb-2">H12_OP990 - FG Date & Time Details</div>
-              <div className="d-flex dt2">
-                <div className="dt1f1">Process Name</div>{" "}
-                <div className="dt1f2">{processNoFiltered[0][5]}</div>
+          <div className="d-flex flex-row flex-wrap mt-2">
+            <div className="d-flex flex-column dt3">
+              <div className="bg-warning text-light">OH</div>{" "}
+              {/* <div>{correctList[1]}</div> */}
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Judgement</div>{" "}
+              <div>
+                {correctList[7].toString() == "1"
+                  ? "LL NG"
+                  : correctList[7].toString() == "2"
+                  ? "OK"
+                  : correctList[7].toString() == "4"
+                  ? "UL NG"
+                  : correctList[7].toString() == "9"
+                  ? "LL2 NG"
+                  : correctList[7].toString() == "D"
+                  ? "ERR"
+                  : ""}
               </div>
-              {/* <div className="d-flex dt2">
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">
+                Measurement leak (mL / min)
+              </div>{" "}
+              <div>{correctList[8]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
+              <div>{correctList[9]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
+              <div>{correctList[10]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Correction (mL / min)</div>{" "}
+              <div>{correctList[11]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
+              <div>{correctList[12]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
+              <div>{correctList[13]}</div>
+            </div>
+          </div>
+
+          <div className="d-flex flex-row flex-wrap mt-2">
+            <div className="d-flex flex-column dt3">
+              <div className="bg-warning text-light">CC</div>{" "}
+              {/* <div>{correctList[1]}</div> */}
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Judgement</div>{" "}
+              <div>
+                {correctList[14].toString() == "1"
+                  ? "LL NG"
+                  : correctList[14].toString() == "2"
+                  ? "OK"
+                  : correctList[14].toString() == "4"
+                  ? "UL NG"
+                  : correctList[14].toString() == "9"
+                  ? "LL2 NG"
+                  : correctList[14].toString() == "D"
+                  ? "ERR"
+                  : ""}
+              </div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">
+                Measurement leak (mL / min)
+              </div>{" "}
+              <div>{correctList[15]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
+              <div>{correctList[16]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
+              <div>{correctList[17]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Correction (mL / min)</div>{" "}
+              <div>{correctList[18]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
+              <div>{correctList[19]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
+              <div>{correctList[20]}</div>
+            </div>
+          </div>
+
+          <div className="d-flex flex-row flex-wrap mt-2">
+            <div className="d-flex flex-column dt3">
+              <div className="bg-warning text-light">EGR</div>{" "}
+              {/* <div>{correctList[1]}</div> */}
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Judgement</div>{" "}
+              <div>
+                {correctList[21].toString() == "1"
+                  ? "LL NG"
+                  : correctList[21].toString() == "2"
+                  ? "OK"
+                  : correctList[21].toString() == "4"
+                  ? "UL NG"
+                  : correctList[21].toString() == "9"
+                  ? "LL2 NG"
+                  : correctList[21].toString() == "D"
+                  ? "ERR"
+                  : ""}
+              </div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">
+                Measurement leak (mL / min)
+              </div>{" "}
+              <div>{correctList[22]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
+              <div>{correctList[23]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
+              <div>{correctList[24]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Correction (mL / min)</div>{" "}
+              <div>{correctList[25]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
+              <div>{correctList[26]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
+              <div>{correctList[27]}</div>
+            </div>
+          </div>
+        </div>
+      );
+  }
+  //   break;
+  // case "FG":
+  processNoFiltered = processNoALCData?.filter(
+    (elements) => elements[5] === "H12_OP990"
+  );
+
+  display_H12_OP990 =
+    processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
+      <div className="d-flex flex-column">
+        <div className="h6 mb-2">H12_OP990 - FG Date & Time Details</div>
+        <div className="d-flex dt2">
+          <div className="dt1f1">Process Name</div>{" "}
+          <div className="dt1f2">{processNoFiltered[0][5]}</div>
+        </div>
+        {/* <div className="d-flex dt2">
                       <div className="dt1f1">Data</div>{" "}
                       <div className="dt1f2">{processNoFiltered[0][1]}</div>
                     </div> */}
-              <div className="d-flex dt2">
-                <div className="dt1f1">FG Date & Time</div>{" "}
-                <div className="dt1f2">
-                  {moment(processNoFiltered[0][8]).format(
-                    "DD-MMMM-YYYY HH:mm:ss"
-                  )}
-                </div>
-              </div>
-            </div>
-          );
+        <div className="d-flex dt2">
+          <div className="dt1f1">FG Date & Time</div>{" "}
+          <div className="dt1f2">
+            {moment(processNoFiltered[0][8]).format("DD-MMMM-YYYY HH:mm:ss")}
+          </div>
+        </div>
+      </div>
+    );
   //       break;
   //     default:
   //       display = null;
@@ -831,7 +798,7 @@ function EntireResultProcess() {
       </div>
     );
   // break;
- 
+
   // case "170 front Gantry":
   processNoFiltered = processNoALCData?.filter(
     (elements) => elements[5] === "C6_OP170 front gantry"
@@ -840,7 +807,9 @@ function EntireResultProcess() {
   display_C6_OP170_front_gantry =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">C6_OP170 front gantry- Date & Time Details</div>
+        <div className="h6 mb-2">
+          C6_OP170 front gantry- Date & Time Details
+        </div>
         <div className="d-flex dt2">
           <div className="dt1f1">Process Name</div>{" "}
           <div className="dt1f2">{processNoFiltered[0][5]}</div>
@@ -878,10 +847,7 @@ function EntireResultProcess() {
       let el = (
         <div className="d-flex flex-row flex-wrap mt-2">
           <div className="d-flex flex-column dt3">
-            <div
-              className="bg-warning text-light"
-              style={{ minWidth: "70px" }}
-            >
+            <div className="bg-warning text-light" style={{ minWidth: "70px" }}>
               {PLabel[i / 4]}
             </div>{" "}
             {/* <div>{correctList[1]}</div> */}
@@ -920,18 +886,13 @@ function EntireResultProcess() {
       let el = (
         <div className="d-flex flex-row flex-wrap mt-2">
           <div className="d-flex flex-column dt3">
-            <div
-              className="bg-warning text-light"
-              style={{ minWidth: "70px" }}
-            >
+            <div className="bg-warning text-light" style={{ minWidth: "70px" }}>
               {PLabel[i / 4]}
             </div>{" "}
             {/* <div>{correctList[1]}</div> */}
           </div>
           <div className="d-flex flex-column dt3">
-            <div className="bg-dark text-light">
-              1-sided measure (0.1 gcm)
-            </div>{" "}
+            <div className="bg-dark text-light">1-sided measure (0.1 gcm)</div>{" "}
             <div>{result[i + 3]}</div>
           </div>
           <div className="d-flex flex-column dt3">
@@ -960,15 +921,13 @@ function EntireResultProcess() {
   }
 
   display_C3_OP150_170 =
-    processNoFiltered == undefined ||
-    processNoFiltered.length == 0 ? null : (
+    processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div className="d-flex flex-column gap-3">
         <div className="d-flex flex-column">
           <div className="h6 mb-2">Crank OP 150 _ 170</div>
           <div className="d-flex flex-row flex-wrap">
             <div className="d-flex flex-column flex-wrap dt3">
-              <div>Process Name</div>{" "}
-              <div>{processNoFiltered[0][5]}</div>
+              <div>Process Name</div> <div>{processNoFiltered[0][5]}</div>
             </div>
 
             <div className="d-flex flex-column flex-wrap dt3">
@@ -996,12 +955,9 @@ function EntireResultProcess() {
       </div>
     );
 
-
-    // break;
+  // break;
 
   // case "OP220":
-
-
 
   processNoFiltered = processNoALCData?.filter(
     (elements) => elements[5] === "C4_OP220"
@@ -1063,9 +1019,12 @@ function EntireResultProcess() {
             </div>
 
             <div className="d-flex flex-column flex-wrap dt3">
-              <div>Date & Time</div> <div>{moment(processNoFiltered[0][8]).format(
-                    "DD-MMMM-YYYY HH:mm:ss"
-                  )}</div>
+              <div>Date & Time</div>{" "}
+              <div>
+                {moment(processNoFiltered[0][8]).format(
+                  "DD-MMMM-YYYY HH:mm:ss"
+                )}
+              </div>
             </div>
           </div>
 
@@ -1306,11 +1265,11 @@ function EntireResultProcess() {
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Fuel Leak</div>
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Value</div>{" "}
+          <div className="dt1f1">Leak Value</div>{" "}
           <div className="dt1f2">{processNoFiltered[0][1].slice(75, 84)}</div>
         </div>
         <div className="d-flex dt2">
-          <div className="dt1f1">Judgment</div>{" "}
+          <div className="dt1f1">Judgement</div>{" "}
           <div className="dt1f2">
             {processNoFiltered[0][1].slice(84, 85) == "2"
               ? "OK"
@@ -1335,11 +1294,11 @@ function EntireResultProcess() {
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Water Leak</div>
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Value</div>{" "}
+          <div className="dt1f1">Leak Value</div>{" "}
           <div className="dt1f2">{processNoFiltered[0][1].slice(75, 84)}</div>
         </div>
         <div className="d-flex dt2">
-          <div className="dt1f1">Judgment</div>{" "}
+          <div className="dt1f1">Judgement</div>{" "}
           <div className="dt1f2">
             {processNoFiltered[0][1].slice(84, 85) == "2"
               ? "OK"
@@ -1364,11 +1323,11 @@ function EntireResultProcess() {
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Oil Leak</div>
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Value</div>{" "}
+          <div className="dt1f1">Leak Value</div>{" "}
           <div className="dt1f2">{processNoFiltered[0][1].slice(75, 84)}</div>
         </div>
         <div className="d-flex dt2">
-          <div className="dt1f1">Judgment</div>{" "}
+          <div className="dt1f1">Judgement</div>{" "}
           <div className="dt1f2">
             {processNoFiltered[0][1].slice(84, 85) == "2"
               ? "OK"
@@ -1422,7 +1381,7 @@ function EntireResultProcess() {
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Engine quality information</div>
         <div className="d-flex dt2">
-          <div className="dt1f1">Code</div>
+          <div className="dt1f1">Variant</div>
           <div className="dt1f2">{code}</div>
         </div>
         <div className="d-flex dt2">
@@ -1456,7 +1415,7 @@ function EntireResultProcess() {
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     display_TEST_ON = (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">TEST_ON</div>
+        <div className="h6 mb-2">Engine Testing (ET) Entry</div>
         {/* <div className="d-flex dt2">
               <div className="dt1f1">Code</div>{" "}
           
@@ -1477,7 +1436,7 @@ function EntireResultProcess() {
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     display_MAIN_ON = (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">MAIN_ON</div>
+        <div className="h6 mb-2">Main Line 1 (MK1) Entry</div>
         {/* <div className="d-flex dt2">
               <div className="dt1f1">Code</div>{" "}
           
@@ -1498,7 +1457,7 @@ function EntireResultProcess() {
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     display_CRANK_ON = (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">CRANK_ON</div>
+        <div className="h6 mb-2">Crank Assembly Time</div>
         {/* <div className="d-flex dt2">
               <div className="dt1f1">Code</div>{" "}
           
@@ -1521,7 +1480,7 @@ function EntireResultProcess() {
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     display_HEADSUB_OFF = (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">HEADSUB_OFF</div>
+        <div className="h6 mb-2">Head Feeding to MK1 Time</div>
         {/* <div className="d-flex dt2">
               <div className="dt1f1">Code</div>{" "}
           
@@ -1544,7 +1503,7 @@ function EntireResultProcess() {
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     display_BLOCKSUB_ON = (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">BLOCKSUB_ON</div>
+        <div className="h6 mb-2">Block Feeding Time</div>
         {/* <div className="d-flex dt2">
               <div className="dt1f1">Code</div>{" "}
           
@@ -1567,7 +1526,7 @@ function EntireResultProcess() {
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     display_CAMHOUSINGSIB_OFF = (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">CAMHOUSINGSIB_OFF</div>
+        <div className="h6 mb-2">Cam Housing Feeding to MK1 Time</div>
         {/* <div className="d-flex dt2">
               <div className="dt1f1">Code</div>{" "}
           
@@ -1599,7 +1558,7 @@ function EntireResultProcess() {
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     display_EX_cam_S_N = (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">EX cam S / N</div>
+        <div className="h6 mb-2">Exhaust Camshaft Serial No.</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Serial no.</div>{" "}
           <div className="dt1f2">{processNoFiltered[0][1]}</div>
@@ -1621,7 +1580,7 @@ function EntireResultProcess() {
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     display_IN_cam_S_N = (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">IN cam S / N</div>
+        <div className="h6 mb-2">Intake Camshaft Serial No.</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Serial no.</div>{" "}
           <div className="dt1f2">{processNoFiltered[0][1]}</div>
@@ -1643,7 +1602,7 @@ function EntireResultProcess() {
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     display_CamHousing_S_N = (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">CamHousing S/N</div>
+        <div className="h6 mb-2">Camhousing Serial No.</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Serial no.</div>{" "}
           <div className="dt1f2">{processNoFiltered[0][1]}</div>
@@ -1663,7 +1622,7 @@ function EntireResultProcess() {
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     display_Head_S_N = (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">Head S / N</div>
+        <div className="h6 mb-2">Cylinder Head Serial No.</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Serial no.</div>{" "}
           <div className="dt1f2">{processNoFiltered[0][1]}</div>
@@ -1685,7 +1644,7 @@ function EntireResultProcess() {
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     display_Crank_S_N = (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">Crank S / N</div>
+        <div className="h6 mb-2">CrankShaft Serial No.</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Serial no.</div>{" "}
           <div className="dt1f2">{processNoFiltered[0][1]}</div>
@@ -1707,7 +1666,7 @@ function EntireResultProcess() {
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     display_Block_S_N = (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">Block S / N</div>
+        <div className="h6 mb-2">Cylinder Block Serial No.</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Serial no.</div>{" "}
           <div className="dt1f2">{processNoFiltered[0][1]}</div>
@@ -1747,32 +1706,33 @@ function EntireResultProcess() {
   display_HeadboltNR =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div>
-        <div className="h6 mb-2">Head Bolt Nutrunner </div>
-      <div className="d-flex flex-row gap-3">
-        <div className="d-flex flex-column">
-          {/* <div className="h6 mb-2">Head Bolt Nutrunner</div> */}
-          <div className="d-flex flex-row flex-wrap">
-            <div className="d-flex flex-column flex-wrap dt3">
-              <div>Process Name</div> <div className="text-start">Date & Time</div>
-            </div>
+        <div className="h6 mb-2">Head Bolt Nut Runner Torque </div>
+        <div className="d-flex flex-row gap-0">
+          <div className="d-flex flex-column">
+            {/* <div className="h6 mb-2">Head Bolt Nutrunner</div> */}
+            <div className="d-flex flex-row flex-wrap">
+              <div className="d-flex flex-column flex-wrap dt3">
+                <div>Process Name</div>{" "}
+                <div className="text-start">Date & Time</div>
+              </div>
 
-            <div className="d-flex flex-column flex-wrap dt3">
-              <div className=" ">Head Bolt Nutrunner</div>
-              <div>
-                {moment(processNoFiltered[0][21]).format(
-                  "DD-MMMM-YYYY HH:mm:ss"
-                )}
+              <div className="d-flex flex-column flex-wrap dt3">
+                <div className=" ">Head Bolt Nut Runner</div>
+                <div>
+                  {moment(processNoFiltered[0][21]).format(
+                    "DD-MMMM-YYYY HH:mm:ss"
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="gap-0 d-flex flex-column ">
-          <div className="border border-dark gap-0 font-weight-bold text-center p-1">
-            Nutrunner Torque data
+          <div className="gap-0 d-flex flex-column ">
+            <div className="border border-dark gap-0 font-weight-bold text-center p-1">
+              Nut Runner Torque data
+            </div>
+            <div className="d-flex flex-row flex-wrap">{headNRElements}</div>
           </div>
-          <div className="d-flex flex-row flex-wrap">{headNRElements}</div>
         </div>
-      </div>
       </div>
     );
 
@@ -1812,6 +1772,9 @@ function EntireResultProcess() {
 
   return (
     <div className="d-flex flex-column gap-3 mt-3">
+      <hr></hr>
+      <div className="h4 text-primary"> Assembly data</div>
+
       <>{display}</>
 
       <div className="d-flex flex-row gap-3">
@@ -1841,42 +1804,37 @@ function EntireResultProcess() {
         <>{display_Block_S_N}</>
       </div>
       <>{display_HeadboltNR}</>
+      <hr></hr>
+      <div className="h4 text-primary"> Machining data</div>
+      <div className="d-flex flex-row gap-3">
+        <>{display_B1_ENGRAVED}</>
+        <>{castingDetails_B1_ENGRAVED}</>
+        <>{display_B4_Finishing_gantry}</>
+        <>{display_B7_OP990}</>
+      </div>
+      <>{display_B3_OP190}</>
+      <>{display_B5_OP235}</>
 
       <div className="d-flex flex-row gap-3">
-      <>{display_B1_ENGRAVED}</> 
-      <>{castingDetails_B1_ENGRAVED}</>
-      <>{display_B4_Finishing_gantry}</>   
-      <>{display_B7_OP990}</>
-      </div>
-      <>{display_B3_OP190}</>     
-      <>{display_B5_OP235}</>
-     
-      <div className="d-flex flex-row gap-3">
-      <>{display_H1_Material_input_engraving}</>
-      <>{castingDetails_H1_Material_input_engraving}</>
-      <>{display_H12_OP990}</>
+        <>{display_H1_Material_input_engraving}</>
+        <>{castingDetails_H1_Material_input_engraving}</>
+        <>{display_H12_OP990}</>
       </div>
       <>{display_H2_OP050}</>
       <>{display_H3_OP055}</>
       <>{display_H5_OP310}</>
-     
 
       <div className="d-flex flex-row gap-3">
-      <>{display_C1_Comaterial}</>
-      <>{display_C7_Gantry_after_OP140}</>      
-      <>{display_C6_OP170_front_gantry}</>
-      <>{display_C8_OP990}</>
+        <>{display_C1_Comaterial}</>
+        <>{display_C7_Gantry_after_OP140}</>
+        <>{display_C6_OP170_front_gantry}</>
+        <>{display_C8_OP990}</>
       </div>
 
       <>{display_C3_OP150_170}</>
       <>{display_C4_OP220}</>
-      
-      
-      
     </div>
   );
 }
 
 export default EntireResultProcess;
-
-

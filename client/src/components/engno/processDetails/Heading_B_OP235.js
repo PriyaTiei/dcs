@@ -8,20 +8,35 @@ function Heading_B_OP235() {
         {/* <div className="text-center font-weight-bold flex-1 bg-dark text-light">
           {plugName}
         </div> */}
-        <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:85}}>
-          {plugName} Judgment
+        <div
+          className="text-center font-weight-bold flex-1 bg-dark text-light"
+          style={{ minWidth: 85 }}
+        >
+          {plugName} Judgement
         </div>
-        <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:85}}>
-        {plugName} Measurement leak (mL / min)
+        <div
+          className="text-center font-weight-bold flex-1 bg-dark text-light"
+          style={{ minWidth: 85 }}
+        >
+          {plugName} Measurement leak (mL / min)
         </div>
-        <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:85}}>
-        {plugName} Correction (mL / min)
+        <div
+          className="text-center font-weight-bold flex-1 bg-dark text-light"
+          style={{ minWidth: 85 }}
+        >
+          {plugName} Correction (mL / min)
         </div>
-        <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:85}}>
-        {plugName} Test pressure(kPa)
+        <div
+          className="text-center font-weight-bold flex-1 bg-dark text-light"
+          style={{ minWidth: 85 }}
+        >
+          {plugName} Test pressure(kPa)
         </div>
-        <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:85}}>
-        {plugName}   K (Ve) value (mL)
+        <div
+          className="text-center font-weight-bold flex-1 bg-dark text-light"
+          style={{ minWidth: 85 }}
+        >
+          {plugName} K (Ve) value (mL)
         </div>
       </>
     );
@@ -32,31 +47,55 @@ function Heading_B_OP235() {
       <div className="mt-3">
         <div className="h5">Day wise - Block OP235</div>
         <div className="d-flex  gap-0 deta ">
-          <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:130}}>
+          <div
+            className="text-center font-weight-bold flex-1 bg-dark text-light"
+            style={{ minWidth: 130 }}
+          >
             Block No.
           </div>
-          <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:80}}>
+          <div
+            className="text-center font-weight-bold flex-1 bg-dark text-light"
+            style={{ minWidth: 80 }}
+          >
             Model
           </div>
-          <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:50}}>
+          <div
+            className="text-center font-weight-bold flex-1 bg-dark text-light"
+            style={{ minWidth: 50 }}
+          >
             Lts
           </div>
-          <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:50}}>
-            Judgment
+          <div
+            className="text-center font-weight-bold flex-1 bg-dark text-light"
+            style={{ minWidth: 50 }}
+          >
+            Judgement
           </div>
-          <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:140}}>
+          <div
+            className="text-center font-weight-bold flex-1 bg-dark text-light"
+            style={{ minWidth: 140 }}
+          >
             OP235 process Date & Time
           </div>
 
           {dataList}
 
-          <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:100}}>
+          <div
+            className="text-center font-weight-bold flex-1 bg-dark text-light"
+            style={{ minWidth: 100 }}
+          >
             Engine No.
           </div>
-          <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:100}}>
+          <div
+            className="text-center font-weight-bold flex-1 bg-dark text-light"
+            style={{ minWidth: 100 }}
+          >
             Dispatch Status
           </div>
-          <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:140}}>
+          <div
+            className="text-center font-weight-bold flex-1 bg-dark text-light"
+            style={{ minWidth: 140 }}
+          >
             Dispatched Date & Time
           </div>
         </div>

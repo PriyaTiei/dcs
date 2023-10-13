@@ -214,7 +214,7 @@ function ResultProcess() {
                     {/* <div>{correctList[1]}</div> */}
                   </div>
                   <div className="d-flex flex-column dt3">
-                    <div className="bg-dark text-light">Judgment</div>{" "}
+                    <div className="bg-dark text-light">Judgement</div>{" "}
                     <div>{result[i + 3]}</div>
                   </div>
                   <div className="d-flex flex-column dt3">
@@ -264,7 +264,7 @@ function ResultProcess() {
 
                 <div className="d-flex flex-column dt2 ">
                   <div className="dt1f1 text-center bg-dark text-light ">
-                    Judgment
+                    Judgement
                   </div>{" "}
                   <div className="dt1f1 text-center">{result[2]}</div>
                 </div>
@@ -504,7 +504,7 @@ function ResultProcess() {
                       {/* <div>{correctList[1]}</div> */}
                     </div>
                     <div className="d-flex flex-column dt3">
-                      <div className="d-flex flex-column dt3">Judgment</div>{" "}
+                      <div className="d-flex flex-column dt3">Judgement</div>{" "}
                       <div>
                         {f1 == "1"
                           ? "LL NG"
@@ -559,7 +559,7 @@ function ResultProcess() {
                       {/* <div>{correctList[1]}</div> */}
                     </div>
                     <div className="d-flex flex-column dt3">
-                      <div className="bg-dark text-light">Judgment</div>{" "}
+                      <div className="bg-dark text-light">Judgement</div>{" "}
                       <div>
                         {correctList[7].toString() == "1"
                           ? "LL NG"
@@ -614,7 +614,7 @@ function ResultProcess() {
                       {/* <div>{correctList[1]}</div> */}
                     </div>
                     <div className="d-flex flex-column dt3">
-                      <div className="bg-dark text-light">Judgment</div>{" "}
+                      <div className="bg-dark text-light">Judgement</div>{" "}
                       <div>
                         {correctList[14].toString() == "1"
                           ? "LL NG"
@@ -669,7 +669,7 @@ function ResultProcess() {
                       {/* <div>{correctList[1]}</div> */}
                     </div>
                     <div className="d-flex flex-column dt3">
-                      <div className="bg-dark text-light">Judgment</div>{" "}
+                      <div className="bg-dark text-light">Judgement</div>{" "}
                       <div>
                         {correctList[21].toString() == "1"
                           ? "LL NG"
@@ -1261,7 +1261,7 @@ function ResultProcess() {
               </div>
             </div>
             <div className="d-flex dt2">
-              <div className="dt1f1">Judgment</div>{" "}
+              <div className="dt1f1">Judgement</div>{" "}
               <div className="dt1f2">
                 {processNoFiltered[0][1].slice(84, 85) == "2"
                   ? "OK"
