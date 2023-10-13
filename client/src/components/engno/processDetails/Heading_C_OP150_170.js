@@ -65,7 +65,7 @@ function Heading_C_OP150_170() {
             Model
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:140}}>
-            process Time
+            process Date & Time
           </div>
                     
           {dataList}
@@ -78,7 +78,7 @@ function Heading_C_OP150_170() {
             Dispatch Status
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:140}}>
-            Dispatched Date
+            Dispatched Date & Time
           </div>
         </div>
       </div>

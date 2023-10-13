@@ -7,7 +7,7 @@ function DetailsTableHeading2() {
         <div className="h5">Engine Produced From Date - to Date</div>
         <div className="d-flex flex-wrap gap-0 deta2 ">
           <div className="text-center font-weight-bold " style={{width:"10vw"}}>Serial No</div>
-          <div className="text-center font-weight-bold">Date Time</div>
+          <div className="text-center font-weight-bold">Date & Time</div>
           <div className="text-center font-weight-bold">W/J </div>
           <div className="text-center font-weight-bold">
             Leak Rate (ml/min.){" "}

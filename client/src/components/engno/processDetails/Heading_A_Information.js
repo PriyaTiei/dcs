@@ -19,13 +19,13 @@ function Heading_A_Information() {
             Customer
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
-            Process Date
+            Process Date & Time
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
             Dispatch Status
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
-            Dispatched Date
+            Dispatched Date & Time
           </div>
         </div>
       </div>

@@ -16,13 +16,13 @@ function Heading_A_LeakTest() {
             Judgment
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
-            Leak test Time
+            Leak test Date & Time
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
             Dispatch Status
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
-            Dispatched Date
+            Dispatched Date & Time
           </div>
         </div>
       </div>

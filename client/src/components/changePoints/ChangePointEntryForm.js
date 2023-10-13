@@ -91,7 +91,7 @@ function ChangePointEntryForm({setRefresh}) {
     <form onSubmit={formHandler}>
       <div className="d-flex ">
         <div className="col-1 bg-secondary text-center text-light">
-          <div className="border border-dark ">Date</div>
+          <div className="border border-dark ">Date & Time</div>
           <ReactDatePicker
             className="w-100 text-center"
             value={entryDate}

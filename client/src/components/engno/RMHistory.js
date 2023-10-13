@@ -7,7 +7,7 @@ function RMHistory() {
     <div>
       <div className="h5">RM history</div>
       <div className="d-flex gap-0">
-        <div className="p-2 border hist">ETA Time</div>
+        <div className="p-2 border hist">ETA Date & Time</div>
         <div className="p-2 border histValue">{hDate}</div>
       </div>
       <div className="d-flex gap-0">
@@ -15,7 +15,7 @@ function RMHistory() {
         <div className="p-2 border histValue">{hDate}</div>
       </div>
       <div className="d-flex gap-0">
-        <div className="p-2 border hist">Feed time</div>
+        <div className="p-2 border hist">Feed Date & Time</div>
         <div className="p-2 border histValue">{hDate}</div>
       </div>
 

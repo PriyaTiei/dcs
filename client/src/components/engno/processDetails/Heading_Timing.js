@@ -10,7 +10,7 @@ function Heading_Timing({line,op}) {
             {line} No.
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
-            {op} Time
+            {op} Date & Time
           </div>
 
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
@@ -20,7 +20,7 @@ function Heading_Timing({line,op}) {
             Dispatch Status
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
-            Dispatched Date
+            Dispatched Date & Time
           </div>
         </div>
       </div>

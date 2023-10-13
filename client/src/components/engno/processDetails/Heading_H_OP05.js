@@ -10,10 +10,10 @@ function Heading_H_OP05() {
    
             <div className="text-center font-weight-bold flex-1">Head No.</div>
             <div className="text-center font-weight-bold flex-1">Serial No.</div>
-            <div className="text-center font-weight-bold flex-1">Date</div>
+            <div className="text-center font-weight-bold flex-1">Process Date & Time</div>
             <div className="text-center font-weight-bold flex-1">Engine No.</div>
             <div className="text-center font-weight-bold flex-1">Dispatch Status</div>
-            <div className="text-center font-weight-bold flex-1">Dispatched Date</div>
+            <div className="text-center font-weight-bold flex-1">Dispatched Date & Time</div>
             
           </div>
         </div>

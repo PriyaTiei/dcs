@@ -14,7 +14,7 @@ function Heading_C_OP220() {
           Model
           </div>
           <div className="text-center font-weight-bold flex-1-mod bg-dark text-light" style={{minWidth:140}}>
-          Date
+          Date & Time
           </div>
 
           <div className="text-center font-weight-bold flex-1-mod bg-dark text-light" style={{minWidth:50}}>
@@ -156,7 +156,7 @@ function Heading_C_OP220() {
             Dispatch Status
           </div>
           <div className="text-center font-weight-bold flex-1-mod bg-dark text-light" style={{minWidth:140}}>
-            Dispatched Date
+            Dispatched Date & Time
           </div>
         </div>
       </div>

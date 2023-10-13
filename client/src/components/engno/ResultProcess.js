@@ -730,7 +730,7 @@ function ResultProcess() {
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
               <div className="d-flex flex-column">
-                <div className="h6 mb-2">FG Time Details</div>
+                <div className="h6 mb-2">FG Date & Time Details</div>
                 <div className="d-flex dt2">
                   <div className="dt1f1">Process Name</div>{" "}
                   <div className="dt1f2">{processNoFiltered[0][5]}</div>
@@ -765,7 +765,7 @@ function ResultProcess() {
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
               <div className="d-flex flex-column">
-                <div className="h6 mb-2">OP02 Time Details</div>
+                <div className="h6 mb-2">OP02 Date & Time Details</div>
                 <div className="d-flex dt2">
                   <div className="dt1f1">Process Name</div>{" "}
                   <div className="dt1f2">{processNoFiltered[0][5]}</div>
@@ -790,7 +790,7 @@ function ResultProcess() {
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
               <div className="d-flex flex-column">
-                <div className="h6 mb-2">OP140 Time Details</div>
+                <div className="h6 mb-2">OP140 Date & Time Details</div>
                 <div className="d-flex dt2">
                   <div className="dt1f1">Process Name</div>{" "}
                   <div className="dt1f2">{processNoFiltered[0][5]}</div>
@@ -1198,7 +1198,7 @@ function ResultProcess() {
             processNoFiltered == undefined ||
             processNoFiltered.length == 0 ? null : (
               <div className="d-flex flex-column">
-                <div className="h6 mb-2">FG Time Details</div>
+                <div className="h6 mb-2">FG Date & Time Details</div>
                 <div className="d-flex dt2">
                   <div className="dt1f1">Process Name</div>{" "}
                   <div className="dt1f2">{processNoFiltered[0][5]}</div>

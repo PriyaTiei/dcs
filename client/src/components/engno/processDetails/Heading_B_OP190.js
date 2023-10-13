@@ -31,7 +31,7 @@ function Heading_B_OP190() {
             Dispatch Status
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
-            Dispatched Date
+            Dispatched Date & Time
           </div>
         </div>
       </div>

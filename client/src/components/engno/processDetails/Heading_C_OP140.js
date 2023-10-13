@@ -10,7 +10,7 @@ function Heading_C_OP140() {
             Crank Shaft No.
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
-            OP140 Time
+            OP140 Date & Time
           </div>
 
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
@@ -20,7 +20,7 @@ function Heading_C_OP140() {
             Dispatch Status
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
-            Dispatched Date
+            Dispatched Date & Time
           </div>
         </div>
       </div>

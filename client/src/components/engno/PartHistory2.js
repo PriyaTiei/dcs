@@ -5,19 +5,19 @@ function PartHistory2() {
     <div>
       <div className="h5">Part history</div>
       <div className="d-flex gap-0">
-        <div className="p-2 border hist">FG time</div>
+        <div className="p-2 border hist">FG Date & Time</div>
         <div className="p-2 border histValue">{hDate}</div>
       </div>
       <div className="d-flex gap-0">
-        <div className="p-2 border hist">Leak test time</div>
+        <div className="p-2 border hist">Leak test Date & Time</div>
         <div className="p-2 border histValue">{hDate}</div>
       </div>
       <div className="d-flex gap-0">
-        <div className="p-2 border hist">Crank boring time</div>
+        <div className="p-2 border hist">Crank boring Date & Time</div>
         <div className="p-2 border histValue">{hDate}</div>
       </div>
       <div className="d-flex gap-0">
-        <div className="p-2 border hist">RM feed time</div>
+        <div className="p-2 border hist">RM feed Date & Time</div>
         <div className="p-2 border histValue">{hDate}</div>
       </div>
       <div className="d-flex gap-0">

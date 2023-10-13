@@ -45,7 +45,7 @@ function Heading_B_OP235() {
             Judgment
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:140}}>
-            OP235 process Time
+            OP235 process Date & Time
           </div>
 
           {dataList}
@@ -57,7 +57,7 @@ function Heading_B_OP235() {
             Dispatch Status
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light" style={{minWidth:140}}>
-            Dispatched Date
+            Dispatched Date & Time
           </div>
         </div>
       </div>

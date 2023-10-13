@@ -116,7 +116,7 @@ function EntireResultProcess() {
               </div>
               <div className="d-flex ">
                 <div className="dt1f1">Engraving Date</div>{" "}
-                <div className="dt1f2">
+                <div className="dt1f2" >
                   {moment(processNoFiltered[0][8]).format(
                     "DD-MMMM-YYYY HH:mm:ss"
                   )}
@@ -226,7 +226,7 @@ function EntireResultProcess() {
                 </div>
               </div>
               <div className="d-flex  dt2">
-                <div className="dt1f1">Date</div>{" "}
+                <div className="dt1f1">Date & Time</div>{" "}
                 <div className="dt1f2">
                   {moment(processNoFiltered[0][8]).format(
                     "DD-MMMM-YYYY HH:mm:ss"
@@ -290,7 +290,8 @@ function EntireResultProcess() {
           processNoFiltered == undefined ||
           processNoFiltered.length == 0 ? null : (
             <div>
-            <div className="h6 mb-2">Block Leak Testing Details</div>
+            <div className="h6 mb-2">Block - OP235 Leak Testing Details</div>
+            <div>
             <div className="d-flex flex-row flex-wrap gap-2">
               <div className="d-flex flex-column dt2 ">
                 <div className="dt1f1 text-center bg-dark text-light ">
@@ -329,8 +330,11 @@ function EntireResultProcess() {
                 </div>
               </div>
 
+              
+            
+            </div>
+            <div className="mt-2 ">
               {/* plug1~6 and SrewPlug */}
-              <div>
               {plug2to5}
               </div>
             </div>
@@ -350,15 +354,15 @@ function EntireResultProcess() {
             <div className="d-flex flex-column">
               <div className="d-flex dt2">
                 <div className="dt1f1">Process Name</div>{" "}
-                <div className="dt1f2">{processNoFiltered[0][5]}</div>
+                <div className="dt1f2" style={{width:"150px"}}>{processNoFiltered[0][5]}</div>
               </div>
               {/* <div className="d-flex dt2">
                       <div className="dt1f1">Data</div>{" "}
                       <div className="dt1f2">{processNoFiltered[0][1]}</div>
                     </div> */}
               <div className="d-flex dt2">
-                <div className="dt1f1">FG Date</div>{" "}
-                <div className="dt1f2">
+                <div className="dt1f1" >FG Date & Time</div>{" "}
+                <div className="dt1f2" style={{width:"150px"}}>
                   {moment(processNoFiltered[0][8]).format(
                     "DD-MMMM-YYYY HH:mm:ss"
                   )}
@@ -394,7 +398,7 @@ function EntireResultProcess() {
                 <div className="dt1f2">{processNoFiltered[0][1].slice(16)}</div>
               </div>
               <div className="d-flex ">
-                <div className="dt1f1">Engraving Date</div>{" "}
+                <div className="dt1f1">Engraving Date & Time</div>{" "}
                 <div className="dt1f2">
                   {moment(processNoFiltered[0][8]).format(
                     "DD-MMMM-YYYY HH:mm:ss"
@@ -439,7 +443,9 @@ function EntireResultProcess() {
                   </div>
 
                   <div className="d-flex flex-column flex-wrap dt3">
-                    <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+                    <div>Date & Time</div> <div>{moment(processNoFiltered[0][8]).format(
+                    "DD-MMMM-YYYY HH:mm:ss"
+                  )}</div>
                   </div>
                 </div>
               </div>
@@ -489,7 +495,9 @@ function EntireResultProcess() {
                   </div>
 
                   <div className="d-flex flex-column flex-wrap dt3">
-                    <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+                    <div>Date & Time</div> <div>{moment(processNoFiltered[0][8]).format(
+                    "DD-MMMM-YYYY HH:mm:ss"
+                  )}</div>
                   </div>
                 </div>
               </div>
@@ -529,7 +537,9 @@ function EntireResultProcess() {
                   </div>
 
                   <div className="d-flex flex-column flex-wrap dt3">
-                    <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+                    <div>Date & Time</div> <div>{moment(processNoFiltered[0][8]).format(
+                    "DD-MMMM-YYYY HH:mm:ss"
+                  )}</div>
                   </div>
                 </div>
 
@@ -539,7 +549,7 @@ function EntireResultProcess() {
                     {/* <div>{correctList[1]}</div> */}
                   </div>
                   <div className="d-flex flex-column dt3">
-                    <div className="d-flex flex-column dt3">Judgment</div>{" "}
+                    <div className="d-flex flex-column dt3 bg-dark text-light">Judgment</div>{" "}
                     <div>
                       {f1 == "1"
                         ? "LL NG"
@@ -749,7 +759,7 @@ function EntireResultProcess() {
           processNoFiltered == undefined ||
           processNoFiltered.length == 0 ? null : (
             <div className="d-flex flex-column">
-              <div className="h6 mb-2">H12_OP990 - FG Time Details</div>
+              <div className="h6 mb-2">H12_OP990 - FG Date & Time Details</div>
               <div className="d-flex dt2">
                 <div className="dt1f1">Process Name</div>{" "}
                 <div className="dt1f2">{processNoFiltered[0][5]}</div>
@@ -759,7 +769,7 @@ function EntireResultProcess() {
                       <div className="dt1f2">{processNoFiltered[0][1]}</div>
                     </div> */}
               <div className="d-flex dt2">
-                <div className="dt1f1">FG Date</div>{" "}
+                <div className="dt1f1">FG Date & Time</div>{" "}
                 <div className="dt1f2">
                   {moment(processNoFiltered[0][8]).format(
                     "DD-MMMM-YYYY HH:mm:ss"
@@ -785,13 +795,13 @@ function EntireResultProcess() {
   display_C1_Comaterial =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">C1_Comaterial_OP02 Time Details</div>
+        <div className="h6 mb-2">C1_Comaterial_OP02 Date & Time Details</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Process Name</div>{" "}
           <div className="dt1f2">{processNoFiltered[0][5]}</div>
         </div>
         <div className="d-flex dt2">
-          <div className="dt1f1">FG Date</div>{" "}
+          <div className="dt1f1">FG Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][8]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -807,13 +817,13 @@ function EntireResultProcess() {
   display_C7_Gantry_after_OP140 =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">C7_Gantry after OP140 Time Details</div>
+        <div className="h6 mb-2">C7_Gantry after OP140 Date & Time Details</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Process Name</div>{" "}
           <div className="dt1f2">{processNoFiltered[0][5]}</div>
         </div>
         <div className="d-flex dt2">
-          <div className="dt1f1">FG Date</div>{" "}
+          <div className="dt1f1">FG Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][8]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -830,13 +840,13 @@ function EntireResultProcess() {
   display_C6_OP170_front_gantry =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">C6_OP170 front gantry- Time Details</div>
+        <div className="h6 mb-2">C6_OP170 front gantry- Date & Time Details</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Process Name</div>{" "}
           <div className="dt1f2">{processNoFiltered[0][5]}</div>
         </div>
         <div className="d-flex dt2">
-          <div className="dt1f1">FG Date</div>{" "}
+          <div className="dt1f1">FG Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][8]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1053,7 +1063,9 @@ function EntireResultProcess() {
             </div>
 
             <div className="d-flex flex-column flex-wrap dt3">
-              <div>Date</div> <div>{processNoFiltered[0][8]}</div>
+              <div>Date & Time</div> <div>{moment(processNoFiltered[0][8]).format(
+                    "DD-MMMM-YYYY HH:mm:ss"
+                  )}</div>
             </div>
           </div>
 
@@ -1232,13 +1244,13 @@ function EntireResultProcess() {
   display_C8_OP990 =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">C8_OP990-FG Time Details</div>
+        <div className="h6 mb-2">C8_OP990-FG Date & Time Details</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Process Name</div>{" "}
           <div className="dt1f2">{processNoFiltered[0][5]}</div>
         </div>
         <div className="d-flex dt2">
-          <div className="dt1f1">FG Date</div>{" "}
+          <div className="dt1f1">FG Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][8]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1308,7 +1320,7 @@ function EntireResultProcess() {
           </div>
         </div>
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>{" "}
+          <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1337,7 +1349,7 @@ function EntireResultProcess() {
           </div>
         </div>
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>{" "}
+          <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1366,7 +1378,7 @@ function EntireResultProcess() {
           </div>
         </div>
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>{" "}
+          <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1422,7 +1434,7 @@ function EntireResultProcess() {
           <div className="dt1f2">{customer}</div>
         </div>
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>
+          <div className="dt1f1">Process Date & Time</div>
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1452,7 +1464,7 @@ function EntireResultProcess() {
             </div> */}
 
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>{" "}
+          <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1473,7 +1485,7 @@ function EntireResultProcess() {
             </div> */}
 
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>{" "}
+          <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1494,7 +1506,7 @@ function EntireResultProcess() {
             </div> */}
 
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>{" "}
+          <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1517,7 +1529,7 @@ function EntireResultProcess() {
             </div> */}
 
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>{" "}
+          <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1540,7 +1552,7 @@ function EntireResultProcess() {
             </div> */}
 
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>{" "}
+          <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1563,7 +1575,7 @@ function EntireResultProcess() {
             </div> */}
 
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>{" "}
+          <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1594,7 +1606,7 @@ function EntireResultProcess() {
         </div>
 
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>{" "}
+          <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1616,7 +1628,7 @@ function EntireResultProcess() {
         </div>
 
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>{" "}
+          <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1638,7 +1650,7 @@ function EntireResultProcess() {
         </div>
 
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>{" "}
+          <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1658,7 +1670,7 @@ function EntireResultProcess() {
         </div>
 
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>{" "}
+          <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1680,7 +1692,7 @@ function EntireResultProcess() {
         </div>
 
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>{" "}
+          <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1702,7 +1714,7 @@ function EntireResultProcess() {
         </div>
 
         <div className="d-flex dt2">
-          <div className="dt1f1">Process Date</div>{" "}
+          <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
             {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
           </div>
@@ -1741,7 +1753,7 @@ function EntireResultProcess() {
           {/* <div className="h6 mb-2">Head Bolt Nutrunner</div> */}
           <div className="d-flex flex-row flex-wrap">
             <div className="d-flex flex-column flex-wrap dt3">
-              <div>Process Name</div> <div className="text-start">Date</div>
+              <div>Process Name</div> <div className="text-start">Date & Time</div>
             </div>
 
             <div className="d-flex flex-column flex-wrap dt3">

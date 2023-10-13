@@ -29,7 +29,7 @@ function Heading_A_HeadNR() {
             className="text-center font-weight-bold flex-1-mod bg-dark text-light"
             style={{ minWidth: 140 }}
           >
-            Process Date
+            Process Date & Time
           </div>
 
           <>
@@ -47,7 +47,7 @@ function Heading_A_HeadNR() {
             className="text-center font-weight-bold flex-1-mod bg-dark text-light"
             style={{ minWidth: 140 }}
           >
-            Dispatched Date
+            Dispatched Date & Time
           </div>
         </div>
       </div>
