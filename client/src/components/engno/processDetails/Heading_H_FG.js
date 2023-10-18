@@ -1,6 +1,22 @@
-import React from "react";
+import React, { useEffect }  from "react";
+import { useSelector } from "react-redux";
 
-function Heading_H_FG() {
+function Heading_H_FG({ setExcelData, excelData }) {
+  const dataRange = useSelector((state) => state.process.dataRange.data);
+
+  useEffect(() => {
+    setExcelData([[]]);
+    setExcelData([
+      [
+        "Head No.",
+        "FG Date & Time",
+        "Engine No.",
+        "Dispatch Status",
+        "Dispatched Date & Time",
+      ],
+    ]);
+  }, [dataRange]);
+
   return (
     <>
       <div className="mt-3">

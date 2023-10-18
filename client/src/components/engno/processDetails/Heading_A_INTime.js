@@ -1,6 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-function Heading_A_INTIME() {
+function Heading_A_INTIME({ setExcelData, excelData }) {
+  const dataRange = useSelector((state) => state.process.dataRange.data);
+  const processName = useSelector((state) => state.process.processName);
+
+  useEffect(() => {
+    console.log("test_Heading serial no")
+    console.log(excelData)
+    setExcelData([[]]);
+    setExcelData([
+      [
+        "Serial No.",
+        "Process Date & Time",
+        "Engine No.",
+        "Dispatch Status",
+        "Dispatched Date & Time",
+      ],
+    ]);
+  }, [processName]);
   return (
     <>
       <div className="mt-3">

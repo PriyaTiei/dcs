@@ -1,6 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-function Heading_B_OP190() {
+function Heading_B_OP190({ setExcelData, excelData }) {
+  const dataRange = useSelector((state) => state.process.dataRange.data);
+  useEffect(() => {
+    setExcelData([[]]);
+    setExcelData([
+      [
+        "Block No.",
+        "Process Date & Time",
+        "J1",
+        "J2",
+        "J3",
+        "J4",
+        "J5",
+        "Engine No.",
+        "Dispatch Status",
+        "Dispatched Date & Time",
+      ],
+    ]);
+  }, [dataRange]);
   return (
     <>
       <div className="mt-3">

@@ -1,10 +1,28 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-function Heading_Timing({line,op}) {
+function Heading_Timing({ line, op, setExcelData, excelData }) {
+  const dataRange = useSelector((state) => state.process.dataRange.data);
+
+  useEffect(() => {
+    setExcelData([[]]);
+    setExcelData([
+      [
+        `${line} No.`,
+        `${op} Date & Time`,
+        "Engine No.",
+        "Dispatch Status",
+        "Dispatched Date & Time",
+      ],
+    ]);
+  }, [dataRange]);
+
   return (
     <>
       <div className="mt-3">
-        <div className="h5">Day wise - {line} {op}</div>
+        <div className="h5">
+          Day wise - {line} {op}
+        </div>
         <div className="d-flex flex-wrap gap-0 deta ">
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
             {line} No.

@@ -1,6 +1,17 @@
-import React from "react";
+import React, {useEffect} from "react";
+import { useSelector } from "react-redux";
 
-function Heading_A_ONTime() {
+function Heading_A_ONTime({setExcelData, excelData}) {
+  const dataRange = useSelector((state) => state.process.dataRange.data)
+  const processName = useSelector((state) => state.process.processName);
+  useEffect(()=>{
+    console.log("test_Heading engine no")
+    console.log(excelData)
+    setExcelData([[]]);
+    setExcelData([ [ "Engine No.","Process Date & Time",  "Dispatch Status", "Dispatched Date & Time" ]])
+      },[processName])
+
+      
   return (
     <>
       <div className="mt-3">

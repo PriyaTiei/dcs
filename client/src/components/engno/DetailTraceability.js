@@ -67,6 +67,7 @@ import Heading_A_HeadNR from "./processDetails/Heading_A_HeadNR";
 import A_OP_HeadNR from "./processDetails/A_OP_HeadNR";
 import Heading_C_OP150_170 from "./processDetails/Heading_C_OP150_170";
 import C_OP_150_170 from "./processDetails/C_OP_150_170";
+import { CSVLink } from "react-csv";
 
 function DeatialTraceability() {
   // formating date
@@ -95,6 +96,7 @@ function DeatialTraceability() {
   const fromDateState = useSelector((state) => state.process.fromDate);
   const toDateState = useSelector((state) => state.process.toDate);
   const loading = useSelector((state) => state.process.loading);
+  const dataRange = useSelector((state) => state.process.dataRange);
 
   // console.log(fromDateState.slice(0, 10));
 
@@ -301,6 +303,11 @@ function DeatialTraceability() {
 
   /// Combine 2 tables
   var bigList = null;
+  const [excelData, setExcelData] = useState([[]]);
+
+  // useEffect(()=>{
+  //   setExcelData([[]])
+  // },[processName])
 
   // {dataOneDay?.data?.map(element=><Reusable_B_OP05 key={element[1]} serialNo={element[1]} date={element[8]}/>)}
 
@@ -371,7 +378,6 @@ function DeatialTraceability() {
         </div>
 
         <div className="d-flex justify-content-start  mt-5">
-          
           <form onChange={radioHandler} className="form-group gap-3">
             <div className="d-flex gap-3">
               <label htmlFor="oneDay">One Day </label>
@@ -475,60 +481,133 @@ function DeatialTraceability() {
               subSection === "Block Cylinder" &&
               processNo == "OP5" && (
                 <div>
-                  <Heading_B_OP05 />
-                  <B_OP_05 />
+                  {" "}
+                  <div className="d-flex justify-content-end">
+                    <CSVLink data={excelData} filename="one_day_data.csv">
+                      {" "}
+                      <button className="btn btn-primary ">
+                        Download to CSV
+                      </button>
+                    </CSVLink>
+                  </div>
+                  <Heading_B_OP05
+                    setExcelData={setExcelData}
+                    excelData={excelData}
+                  />
+                  <B_OP_05 setExcelData={setExcelData} excelData={excelData} />
                 </div>
               )}
             {processName == "B3_OP190" && (
               <div>
-                <Heading_B_OP190 />
-                <B_OP_190 />
+                   <div className="d-flex justify-content-end">
+                <CSVLink data= {excelData} filename="one_day_data.csv" > <button className="btn btn-primary " >Download to CSV</button></CSVLink>
+                </div>
+                <Heading_B_OP190
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <B_OP_190 setExcelData={setExcelData} excelData={excelData} />
               </div>
             )}
             {processName == "B4_Finishing gantry" && (
               <div>
-                <Heading_B_OP195 />
-                <B_OP_195 />
+                  <div className="d-flex justify-content-end">
+                <CSVLink data= {excelData} filename="one_day_data.csv" > <button className="btn btn-primary " >Download to CSV</button></CSVLink>
+                </div>
+                <Heading_B_OP195
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <B_OP_195 setExcelData={setExcelData} excelData={excelData} />
               </div>
             )}
             {processName == "B5_OP235" && (
-              <div className="" style={{ width: "90vw", overflowX: "auto" }}>
-                <Heading_B_OP235 />
-                <B_OP_235 />
+              <div
+                className="mt-3"
+                style={{ width: "90vw", overflowX: "auto" }}
+              >
+                   <div className="d-flex justify-content-end">
+                <CSVLink data= {excelData} filename="one_day_data.csv" > <button className="btn btn-primary " >Download to CSV</button></CSVLink>
+                </div>
+                <Heading_B_OP235
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <B_OP_235 setExcelData={setExcelData} excelData={excelData} />
               </div>
             )}
             {processName == "B7_OP990" && (
               <div>
-                <Heading_B_FG />
-                <B_OP_FG />
+                   <div className="d-flex justify-content-end">
+                <CSVLink data= {excelData} filename="one_day_data.csv" > <button className="btn btn-primary " >Download to CSV</button></CSVLink>
+                </div>
+                <Heading_B_FG
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <B_OP_FG setExcelData={setExcelData} excelData={excelData} />
               </div>
             )}
 
             {/* ****************** Head process */}
             {processName == "H1_Material input/engraving" && (
               <div>
-                <Heading_H_OP05 />
-                <H_OP_05 />
+                <CSVLink data={excelData} filename="one_day_data.csv">
+                  {" "}
+                  <button className="btn btn-primary">Download to CSV</button>
+                </CSVLink>
+                <Heading_H_OP05
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <H_OP_05 setExcelData={setExcelData} excelData={excelData} />
               </div>
             )}
 
             {(processName == "H2_OP050" || processName == "H3_OP055") && (
               <div className="" style={{ width: "90vw", overflowX: "auto" }}>
-                <Heading_H_OP50 />
-                <H_OP_50 />
+                <CSVLink data={excelData} filename="one_day_data.csv">
+                  {" "}
+                  <button className="btn btn-primary">Download to CSV</button>
+                </CSVLink>
+                <Heading_H_OP50
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <H_OP_50 setExcelData={setExcelData} excelData={excelData} />
               </div>
             )}
             {processName == "H5_OP310" && (
               <div className="" style={{ width: "90vw", overflowX: "auto" }}>
-                <Heading_H_OP310 />
-                <H_OP_310 />
+               <div className="d-flex justify-content-end">
+                  <CSVLink data={excelData} filename="one_day_data.csv">                
+                    <button className="btn btn-primary ">
+                      Download to CSV
+                    </button>
+                  </CSVLink>
+                </div>
+                <Heading_H_OP310
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <H_OP_310 setExcelData={setExcelData} excelData={excelData} />
               </div>
             )}
 
             {processName == "H12_OP990" && (
               <div>
-                <Heading_H_FG />
-                <H_OP_FG />
+                 <div className="d-flex justify-content-end">
+                  <CSVLink data={excelData} filename="one_day_data.csv">                
+                    <button className="btn btn-primary ">
+                      Download to CSV
+                    </button>
+                  </CSVLink>
+                </div>
+                <Heading_H_FG
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <H_OP_FG setExcelData={setExcelData} excelData={excelData} />
               </div>
             )}
 
@@ -536,55 +615,150 @@ function DeatialTraceability() {
 
             {processName == "C8_OP990" && (
               <div>
-                <Heading_C_FG />
-                <C_OP_FG />
+                 <div className="d-flex justify-content-end">
+                  <CSVLink data={excelData} filename="one_day_data.csv">                
+                    <button className="btn btn-primary ">
+                      Download to CSV
+                    </button>
+                  </CSVLink>
+                </div>
+                <Heading_C_FG
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <C_OP_FG setExcelData={setExcelData} excelData={excelData} />
               </div>
             )}
-             {processName == "C3_OP150_170" && (
+            {processName == "C3_OP150_170" && (
               <div className="" style={{ width: "90vw", overflowX: "auto" }}>
-                <Heading_C_OP150_170 />
-                <C_OP_150_170 />
+               <div className="d-flex justify-content-end">
+                  <CSVLink data={excelData} filename="one_day_data.csv">                
+                    <button className="btn btn-primary ">
+                      Download to CSV
+                    </button>
+                  </CSVLink>
+                </div>
+                <Heading_C_OP150_170
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <C_OP_150_170
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
               </div>
             )}
 
             {processName == "C4_OP220" && (
               <div style={{ width: "90vw", overflowX: "auto" }}>
-                <Heading_C_OP220 />
-                <C_OP_220 />
+                  <div className="d-flex justify-content-end">
+                  <CSVLink data={excelData} filename="one_day_data.csv">                
+                    <button className="btn btn-primary ">
+                      Download to CSV
+                    </button>
+                  </CSVLink>
+                </div>
+                <Heading_C_OP220
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <C_OP_220 setExcelData={setExcelData} excelData={excelData} />
               </div>
             )}
             {processName == "C1_Comaterial" && (
               <div>
-                <Heading_C_OP02 />
-                <C_OP_02 />
+                <div className="d-flex justify-content-end">
+                  <CSVLink data={excelData} filename="one_day_data.csv">                
+                    <button className="btn btn-primary ">
+                      Download to CSV
+                    </button>
+                  </CSVLink>
+                </div>
+                <Heading_C_OP02
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <C_OP_02 setExcelData={setExcelData} excelData={excelData} />
               </div>
             )}
             {processName == "C7_Gantry after OP140" && (
               <div>
-                <Heading_C_OP140 />
-                <C_OP_140 />
+                <div className="d-flex justify-content-end">
+                  <CSVLink data={excelData} filename="one_day_data.csv">                
+                    <button className="btn btn-primary ">
+                      Download to CSV
+                    </button>
+                  </CSVLink>
+                </div>
+                <Heading_C_OP140
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <C_OP_140 setExcelData={setExcelData} excelData={excelData} />
               </div>
             )}
             {processName == "C6_OP170 front gantry" && (
               <div>
-                <Heading_Timing line="Crank" op="OP170" />
-                <Timing selectedProcessName="C6_OP170 front gantry" />
+                  <div className="d-flex justify-content-end">
+                  <CSVLink data={excelData} filename="one_day_data.csv">                
+                    <button className="btn btn-primary ">
+                      Download to CSV
+                    </button>
+                  </CSVLink>
+                </div>
+                <Heading_Timing
+                  line="Crank"
+                  op="OP170"
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <Timing
+                  selectedProcessName="C6_OP170 front gantry"
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
               </div>
             )}
             {(processName == "FuelLeak" ||
               processName == "WalterLeak" ||
               processName == "OileLeak") && (
               <div>
-                <Heading_A_LeakTest />
-                <A_OP_LeakTest />
+                <div className="d-flex justify-content-end">
+                  <CSVLink data={excelData} filename="one_day_data.csv">                
+                    <button className="btn btn-primary ">
+                      Download to CSV
+                    </button>
+                  </CSVLink>
+                </div>
+                <Heading_A_LeakTest
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <A_OP_LeakTest
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
                 {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
               </div>
             )}
 
             {processName == "Engine quality information" && (
               <div>
-                <Heading_A_Information />
-                <A_OP_Information />
+                 <div className="d-flex justify-content-end">
+                  <CSVLink data={excelData} filename="one_day_data.csv">                
+                    <button className="btn btn-primary ">
+                      Download to CSV
+                    </button>
+                  </CSVLink>
+                </div>
+                <Heading_A_Information
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <A_OP_Information
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
                 {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
               </div>
             )}
@@ -595,8 +769,21 @@ function DeatialTraceability() {
               processName == "CAMHOUSINGSIB_OFF" ||
               processName == "BLOCKSUB_ON") && (
               <div>
-                <Heading_A_ONTime />
-                <A_OP_ONTime />
+                  <div className="d-flex justify-content-end">
+                  <CSVLink data={excelData} filename="one_day_data.csv">                
+                    <button className="btn btn-primary ">
+                      Download to CSV
+                    </button>
+                  </CSVLink>
+                </div>
+                <Heading_A_ONTime
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <A_OP_ONTime
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
                 {/* <Timing selectedProcessName="C6_OP170 front gantry" /> */}
               </div>
             )}
@@ -608,18 +795,42 @@ function DeatialTraceability() {
               processName == "Crank S / N" ||
               processName == "Block S / N") && (
               <div>
-
-                <Heading_A_INTime />
-                <A_OP_INTime />
-               
+                <div className="d-flex justify-content-end">
+                  <CSVLink data={excelData} filename="one_day_data.csv">
+                    {" "}
+                    <button className="btn btn-primary ">
+                      Download to CSV
+                    </button>
+                  </CSVLink>
+                </div>
+                <Heading_A_INTime
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <A_OP_INTime
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
               </div>
             )}
-                 {(processName == "HeadboltNR") && (
-         <div className="" style={{ width: "90vw", overflowX: "auto" }}>
-               
-                <Heading_A_HeadNR />
-                <A_OP_HeadNR />
-             
+            {processName == "HeadboltNR" && (
+              <div className="" style={{ width: "90vw", overflowX: "auto" }}>
+                <div className="d-flex justify-content-end">
+                  <CSVLink data={excelData} filename="one_day_data.csv">
+                    {" "}
+                    <button className="btn btn-primary ">
+                      Download to CSV
+                    </button>
+                  </CSVLink>
+                </div>
+                <Heading_A_HeadNR
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
+                <A_OP_HeadNR
+                  setExcelData={setExcelData}
+                  excelData={excelData}
+                />
               </div>
             )}
           </>

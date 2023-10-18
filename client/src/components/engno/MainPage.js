@@ -18,6 +18,7 @@ import { processDataClear } from "../../redux/slices/processData/processActions.
 import Loading from "./Loading.js";
 import EntireResultProcess from "./Entire.js";
 import { getProcess3Details} from "../../redux/slices/processData/processActions.js";
+import   {CSVLink} from "react-csv"
 
 function EngNo() {
   const [engineNo, setEngineNo] = useState("");
@@ -46,6 +47,8 @@ function EngNo() {
   ];
 
   const oracleData = useSelector((state) => state.engine.engineData);
+  const data3 = useSelector((state) => state.process.data3);
+
   const shippingRow = useSelector((state) => state.engine.shippingData);
 
   const getColumn = (arr, a, b, c) => {
@@ -147,7 +150,11 @@ function EngNo() {
 
       <div>
         <div>Engine Number</div>
-
+        {console.log("oracleData?.data ")}
+        {console.log(oracleData?.data )}
+        <CSVLink data= {oracleData?.data ===undefined? [["please search before you click on download button"]]:oracleData?.data } filename="assembly_data.csv"> <button className="btn btn-primary">Assy data</button></CSVLink>
+        <CSVLink data= {data3?.data ===undefined? [["please search before you click on download button"]]:data3?.data } filename="machining_data.csv"> <button className="btn btn-primary">machining data</button></CSVLink>
+       
         <div className="d-flex gap-3">
           <input
             type="text"

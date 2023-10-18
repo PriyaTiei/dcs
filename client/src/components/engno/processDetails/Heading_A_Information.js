@@ -1,6 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-function Heading_A_Information() {
+function Heading_A_Information({ setExcelData, excelData }) {
+  const dataRange = useSelector((state) => state.process.dataRange.data);
+
+  useEffect(() => {
+    setExcelData([[]]);
+    setExcelData([
+      [
+        "Engine No.",
+        "Code",
+        "Engine Type",
+        "Customer",
+        "Process Date & Time",
+        "Dispatch Status",
+        "Dispatched Date & Time",
+      ],
+    ]);
+  }, [dataRange]);
+
   return (
     <>
       <div className="mt-3">
@@ -10,7 +28,7 @@ function Heading_A_Information() {
             Engine No.
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
-            code
+            Code
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
             Engine Type

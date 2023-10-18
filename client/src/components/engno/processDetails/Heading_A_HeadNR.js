@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-function Heading_A_HeadNR() {
+function Heading_A_HeadNR({ setExcelData, excelData }) {
+  const dataRange = useSelector((state) => state.process.dataRange.data);
   let subElements = [];
   for (let i = 0; i < 10; i++) {
     subElements.push(
@@ -8,10 +10,27 @@ function Heading_A_HeadNR() {
         className="text-center font-weight-bold flex-1-mod bg-dark text-light"
         style={{ minWidth: 85 }}
       >
-       Torque #{i + 1} 
+        Torque #{i + 1}
       </div>
     );
   }
+
+  useEffect(() => {
+    let subElements2 = [];
+    for (let i = 0; i < 10; i++) {
+      subElements2.push(`Torque #${i + 1}`);
+    }
+    setExcelData([[]]);
+    setExcelData([
+      [
+        "Engine No.",
+        "Process Date & Time",
+        ...subElements2,
+        "Dispatch Status",
+        "Dispatched Date & Time",
+      ],
+    ]);
+  }, [dataRange]);
 
   return (
     <>
@@ -32,11 +51,8 @@ function Heading_A_HeadNR() {
             Process Date & Time
           </div>
 
-          <>
-            {subElements}
-          </>
+          <>{subElements}</>
 
-          
           <div
             className="text-center font-weight-bold flex-1-mod bg-dark text-light"
             style={{ minWidth: 100 }}

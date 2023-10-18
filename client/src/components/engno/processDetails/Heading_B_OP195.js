@@ -1,6 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-function Heading_B_OP195() {
+function Heading_B_OP195({ setExcelData, excelData }) {
+  const dataRange = useSelector((state) => state.process.dataRange.data);
+  useEffect(() => {
+    setExcelData([[]]);
+    setExcelData([
+      [
+        "Block No.",
+        "OP195A or OP195B",
+        "Engine No.",
+        "Dispatch Status",
+        "Dispatched Date & Time",
+      ],
+    ]);
+  }, [dataRange]);
   return (
     <>
       <div className="mt-3">
@@ -10,9 +24,9 @@ function Heading_B_OP195() {
             Block No.
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
-           OP195A or OP195B
+            OP195A or OP195B
           </div>
-         
+
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
             Engine No.
           </div>

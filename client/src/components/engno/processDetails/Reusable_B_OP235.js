@@ -1,11 +1,13 @@
-import React from "react";
+import React, {useEffect} from "react";
 import moment from "moment";
 import { decodeBlock235 } from "./func_B_235";
 
-function Reusable_B_OP235({ serialNo, data, date, engineNo, dispatchedDate }) {
+function Reusable_B_OP235({ serialNo, data, date, engineNo, dispatchedDate ,setExcelData, excelData}) {
   var result = decodeBlock235(data);
   var plug1to7 = [];
   var PLabel = ["P1", "P2", "P3", "P4", "P5", "P6", "", "SP"];
+
+
   for (let i = 0; i < 40; i += 5) {
     if (i === 30) {
       continue;

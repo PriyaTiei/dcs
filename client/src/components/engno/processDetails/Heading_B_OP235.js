@@ -1,7 +1,39 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-function Heading_B_OP235() {
+function Heading_B_OP235({ setExcelData, excelData }) {
+  const dataRange = useSelector((state) => state.process.dataRange.data);
   let plug = ["P1", "P2", "P3", "P4", "P5", "P6", "SP"];
+  useEffect(() => {
+    let dataList1 = [];
+    plug.forEach((plugName) => {
+      dataList1.push(`${plugName} Judgement`);
+      dataList1.push(`${plugName} Measurement leak (mL / min)`);
+      dataList1.push(`${plugName} Correction (mL / min)`);
+      dataList1.push(`${plugName} Test pressure(kPa)`);
+      dataList1.push(`${plugName} K (Ve) value (mL)`);
+    });
+    setExcelData([[]]);
+    // let dataList1 = plug.map((plugName) =>`${plugName} Judgement`,`${plugName} Measurement leak (mL / min)`)
+    setExcelData([
+      [
+        "Block No.",
+        "Model",
+        "Lts",
+        "Judgement",
+        "OP235 process Date & Time",
+        ...dataList1,
+        "Engine No.",
+        "Dispatch Status",
+        "Dispatched Date & Time",
+      ],
+    ]);
+  }, [dataRange]);
+
+  // useEffect(()=>{
+  //   console.log(excelData);
+  // },[excelData])
+
   let dataList = plug.map((plugName) => {
     return (
       <>

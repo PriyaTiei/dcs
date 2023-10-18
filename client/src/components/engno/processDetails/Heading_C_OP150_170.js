@@ -1,6 +1,8 @@
-import React from "react";
-
-function Heading_C_OP150_170() {
+import React, {useEffect} from "react";
+import { useSelector } from "react-redux"
+function Heading_C_OP150_170({setExcelData, excelData}) {
+  const dataRange = useSelector((state) => state.process.dataRange.data)
+   
   let plug = ["1st CW", "2nd CW", "3rd CW","4th CW", "5th CW", "6th CW","7th CW", "8th CW"];
   let dataList = plug.map((plugName) => {
     return (
@@ -24,6 +26,9 @@ function Heading_C_OP150_170() {
       </>
     );
   });
+
+
+
 
   let plug2 = ["Initial", "Final"];
   let dataList2 = plug2.map((plugName) => {
@@ -49,6 +54,30 @@ function Heading_C_OP150_170() {
     );
   });
 
+ 
+
+
+
+   
+  useEffect(()=>{
+    let dataListExcel = []
+    plug.forEach((plugName)=>{
+      dataListExcel.push(`${plugName} 1st hole Hole angle (0.1 °)`)
+      dataListExcel.push(`${plugName} 1st hole Hole depth (0.1mm)`)
+      dataListExcel.push(`${plugName} 2nd hole Hole angle (0.1 °)`)
+      dataListExcel.push(`${plugName} 2nd hole Hole depth (0.1mm)`)
+    })
+
+    let dataList2Excel = []
+    plug.forEach((plugName)=>{
+      dataList2Excel.push(`${plugName} 1-sided measure (0.1 gcm)`)
+      dataList2Excel.push(`${plugName} two-sided measure (0.1 gcm)`)
+      dataList2Excel.push(`${plugName} 1-sided measurement angle (0.1 °)`)
+      dataList2Excel.push(`${plugName} two-sided measurement angle (0.1 °)`)
+    })
+    setExcelData([ [ "Crank No.","Process No","Model","process Date & Time",...dataListExcel,...dataList2Excel, "Engine No.", "Dispatch Status", "Dispatched Date & Time" ]])
+      },[dataRange])
+    
   return (
     <>
       <div className="mt-3">

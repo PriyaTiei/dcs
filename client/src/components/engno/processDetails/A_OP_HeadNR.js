@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from "react";
 import { useSelector } from "react-redux";
 import  Reusable_A_HeadNR from "./Reusable_A_HeadNR"
+import moment from "moment";
+import { decodeAssyHeadBoltNR } from "./func_A_HeadBoltNR";
 
-function A_OP_HeadNR() {
+function A_OP_HeadNR({setExcelData, excelData}) {
   const processName = useSelector((state) => state.process.processName);
   const dataOneDay = useSelector((state) => state.process.dataOneDay);
   const processEngine = useSelector((state) => state.process.processEngine);
@@ -13,7 +15,31 @@ function A_OP_HeadNR() {
   const dataRange = useSelector((state) => state.process.dataRange.data);
 
 
+  useEffect(() => {
+    let bigList2 = dataRange?.map((element) => {
 
+      let result = decodeAssyHeadBoltNR(element[0]);
+      var assemblyHeadNRElements = [];
+      if (result.length > 0) {
+        for (let i = 0; i < 10; i++) {
+          assemblyHeadNRElements.push(result[i]);
+        }
+      }
+
+      return [
+        element[1],
+        moment(element[2]).format("DD-MM-YYYY HH:mm:ss"),      
+        ...assemblyHeadNRElements ,
+        element[1] != "-" && element[3] != "-" ? "Dispatched" : null,
+        element[1] != "-" && element[3] != "-"
+          ? moment(element[4]).format("DD-MM-YYYY HH:mm:ss")
+          : null,
+      ];
+    });
+    if (bigList2 != undefined && bigList2.length > 0) {
+      setExcelData([...excelData, ...bigList2]);
+    }
+  }, [dataRange]);
 
   var bigList = null;
   

@@ -1,6 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-function Heading_B_FG() {
+function Heading_B_FG({ setExcelData, excelData }) {
+  const dataRange = useSelector((state) => state.process.dataRange.data);
+
+  useEffect(() => {
+    setExcelData([[]]);
+    setExcelData([
+      [
+        "Block No.",
+        "FG Date & Time",
+        "Engine No.",
+        "Dispatch Status",
+        "Dispatched Date & Time",
+      ],
+    ]);
+  }, [dataRange]);
+
   return (
     <>
       <div className="mt-3">
@@ -10,9 +26,9 @@ function Heading_B_FG() {
             Block No.
           </div>
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
-           FG Date & Time
+            FG Date & Time
           </div>
-         
+
           <div className="text-center font-weight-bold flex-1 bg-dark text-light">
             Engine No.
           </div>

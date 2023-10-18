@@ -1,6 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-function Heading_C_OP140() {
+function Heading_C_OP140({ setExcelData, excelData }) {
+  const dataRange = useSelector((state) => state.process.dataRange.data);
+  useEffect(() => {
+    setExcelData([[]]);
+    setExcelData([
+      [
+        "Crank Shaft No.",
+        "OP140 Date & Time",
+        "Engine No.",
+        "Dispatch Status",
+        "Dispatched Date & Time",
+      ],
+    ]);
+  }, [dataRange]);
+
   return (
     <>
       <div className="mt-3">

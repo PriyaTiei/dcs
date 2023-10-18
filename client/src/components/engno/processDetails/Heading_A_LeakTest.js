@@ -1,6 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-function Heading_A_LeakTest() {
+function Heading_A_LeakTest({ setExcelData, excelData }) {
+  const dataRange = useSelector((state) => state.process.dataRange.data);
+  useEffect(() => {
+    setExcelData([[]]);
+    setExcelData([
+      [
+        "Engine No.",
+        "Leak values",
+        "Judgement",
+        "Leak test Date & Time",
+        "Dispatch Status",
+        "Dispatched Date & Time",
+      ],
+    ]);
+  }, [dataRange]);
+
   return (
     <>
       <div className="mt-3">

@@ -3,12 +3,8 @@ import moment from "moment";
 
 function Reusable_C_OP220({ serialNo, data, date, engineNo, dispatchedDate }) {
   let C_OP220_list = data.split(",");
-  // console.log(C_OP220_list)
-  C_OP220_list.forEach((item) => console.log(item));
-
   let correctList = C_OP220_list.map((item) => {
     let newItem = item.split("-");
-    // console.log(newItem)
     if (newItem.length >= 2) {
       return -1 * newItem[1];
     } else {
