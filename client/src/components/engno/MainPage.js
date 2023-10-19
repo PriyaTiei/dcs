@@ -150,11 +150,11 @@ function EngNo() {
 
       <div>
         <div>Engine Number</div>
-        {console.log("oracleData?.data ")}
+        {/* {console.log("oracleData?.data ")}
         {console.log(oracleData?.data )}
         <CSVLink data= {oracleData?.data ===undefined? [["please search before you click on download button"]]:oracleData?.data } filename="assembly_data.csv"> <button className="btn btn-primary">Assy data</button></CSVLink>
         <CSVLink data= {data3?.data ===undefined? [["please search before you click on download button"]]:data3?.data } filename="machining_data.csv"> <button className="btn btn-primary">machining data</button></CSVLink>
-       
+        */}
         <div className="d-flex gap-3">
           <input
             type="text"
