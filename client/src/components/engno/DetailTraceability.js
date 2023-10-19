@@ -552,10 +552,13 @@ function DeatialTraceability() {
             {/* ****************** Head process */}
             {processName == "H1_Material input/engraving" && (
               <div>
-                <CSVLink data={excelData} filename="one_day_data.csv">
-                  {" "}
-                  <button className="btn btn-primary">Download to CSV</button>
-                </CSVLink>
+                 <div className="d-flex justify-content-end">
+                  <CSVLink data={excelData} filename="one_day_data.csv">                
+                    <button className="btn btn-primary ">
+                      Download to CSV
+                    </button>
+                  </CSVLink>
+                </div>
                 <Heading_H_OP05
                   setExcelData={setExcelData}
                   excelData={excelData}
@@ -566,10 +569,13 @@ function DeatialTraceability() {
 
             {(processName == "H2_OP050" || processName == "H3_OP055") && (
               <div className="" style={{ width: "90vw", overflowX: "auto" }}>
-                <CSVLink data={excelData} filename="one_day_data.csv">
-                  {" "}
-                  <button className="btn btn-primary">Download to CSV</button>
-                </CSVLink>
+                <div className="d-flex justify-content-end">
+                  <CSVLink data={excelData} filename="one_day_data.csv">                
+                    <button className="btn btn-primary ">
+                      Download to CSV
+                    </button>
+                  </CSVLink>
+                </div>
                 <Heading_H_OP50
                   setExcelData={setExcelData}
                   excelData={excelData}

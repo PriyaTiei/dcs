@@ -1,6 +1,22 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useSelector } from "react-redux";
 
-function Heading_H_OP05() {
+function Heading_H_OP05({ setExcelData, excelData }) {
+  const dataRange = useSelector((state) => state.process.dataRange.data);
+
+  useEffect(() => {
+    setExcelData([[]]);
+    setExcelData([
+      [
+        "Head No.",
+        "Serial No.",
+        "Process Date & Time",
+        "Engine No.",
+        "Dispatch Status",
+        "Dispatched Date & Time",
+      ],
+    ]);
+  }, [dataRange]);
  
     return (
       <>

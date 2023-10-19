@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 
-function Heading_H_OP50() {
+function Heading_H_OP50({ setExcelData, excelData }) {
   let subElements = [];
   for (let i = 0; i < 8; i++) {
     subElements.push(
@@ -12,6 +13,26 @@ function Heading_H_OP50() {
       </div>
     );
   }
+  const dataRange = useSelector((state) => state.process.dataRange.data);
+
+  useEffect(() => {
+
+    let subElements2 = [];
+    for (let i = 0; i < 8; i++) {
+      subElements2.push(`T${i + 1} (0.001g/sec) `);
+    }
+    setExcelData([[]]);
+    setExcelData([
+      [
+        "Head No.",
+        "Process Date & Time",
+        ...subElements2,
+        "Engine No.",
+        "Dispatch Status",
+        "Dispatched Date & Time",
+      ],
+    ]);
+  }, [dataRange]);
 
   return (
     <>
@@ -29,7 +50,7 @@ function Heading_H_OP50() {
             className="text-center font-weight-bold flex-1-mod bg-dark text-light"
             style={{ minWidth: 140 }}
           >
-            Date & Time
+            Process Date & Time
           </div>
 
           <>
