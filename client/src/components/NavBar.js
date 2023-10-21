@@ -17,7 +17,7 @@ export default function Navbar() {
         <Icon name={visible ? "close" : "bars"} size="large" />
         
       </Menu.Item>
-      <h1 className="mx-auto custom-font-text ">Engine Traceability <spam className="mr-0"><img src={engine2} style={{height:"40px"}}></img></spam></h1>
+      <h1 className="mx-auto custom-font-text ">Engine Traceability <span className="mr-0"><img src={engine2} style={{height:"40px"}}></img></span></h1>
     </Menu>
   );
 }

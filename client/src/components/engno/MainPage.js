@@ -102,10 +102,7 @@ function EngNo() {
       });
       // console.log(c3);
       c3.forEach((item) => {
-        getPartData(item[1]);
-        console.log("3 c aba")
-        console.log(item[1])
-        
+        getPartData(item[1]);     
       });
       dispatch(getProcess3Details(c3[0][1],c3[1][1],c3[2][1] ))
     }

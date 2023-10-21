@@ -14,6 +14,7 @@ import { decodeBlock235 } from "./processDetails/func_B_235";
 import { decodeHead50 } from "./processDetails/func_H_50";
 import { decode_C_150_170 } from "./processDetails/func_C_150_170";
 import { decodeAssyHeadBoltNR } from "./processDetails/func_A_HeadBoltNR";
+import ExcelJS from "exceljs";
 
 function EntireResultProcess() {
   const dispatch = useDispatch();
@@ -100,7 +101,9 @@ function EntireResultProcess() {
   processNoFiltered = processNoALCData?.filter(
     (elements) => elements[5] === "B1_ENGRAVED"
   );
-
+  if(processNoFiltered != undefined && processNoFiltered.length > 0){
+    var T_Cylinder_Block_Engraving_Details = [processNoFiltered[0][1]?.slice(16), moment(processNoFiltered[0][8]).format("DD-MMMM-YYYY HH:mm:ss")]
+  }
   display_B1_ENGRAVED =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div className="d-flex flex-column dt1">
@@ -111,12 +114,12 @@ function EntireResultProcess() {
         </div>
         <div className="d-flex ">
           <div className="dt1f1">Ahresty Casting No.</div>{" "}
-          <div className="dt1f2">{processNoFiltered[0][1].slice(16)}</div>
+          <div className="dt1f2">{T_Cylinder_Block_Engraving_Details[0]}</div>
         </div>
         <div className="d-flex ">
           <div className="dt1f1">Engraving Date & Time</div>{" "}
           <div className="dt1f2">
-            {moment(processNoFiltered[0][8]).format("DD-MMMM-YYYY HH:mm:ss")}
+            {T_Cylinder_Block_Engraving_Details[1]}
           </div>
         </div>
       </div>
@@ -190,8 +193,13 @@ function EntireResultProcess() {
     // console.log(op190Data)
     // console.log(op190Data[7])
     // console.log(parseInt(op190Data[7].slice(0,6)))
-  }
-
+  
+var T_OP_195A_B_Machining_Time = [op195Data == "0011"
+? "OP195A"
+: op195Data == "0012"
+? "OP195B"
+: "", moment(processNoFiltered[0][8]).format("DD-MMMM-YYYY HH:mm:ss")]
+}
   display_B4_Finishing_gantry =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div>
@@ -204,17 +212,13 @@ function EntireResultProcess() {
           <div className="d-flex  dt2">
             <div className="dt1f1">Machine</div>{" "}
             <div className="dt1f2">
-              {op195Data == "0011"
-                ? "OP195A"
-                : op195Data == "0012"
-                ? "OP195B"
-                : ""}
+              {T_OP_195A_B_Machining_Time[0]}
             </div>
           </div>
           <div className="d-flex  dt2">
             <div className="dt1f1">Date & Time</div>{" "}
             <div className="dt1f2">
-              {moment(processNoFiltered[0][8]).format("DD-MMMM-YYYY HH:mm:ss")}
+              {T_OP_195A_B_Machining_Time[1]}
             </div>
           </div>
         </div>
@@ -228,7 +232,16 @@ function EntireResultProcess() {
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     var result = decodeBlock235(processNoFiltered[0][1]);
     var plug2to5 = [];
-    var PLabel = ["Plug1 ", "Plug2 ", "Plug3 ", "Plug4 ", "Plug5 ", "Plug6 ", "", "ScrewPlug "];
+    var PLabel = [
+      "Plug1 ",
+      "Plug2 ",
+      "Plug3 ",
+      "Plug4 ",
+      "Plug5 ",
+      "Plug6 ",
+      "",
+      "ScrewPlug ",
+    ];
     for (let i = 0; i < 40; i += 5) {
       if (i === 30) {
         continue;
@@ -236,7 +249,10 @@ function EntireResultProcess() {
       let el = (
         <div className="d-flex flex-row flex-wrap mb-2">
           <div className="d-flex flex-column dt3">
-            <div className="bg-warning text-light">{PLabel[i / 5]}<>&empty;</></div>{" "}
+            <div className="bg-warning text-light">
+              {PLabel[i / 5]}
+           
+            </div>{" "}
             {/* <div>{correctList[1]}</div> */}
           </div>
           <div className="d-flex flex-column dt3">
@@ -245,7 +261,7 @@ function EntireResultProcess() {
           </div>
           <div className="d-flex flex-column dt3">
             <div className="bg-dark text-light">
-              Measurement leak (mL / min)
+              Leak Value(mL / min)
             </div>{" "}
             <div>{result[i + 4]}</div>
           </div>
@@ -326,7 +342,7 @@ function EntireResultProcess() {
   display_B7_OP990 =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div>
-        <div className="h6 mb-2">FG Date & Time</div>
+        <div className="h6 mb-2">Block FG Date & Time</div>
         <div className="d-flex flex-column">
           <div className="d-flex dt2">
             <div className="dt1f1">Process Name</div>{" "}
@@ -339,7 +355,7 @@ function EntireResultProcess() {
                       <div className="dt1f2">{processNoFiltered[0][1]}</div>
                     </div> */}
           <div className="d-flex dt2">
-            <div className="dt1f1">FG Date & Time</div>{" "}
+            <div className="dt1f1"> FG Date & Time</div>{" "}
             <div className="dt1f2" style={{ width: "150px" }}>
               {moment(processNoFiltered[0][8]).format("DD-MMMM-YYYY HH:mm:ss")}
             </div>
@@ -364,11 +380,11 @@ function EntireResultProcess() {
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div className="d-flex flex-column dt1">
         <div className="h6 mb-2">
-          H1_Material input/engraving - Engraving Details
+          Cylinder Head Engraving Details
         </div>
         <div className="d-flex ">
           <div className="dt1f1">Name</div>{" "}
-          <div className="dt1f2">{processNoFiltered[0][5]}</div>
+          <div className="dt1f2">TIEI Engraving</div>
         </div>
         <div className="d-flex ">
           <div className="dt1f1">Casting No.</div>{" "}
@@ -404,7 +420,7 @@ function EntireResultProcess() {
   display_H2_OP050 =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div>
-        <div className="h6 mb-2">H2_OP050-Lazer Clading</div>
+        <div className="h6 mb-2">OP050-Laser Clading Details</div>
         <div className="d-flex flex-row gap-3">
           <div className="d-flex flex-row">
             <div className="d-flex flex-row flex-wrap">
@@ -413,7 +429,7 @@ function EntireResultProcess() {
               </div>
 
               <div className="d-flex flex-column flex-wrap dt3">
-                <div>Date & Time</div>{" "}
+                <div>Laser Clading</div>{" "}
                 <div>
                   {moment(processNoFiltered[0][8]).format(
                     "DD-MMMM-YYYY HH:mm:ss"
@@ -427,7 +443,7 @@ function EntireResultProcess() {
             style={{ width: "max-content" }}
           >
             <div className="border border-dark gap-0 font-weight-bold text-center p-1 ">
-              Sheet powder flow rate
+              Laser clad powder flow rate
             </div>
             <div className="d-flex flex-row">{headOP50Elements}</div>
           </div>
@@ -456,7 +472,7 @@ function EntireResultProcess() {
   display_H3_OP055 =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div>
-        <div className="h6 mb-2">H3_OP055-Lazer Clading</div>
+        <div className="h6 mb-2">OP055-Laser Clading Details</div>
         <div className="d-flex flex-row gap-3">
           <div className="d-flex flex-column">
             <div className="d-flex flex-row flex-wrap">
@@ -465,7 +481,7 @@ function EntireResultProcess() {
               </div>
 
               <div className="d-flex flex-column flex-wrap dt3">
-                <div>Date & Time</div>{" "}
+                <div>Laser Clading</div>{" "}
                 <div>
                   {moment(processNoFiltered[0][8]).format(
                     "DD-MMMM-YYYY HH:mm:ss"
@@ -479,7 +495,7 @@ function EntireResultProcess() {
             style={{ width: "max-content" }}
           >
             <div className="border border-dark gap-0 font-weight-bold text-center p-1">
-              Sheet powder flow rate
+              Laser clad powder flow rate
             </div>
             <div className="d-flex flex-row ">{headOP50Elements}</div>
           </div>
@@ -503,14 +519,14 @@ function EntireResultProcess() {
     display_H5_OP310 =
       processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
         <div className="d-flex flex-column">
-          <div className="h6 mb-2">H5_OP310 - Leak Testing</div>
+          <div className="h6 mb-2">OP310 - Leak Testing Details</div>
           <div className="d-flex flex-row flex-wrap">
             <div className="d-flex flex-column flex-wrap dt3">
               <div>Process Name</div> <div>{processNoFiltered[0][5]}</div>
             </div>
 
             <div className="d-flex flex-column flex-wrap dt3">
-              <div>Date & Time</div>{" "}
+              <div>Leak Test</div>{" "}
               <div>
                 {moment(processNoFiltered[0][8]).format(
                   "DD-MMMM-YYYY HH:mm:ss"
@@ -521,7 +537,7 @@ function EntireResultProcess() {
 
           <div className="d-flex flex-row flex-wrap mt-2">
             <div className="d-flex flex-column dt3">
-              <div className="bg-warning text-light">WJ</div>{" "}
+              <div className="bg-warning text-light">Water Jacket </div>{" "}
               {/* <div>{correctList[1]}</div> */}
             </div>
             <div className="d-flex flex-column dt3">
@@ -544,16 +560,16 @@ function EntireResultProcess() {
             </div>
             <div className="d-flex flex-column dt3">
               <div className="bg-dark text-light">
-                Measurement leak (mL / min)
+                Leak Value(mL / min)
               </div>{" "}
               <div>{correctList[1]}</div>
             </div>
             <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
+              <div className="bg-dark text-light">STD(Upper Limit)</div>{" "}
               <div>{correctList[2]}</div>
             </div>
             <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
+              <div className="bg-dark text-light">STD(Lower Limit)</div>{" "}
               <div>{correctList[3]}</div>
             </div>
             <div className="d-flex flex-column dt3">
@@ -572,7 +588,7 @@ function EntireResultProcess() {
 
           <div className="d-flex flex-row flex-wrap mt-2">
             <div className="d-flex flex-column dt3">
-              <div className="bg-warning text-light">OH</div>{" "}
+              <div className="bg-warning text-light">Oil Hole</div>{" "}
               {/* <div>{correctList[1]}</div> */}
             </div>
             <div className="d-flex flex-column dt3">
@@ -593,16 +609,16 @@ function EntireResultProcess() {
             </div>
             <div className="d-flex flex-column dt3">
               <div className="bg-dark text-light">
-                Measurement leak (mL / min)
+                Leak Value(mL / min)
               </div>{" "}
               <div>{correctList[8]}</div>
             </div>
             <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
+              <div className="bg-dark text-light">STD(Upper Limit)</div>{" "}
               <div>{correctList[9]}</div>
             </div>
             <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
+              <div className="bg-dark text-light">STD(Lower Limit)</div>{" "}
               <div>{correctList[10]}</div>
             </div>
             <div className="d-flex flex-column dt3">
@@ -621,7 +637,7 @@ function EntireResultProcess() {
 
           <div className="d-flex flex-row flex-wrap mt-2">
             <div className="d-flex flex-column dt3">
-              <div className="bg-warning text-light">CC</div>{" "}
+              <div className="bg-warning text-light">Cam Case </div>{" "}
               {/* <div>{correctList[1]}</div> */}
             </div>
             <div className="d-flex flex-column dt3">
@@ -642,16 +658,16 @@ function EntireResultProcess() {
             </div>
             <div className="d-flex flex-column dt3">
               <div className="bg-dark text-light">
-                Measurement leak (mL / min)
+                Leak Value(mL / min)
               </div>{" "}
               <div>{correctList[15]}</div>
             </div>
             <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
+              <div className="bg-dark text-light">STD(Upper Limit)</div>{" "}
               <div>{correctList[16]}</div>
             </div>
             <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
+              <div className="bg-dark text-light">STD(Lower Limit)</div>{" "}
               <div>{correctList[17]}</div>
             </div>
             <div className="d-flex flex-column dt3">
@@ -691,16 +707,16 @@ function EntireResultProcess() {
             </div>
             <div className="d-flex flex-column dt3">
               <div className="bg-dark text-light">
-                Measurement leak (mL / min)
+                Leak Value(mL / min)
               </div>{" "}
               <div>{correctList[22]}</div>
             </div>
             <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">DET UL(mL/min)</div>{" "}
+              <div className="bg-dark text-light">STD(Upper Limit)</div>{" "}
               <div>{correctList[23]}</div>
             </div>
             <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">DET LL(mL/min)</div>{" "}
+              <div className="bg-dark text-light">STD(Lower Limit)</div>{" "}
               <div>{correctList[24]}</div>
             </div>
             <div className="d-flex flex-column dt3">
@@ -728,10 +744,10 @@ function EntireResultProcess() {
   display_H12_OP990 =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">H12_OP990 - FG Date & Time Details</div>
+        <div className="h6 mb-2"> Head FG Date & Time </div>
         <div className="d-flex dt2">
           <div className="dt1f1">Process Name</div>{" "}
-          <div className="dt1f2">{processNoFiltered[0][5]}</div>
+          <div className="dt1f2">FG Scanning</div>
         </div>
         {/* <div className="d-flex dt2">
                       <div className="dt1f1">Data</div>{" "}
@@ -762,10 +778,10 @@ function EntireResultProcess() {
   display_C1_Comaterial =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">C1_Comaterial_OP02 Date & Time Details</div>
+        <div className="h6 mb-2">Crank Shaft Engraving Details</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Process Name</div>{" "}
-          <div className="dt1f2">{processNoFiltered[0][5]}</div>
+          <div className="dt1f2">TIEI Engraving</div>
         </div>
         <div className="d-flex dt2">
           <div className="dt1f1">FG Date & Time</div>{" "}
@@ -808,11 +824,11 @@ function EntireResultProcess() {
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">
-          C6_OP170 front gantry- Date & Time Details
+          Induction Hardening Entry Time
         </div>
         <div className="d-flex dt2">
           <div className="dt1f1">Process Name</div>{" "}
-          <div className="dt1f2">{processNoFiltered[0][5]}</div>
+          <div className="dt1f2">Induction Hardening</div>
         </div>
         <div className="d-flex dt2">
           <div className="dt1f1">FG Date & Time</div>{" "}
@@ -1203,10 +1219,10 @@ function EntireResultProcess() {
   display_C8_OP990 =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div className="d-flex flex-column">
-        <div className="h6 mb-2">C8_OP990-FG Date & Time Details</div>
+        <div className="h6 mb-2">Crank FG Date & Time</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Process Name</div>{" "}
-          <div className="dt1f2">{processNoFiltered[0][5]}</div>
+          <div className="dt1f2">FG Scanning</div>
         </div>
         <div className="d-flex dt2">
           <div className="dt1f1">FG Date & Time</div>{" "}
@@ -1261,28 +1277,29 @@ function EntireResultProcess() {
   //   ) {
   processNoFiltered = data?.filter((elements) => elements[17] === "FuelLeak");
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var T_Fuel_Leak = [
+      processNoFiltered[0][1].slice(75, 84),
+      processNoFiltered[0][1].slice(84, 85) == "2"
+        ? "OK"
+        : processNoFiltered[0][1].slice(84, 85) == "1"
+        ? "NG"
+        : "",
+      moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss"),
+    ];
     display_FuelLeak = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Fuel Leak</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Leak Value</div>{" "}
-          <div className="dt1f2">{processNoFiltered[0][1].slice(75, 84)}</div>
+          <div className="dt1f2">{T_Fuel_Leak[0]}</div>
         </div>
         <div className="d-flex dt2">
           <div className="dt1f1">Judgement</div>{" "}
-          <div className="dt1f2">
-            {processNoFiltered[0][1].slice(84, 85) == "2"
-              ? "OK"
-              : processNoFiltered[0][1].slice(84, 85) == "1"
-              ? "NG"
-              : ""}
-          </div>
+          <div className="dt1f2">{T_Fuel_Leak[1]}</div>
         </div>
         <div className="d-flex dt2">
           <div className="dt1f1">Process Date & Time</div>{" "}
-          <div className="dt1f2">
-            {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
-          </div>
+          <div className="dt1f2">{T_Fuel_Leak[2]}</div>
         </div>
       </div>
     );
@@ -1290,28 +1307,29 @@ function EntireResultProcess() {
 
   processNoFiltered = data?.filter((elements) => elements[17] === "WalterLeak");
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var T_Water_Leak = [
+      processNoFiltered[0][1].slice(75, 84),
+      processNoFiltered[0][1].slice(84, 85) == "2"
+        ? "OK"
+        : processNoFiltered[0][1].slice(84, 85) == "1"
+        ? "NG"
+        : "",
+      moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss"),
+    ];
     display_WalterLeak = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Water Leak</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Leak Value</div>{" "}
-          <div className="dt1f2">{processNoFiltered[0][1].slice(75, 84)}</div>
+          <div className="dt1f2">{T_Water_Leak[0]}</div>
         </div>
         <div className="d-flex dt2">
           <div className="dt1f1">Judgement</div>{" "}
-          <div className="dt1f2">
-            {processNoFiltered[0][1].slice(84, 85) == "2"
-              ? "OK"
-              : processNoFiltered[0][1].slice(84, 85) == "1"
-              ? "NG"
-              : ""}
-          </div>
+          <div className="dt1f2">{T_Water_Leak[1]}</div>
         </div>
         <div className="d-flex dt2">
           <div className="dt1f1">Process Date & Time</div>{" "}
-          <div className="dt1f2">
-            {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
-          </div>
+          <div className="dt1f2">{T_Water_Leak[2]}</div>
         </div>
       </div>
     );
@@ -1319,28 +1337,29 @@ function EntireResultProcess() {
 
   processNoFiltered = data?.filter((elements) => elements[17] === "OileLeak");
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var T_Oil_Leak = [
+      processNoFiltered[0][1].slice(75, 84),
+      processNoFiltered[0][1].slice(84, 85) == "2"
+        ? "OK"
+        : processNoFiltered[0][1].slice(84, 85) == "1"
+        ? "NG"
+        : "",
+      moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss"),
+    ];
     display_OileLeak = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Oil Leak</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Leak Value</div>{" "}
-          <div className="dt1f2">{processNoFiltered[0][1].slice(75, 84)}</div>
+          <div className="dt1f2">{T_Oil_Leak[0]}</div>
         </div>
         <div className="d-flex dt2">
           <div className="dt1f1">Judgement</div>{" "}
-          <div className="dt1f2">
-            {processNoFiltered[0][1].slice(84, 85) == "2"
-              ? "OK"
-              : processNoFiltered[0][1].slice(84, 85) == "1"
-              ? "NG"
-              : ""}
-          </div>
+          <div className="dt1f2">{T_Oil_Leak[1]}</div>
         </div>
         <div className="d-flex dt2">
           <div className="dt1f1">Process Date & Time</div>{" "}
-          <div className="dt1f2">
-            {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
-          </div>
+          <div className="dt1f2">{T_Oil_Leak[2]}</div>
         </div>
       </div>
     );
@@ -1377,6 +1396,17 @@ function EntireResultProcess() {
         customer = "TMMIN";
         break;
     }
+    // b3="Engine quality information"
+    // b4="Variant"
+    // b5="Engine Type"
+    // c4=code
+    var T_Engine_information = [
+      code,
+      lts,
+      customer,
+      moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss"),
+    ];
+
     display = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Engine quality information</div>
@@ -1413,6 +1443,9 @@ function EntireResultProcess() {
 
   processNoFiltered = data?.filter((elements) => elements[17] === "TEST_ON");
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var T_Engine_Testing_Entry = [
+      moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss"),
+    ];
     display_TEST_ON = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Engine Testing (ET) Entry</div>
@@ -1424,9 +1457,7 @@ function EntireResultProcess() {
 
         <div className="d-flex dt2">
           <div className="dt1f1">Process Date & Time</div>{" "}
-          <div className="dt1f2">
-            {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
-          </div>
+          <div className="dt1f2">{T_Engine_Testing_Entry[0]}</div>
         </div>
       </div>
     );
@@ -1434,6 +1465,9 @@ function EntireResultProcess() {
 
   processNoFiltered = data?.filter((elements) => elements[17] === "MAIN_ON");
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var T_Main_Line_1_Entry = [
+      moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss"),
+    ];
     display_MAIN_ON = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Main Line 1 (MK1) Entry</div>
@@ -1445,9 +1479,7 @@ function EntireResultProcess() {
 
         <div className="d-flex dt2">
           <div className="dt1f1">Process Date & Time</div>{" "}
-          <div className="dt1f2">
-            {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
-          </div>
+          <div className="dt1f2">{T_Main_Line_1_Entry[0]}</div>
         </div>
       </div>
     );
@@ -1455,6 +1487,9 @@ function EntireResultProcess() {
 
   processNoFiltered = data?.filter((elements) => elements[17] === "CRANK_ON");
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var T_Crank_Assembly_Time = [
+      moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss"),
+    ];
     display_CRANK_ON = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Crank Assembly Time</div>
@@ -1466,9 +1501,7 @@ function EntireResultProcess() {
 
         <div className="d-flex dt2">
           <div className="dt1f1">Process Date & Time</div>{" "}
-          <div className="dt1f2">
-            {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
-          </div>
+          <div className="dt1f2">{T_Crank_Assembly_Time[0]}</div>
         </div>
       </div>
     );
@@ -1478,6 +1511,9 @@ function EntireResultProcess() {
     (elements) => elements[17] === "HEADSUB_OFF"
   );
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var T_Head_Feeding_to_MK1_Time = [
+      moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss"),
+    ];
     display_HEADSUB_OFF = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Head Feeding to MK1 Time</div>
@@ -1489,9 +1525,7 @@ function EntireResultProcess() {
 
         <div className="d-flex dt2">
           <div className="dt1f1">Process Date & Time</div>{" "}
-          <div className="dt1f2">
-            {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
-          </div>
+          <div className="dt1f2">{T_Head_Feeding_to_MK1_Time[0]}</div>
         </div>
       </div>
     );
@@ -1501,6 +1535,9 @@ function EntireResultProcess() {
     (elements) => elements[17] === "BLOCKSUB_ON"
   );
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var T_Block_Feeding_Time = [
+      moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss"),
+    ];
     display_BLOCKSUB_ON = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Block Feeding Time</div>
@@ -1512,9 +1549,7 @@ function EntireResultProcess() {
 
         <div className="d-flex dt2">
           <div className="dt1f1">Process Date & Time</div>{" "}
-          <div className="dt1f2">
-            {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
-          </div>
+          <div className="dt1f2">{T_Block_Feeding_Time[0]}</div>
         </div>
       </div>
     );
@@ -1524,6 +1559,9 @@ function EntireResultProcess() {
     (elements) => elements[17] === "CAMHOUSINGSIB_OFF"
   );
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var T_Cam_Housing_Feeding_to_MK1_Time = [
+      moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss"),
+    ];
     display_CAMHOUSINGSIB_OFF = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Cam Housing Feeding to MK1 Time</div>
@@ -1535,9 +1573,7 @@ function EntireResultProcess() {
 
         <div className="d-flex dt2">
           <div className="dt1f1">Process Date & Time</div>{" "}
-          <div className="dt1f2">
-            {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
-          </div>
+          <div className="dt1f2">{T_Cam_Housing_Feeding_to_MK1_Time[0]}</div>
         </div>
       </div>
     );
@@ -1556,18 +1592,19 @@ function EntireResultProcess() {
     (elements) => elements[17] === "EX cam S / N"
   );
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var T_Exhaust_Camshaft_Serial_No = [processNoFiltered[0][1], moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")];
     display_EX_cam_S_N = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Exhaust Camshaft Serial No.</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Serial no.</div>{" "}
-          <div className="dt1f2">{processNoFiltered[0][1]}</div>
+          <div className="dt1f2">{T_Cam_Housing_Feeding_to_MK1_Time[0]}</div>
         </div>
 
         <div className="d-flex dt2">
           <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
-            {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
+            {T_Exhaust_Camshaft_Serial_No[1]}
           </div>
         </div>
       </div>
@@ -1578,18 +1615,19 @@ function EntireResultProcess() {
     (elements) => elements[17] === "IN cam S / N"
   );
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var T_Intake_Camshaft_Serial_No = [processNoFiltered[0][1], moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")];
     display_IN_cam_S_N = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Intake Camshaft Serial No.</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Serial no.</div>{" "}
-          <div className="dt1f2">{processNoFiltered[0][1]}</div>
+          <div className="dt1f2">{T_Intake_Camshaft_Serial_No[0]}</div>
         </div>
 
         <div className="d-flex dt2">
           <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
-            {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
+            {T_Intake_Camshaft_Serial_No[1]}
           </div>
         </div>
       </div>
@@ -1600,18 +1638,19 @@ function EntireResultProcess() {
     (elements) => elements[17] === "CamHousing S/N"
   );
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var T_Camhousing_Serial_No = [processNoFiltered[0][1], moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")];
     display_CamHousing_S_N = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Camhousing Serial No.</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Serial no.</div>{" "}
-          <div className="dt1f2">{processNoFiltered[0][1]}</div>
+          <div className="dt1f2">{T_Cam_Housing_Feeding_to_MK1_Time[0]}</div>
         </div>
 
         <div className="d-flex dt2">
           <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
-            {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
+            {T_Camhousing_Serial_No[1]}
           </div>
         </div>
       </div>
@@ -1620,18 +1659,19 @@ function EntireResultProcess() {
 
   processNoFiltered = data?.filter((elements) => elements[17] === "Head S / N");
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var T_Cylinder_Head_Serial_No = [processNoFiltered[0][1], moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")]
     display_Head_S_N = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Cylinder Head Serial No.</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Serial no.</div>{" "}
-          <div className="dt1f2">{processNoFiltered[0][1]}</div>
+          <div className="dt1f2">{T_Cylinder_Head_Serial_No[0]}</div>
         </div>
 
         <div className="d-flex dt2">
           <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
-            {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
+            {T_Cylinder_Head_Serial_No[1]}
           </div>
         </div>
       </div>
@@ -1642,18 +1682,19 @@ function EntireResultProcess() {
     (elements) => elements[17] === "Crank S / N"
   );
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var T_CrankShaft_Serial_No = [processNoFiltered[0][1], moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss") ]
     display_Crank_S_N = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">CrankShaft Serial No.</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Serial no.</div>{" "}
-          <div className="dt1f2">{processNoFiltered[0][1]}</div>
+          <div className="dt1f2">{T_CrankShaft_Serial_No[0]}</div>
         </div>
 
         <div className="d-flex dt2">
           <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
-            {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
+            {T_CrankShaft_Serial_No[1]}
           </div>
         </div>
       </div>
@@ -1664,18 +1705,19 @@ function EntireResultProcess() {
     (elements) => elements[17] === "Block S / N"
   );
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
+    var T_Cylinder_Block_Serial_No = [processNoFiltered[0][1], moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")]
     display_Block_S_N = (
       <div className="d-flex flex-column">
         <div className="h6 mb-2">Cylinder Block Serial No.</div>
         <div className="d-flex dt2">
           <div className="dt1f1">Serial no.</div>{" "}
-          <div className="dt1f2">{processNoFiltered[0][1]}</div>
+          <div className="dt1f2">{T_Cylinder_Block_Serial_No[0]}</div>
         </div>
 
         <div className="d-flex dt2">
           <div className="dt1f1">Process Date & Time</div>{" "}
           <div className="dt1f2">
-            {moment(processNoFiltered[0][21]).format("DD-MMMM-YYYY HH:mm:ss")}
+            {T_Cylinder_Block_Serial_No[1]}
           </div>
         </div>
       </div>
@@ -1701,8 +1743,22 @@ function EntireResultProcess() {
         );
       }
     }
-  }
-
+    var headNRElements_excel_Heading = [];
+    if (result.length > 0) {
+      for (let i = 0; i < 10; i++) {
+        headNRElements_excel_Heading.push(`Torque #${i + 1}`);
+      }
+    }
+    var headNRElements_excel_Data = [];
+    if (result.length > 0) {
+      for (let i = 0; i < 10; i++) {
+        headNRElements_excel_Data.push(result[i]);
+      }
+    }
+  
+var T_Head_Bolt_Nut_Runner_Torque = [moment(processNoFiltered[0][21]).format(
+  "DD-MMMM-YYYY HH:mm:ss"
+), ...headNRElements_excel_Data]
   display_HeadboltNR =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div>
@@ -1719,9 +1775,7 @@ function EntireResultProcess() {
               <div className="d-flex flex-column flex-wrap dt3">
                 <div className=" ">Head Bolt Nut Runner</div>
                 <div>
-                  {moment(processNoFiltered[0][21]).format(
-                    "DD-MMMM-YYYY HH:mm:ss"
-                  )}
+                  {T_Head_Bolt_Nut_Runner_Torque[0]}
                 </div>
               </div>
             </div>
@@ -1735,6 +1789,7 @@ function EntireResultProcess() {
         </div>
       </div>
     );
+}
 
   // } else if ("p" == "p") {
   //   processNoFiltered = data?.filter(
@@ -1769,11 +1824,225 @@ function EntireResultProcess() {
   //     break;
   // }
   // }
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("yousuf");
+   
+
+    // const data1 = ["a1", "b1"];
+    // const data2 = [[1, 2], [3, 4]];
+
+    // Set the value of cell 'C1'
+
+    // worksheet.getCell("B4").value = b4;
+    // worksheet.getCell("B5").value = b5;
+    // worksheet.getCell("C4").value = c4;
+
+    //     for(let i = 0; i<10; i++){
+    //       worksheet.getCell(9 +i,12).value = `apple ${i*10}`;
+    // }
+    // // Add the remaining data
+    worksheet.getCell("B3").value = "Engine quality information";
+    worksheet.addTable({
+      name: "T_Engine_information",
+      ref: "B4", // Start data from A2 to allow space for the table header
+      columns: [
+        { name: "Variant" },
+        { name: "Engine Type" },
+        { name: "Customer" },
+        { name: "Process Date & Time" },
+      ],
+      rows: [T_Engine_information],
+    });
+
+    worksheet.getCell("B7").value = "Fuel Leak";
+    worksheet.addTable({
+      name: "T_Fuel_Leak",
+      ref: "B8", // Start data from A2 to allow space for the table header
+      columns: [
+        { name: "Leak Value" },
+        { name: "Judgement" },
+        { name: "Process Date & Time" },
+      ],
+      rows: [T_Fuel_Leak],
+    });
+
+    worksheet.getCell("B11").value = "Water Leak";
+    worksheet.addTable({
+      name: "T_Water_Leak",
+      ref: "B12", // Start data from A2 to allow space for the table header
+      columns: [
+        { name: "Leak Value" },
+        { name: "Judgement" },
+        { name: "Process Date & Time" },
+      ],
+      rows: [T_Water_Leak],
+    });
+
+    worksheet.getCell("B15").value = "Oil Leak";
+    worksheet.addTable({
+      name: "T_Oil_Leak",
+      ref: "B16", // Start data from A2 to allow space for the table header
+      columns: [
+        { name: "Leak Value" },
+        { name: "Judgement" },
+        { name: "Process Date & Time" },
+      ],
+      rows: [T_Oil_Leak],
+    });
+
+    worksheet.getCell("B20").value = "Engine Testing (ET) Entry";
+    worksheet.addTable({
+      name: "T_Engine_Testing_Entry",
+      ref: "B21", // Start data from A2 to allow space for the table header
+      columns: [{ name: "Process Date & Time" }],
+      rows: [T_Engine_Testing_Entry],
+    });
+
+    worksheet.getCell("D20").value = "Main Line 1 (MK1) Entry";
+    worksheet.addTable({
+      name: "T_Main_Line_1_Entry",
+      ref: "D21", // Start data from A2 to allow space for the table header
+      columns: [{ name: "Process Date & Time" }],
+      rows: [T_Main_Line_1_Entry],
+    });
+
+    worksheet.getCell("F20").value = "Crank Assembly Time";
+    worksheet.addTable({
+      name: "T_Crank_Assembly_Time",
+      ref: "F21", // Start data from A2 to allow space for the table header
+      columns: [{ name: "Process Date & Time" }],
+      rows: [T_Crank_Assembly_Time],
+    });
+
+    worksheet.getCell("B24").value = "Block Feeding Time";
+    worksheet.addTable({
+      name: "T_Block_Feeding_Time",
+      ref: "B25", // Start data from A2 to allow space for the table header
+      columns: [{ name: "Process Date & Time" }],
+      rows: [T_Block_Feeding_Time],
+    });
+
+    worksheet.getCell("D24").value = "Head Feeding to MK1 Time";
+    worksheet.addTable({
+      name: "T_Head_Feeding_to_MK1_Time",
+      ref: "D25", // Start data from A2 to allow space for the table header
+      columns: [{ name: "Process Date & Time" }],
+      rows: [T_Head_Feeding_to_MK1_Time],
+    });
+
+    worksheet.getCell("F24").value = "Cam Housing Feeding to MK1 Time";
+    worksheet.addTable({
+      name: "T_Cam_Housing_Feeding_to_MK1_Time",
+      ref: "F25", // Start data from A2 to allow space for the table header
+      columns: [{ name: "Process Date & Time" }],
+      rows: [T_Cam_Housing_Feeding_to_MK1_Time],
+    });
+
+    worksheet.getCell("B28").value = "Exhaust Camshaft Serial No.";
+    worksheet.addTable({
+      name: "T_Exhaust_Camshaft_Serial_No",
+      ref: "B29", // Start data from A2 to allow space for the table header
+      columns: [{ name: "Serial No."}, {name: "Process Date & Time" }],
+      rows: [T_Exhaust_Camshaft_Serial_No],
+    });
+
+    worksheet.getCell("E28").value = "Intake Camshaft Serial No";
+    worksheet.addTable({
+      name: "T_Intake_Camshaft_Serial_No",
+      ref: "E29", // Start data from A2 to allow space for the table header
+      columns: [{ name: "Serial No."}, {name: "Process Date & Time" }],
+      rows: [T_Intake_Camshaft_Serial_No],
+    });
+
+    worksheet.getCell("H28").value = "Camhousing Serial No.";
+    worksheet.addTable({
+      name: "T_Camhousing_Serial_No",
+      ref: "H29", // Start data from A2 to allow space for the table header
+      columns: [{ name: "Serial No."}, {name: "Process Date & Time" }],
+      rows: [T_Camhousing_Serial_No],
+    });
+
+    worksheet.getCell("B31").value = "Cylinder Head Serial No.";
+    worksheet.addTable({
+      name: "T_Cylinder_Head_Serial_No",
+      ref: "B32", // Start data from A2 to allow space for the table header
+      columns: [{ name: "Serial No."}, {name: "Process Date & Time" }],
+      rows: [T_Cylinder_Head_Serial_No],
+    });
+
+    
+    worksheet.getCell("E31").value = "CrankShaft Serial No.";
+    worksheet.addTable({
+      name: "T_CrankShaft_Serial_No",
+      ref: "E32", // Start data from A2 to allow space for the table header
+      columns: [{ name: "Serial No."}, {name: "Process Date & Time" }],
+      rows: [T_CrankShaft_Serial_No],
+    });
+
+    worksheet.getCell("H31").value = "Cylinder Block Serial No.";
+    worksheet.addTable({
+      name: "T_Cylinder_Block_Serial_No",
+      ref: "H32", // Start data from A2 to allow space for the table header
+      columns: [{ name: "Serial No."}, {name: "Process Date & Time" }],
+      rows: [T_Cylinder_Block_Serial_No],
+    });
+
+
+    worksheet.getCell("B35").value = "Head Bolt Nut Runner Torque";
+    let partHeading = headNRElements_excel_Heading.map(item=>({name:item}))
+    worksheet.addTable({
+      name: "T_Head_Bolt_Nut_Runner_Torque",
+      ref: "B36", // Start data from A2 to allow space for the table header
+      columns: [ {name: "Process Date & Time" }, ...partHeading ],
+      rows: [T_Head_Bolt_Nut_Runner_Torque],
+    });
+
+    worksheet.getCell("B39").value = "Cylinder Block Engraving Details";
+    worksheet.addTable({
+      name: "T_Cylinder_Block_Engraving_Details",
+      ref: "B40", // Start data from A2 to allow space for the table header
+      columns: [{ name: "Ahresty Casting No."}, {name: "Engraving Date & Time" }],
+      rows: [T_Cylinder_Block_Engraving_Details],
+    });
+    
+    worksheet.getCell("B43").value = "OP-195A/B Machining Time";
+    worksheet.addTable({
+      name: "T_OP_195A_B_Machining_Time",
+      ref: "B44", // Start data from A2 to allow space for the table header
+      columns: [ {name: "Machine" }, {name: "Date & Time"}],
+      rows: [T_OP_195A_B_Machining_Time],
+    });
+
+    
+    
+
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "data.xlsx";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="d-flex flex-column gap-3 mt-3">
       <hr></hr>
       <div className="h4 text-primary"> Assembly data</div>
+      <button
+        className="btn btn-primary"
+        style={{ width: "150px" }}
+        onClick={exportToExcel}
+      >
+        Export to Excel
+      </button>
 
       <>{display}</>
 
