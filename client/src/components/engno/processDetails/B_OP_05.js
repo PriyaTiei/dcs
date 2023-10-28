@@ -35,7 +35,7 @@ function B_OP_05({setExcelData, excelData}) {
 
   bigList = dataRange?.map((element) => (
     <Reusable_B_OP05
-      key={element[1]}
+      key={element[2]}
       serialNo={element[0]}
       date={element[2]}
       engineNo={element[3]}

@@ -49,7 +49,7 @@ function H_OP_50({ setExcelData, excelData }) {
   
   bigList = dataRange?.map((element) => (
     <Reusable_H_OP50
-      key={element[1]}
+      key={element[2]}
       serialNo={element[1]}
       data={element[0]}
       date={element[2]}

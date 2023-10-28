@@ -34,7 +34,7 @@ function B_OP_FG({ setExcelData, excelData }) {
 
   bigList = dataRange?.map((element) => (
     <Reusable_B_FG
-      key={element[1]}
+      key={element[2]}
       data={element[0]}
       date={element[2]}
       engineNo={element[3]}

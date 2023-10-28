@@ -34,7 +34,7 @@ function C_OP_220({ setExcelData, excelData }) {
 
   bigList = dataRange?.map((element) => (
     <Reusable_C_OP02
-      key={element[1]}
+      key={element[2]}
       data={element[1]}
       date={element[2]}
       engineNo={element[3]}

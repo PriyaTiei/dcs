@@ -69,7 +69,7 @@ function A_OP_Information({ setExcelData, excelData }) {
     if (element[1].slice(0, 1) === "N") {
       return (
         <Reusable_A_Information
-          key={element[1]}
+          key={element[2]}
           data={element[0]}
           date={element[2]}
           engineNo={element[1]}

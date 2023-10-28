@@ -15,7 +15,7 @@ function C_OP_220({ setExcelData, excelData }) {
 
   useEffect(() => {
     let bigList2 = dataRange?.map((element) => {
-      let C_OP220_list = element[0].split(",");
+      let C_OP220_list = element[0]?.split(",");
       let correctList = C_OP220_list.map((item) => {
         let newItem = item.split("-");
         if (newItem.length >= 2) {
@@ -28,12 +28,12 @@ function C_OP_220({ setExcelData, excelData }) {
       var tt;
       var ttString;
       if (correctList[39] != undefined) {
-        ttString = tt = correctList[39].toString().replace(".", "").slice(0, 8);
+        ttString = tt = correctList[39]?.toString().replace(".", "")?.slice(0, 8);
 
         if (correctList[1] === 11) {
-          tt = ttString.slice(0, 4);
+          tt = ttString?.slice(0, 4);
         } else {
-          tt = ttString.slice(7, 8) + ttString.slice(0, 4);
+          tt = ttString?.slice(7, 8) + ttString?.slice(0, 4);
         }
       }
 
@@ -71,7 +71,7 @@ function C_OP_220({ setExcelData, excelData }) {
 
   bigList = dataRange?.map((element) => (
     <Reusable_C_OP220
-      key={element[1]}
+      key={element[2]}
       serialNo={element[1]}
       data={element[0]}
       date={element[2]}

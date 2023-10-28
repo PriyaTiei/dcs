@@ -19,11 +19,11 @@ function B_OP_190({ setExcelData, excelData }) {
       return [
         element[1],
         moment(element[2]).format("DD-MM-YYYY HH:mm:ss"),   
-        parseInt(dataList[7].slice(0, 6)),   
-        parseInt(dataList[8].slice(0, 6)),  
-        parseInt(dataList[9].slice(0, 6)),  
-        parseInt(dataList[10].slice(0, 6)),  
-        parseInt(dataList[11].slice(0, 6)), 
+        parseInt(dataList[7]?.slice(0, 6)),   
+        parseInt(dataList[8]?.slice(0, 6)),  
+        parseInt(dataList[9]?.slice(0, 6)),  
+        parseInt(dataList[10]?.slice(0, 6)),  
+        parseInt(dataList[11]?.slice(0, 6)), 
         element[3],
         element[3] != "-" && element[4] != "-" ? "Dispatched" : null,
         element[3] != "-" && element[4] != "-"
@@ -44,7 +44,7 @@ function B_OP_190({ setExcelData, excelData }) {
 
   bigList = dataRange?.map((element) => (
     <Reusable_B_OP190
-      key={element[1]}
+      key={element[2]}
       data={element[0]}
       date={element[2]}
       engineNo={element[3]}

@@ -16,8 +16,8 @@ function H_OP_05({ setExcelData, excelData }) {
   useEffect(() => {
     let bigList2 = dataRange?.map((element) => {
       return [
-        element[0].slice(0, 16),
-        element[0].slice(16),
+        element[0]?.slice(0, 16),
+        element[0]?.slice(16),
         moment(element[2]).format("DD-MM-YYYY HH:mm:ss"),      
         element[3],
         element[3] != "-" && element[4] != "-" ? "Dispatched" : null,
@@ -37,7 +37,7 @@ function H_OP_05({ setExcelData, excelData }) {
 
   bigList = dataRange?.map((element) => (
     <Reusable_H_OP05
-      key={element[1]}
+      key={element[2]}
       data={element[0]}
       date={element[2]}
       engineNo={element[3]}

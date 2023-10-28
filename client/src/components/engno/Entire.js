@@ -2103,6 +2103,7 @@ var T_Head_Bolt_Nut_Runner_Torque = [moment(processNoFiltered[0][21]).format(
       <>{display_C3_OP150_170}</>
       <>{display_C4_OP220}</>
     </div>
+    
   );
 }
 

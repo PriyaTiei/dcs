@@ -69,7 +69,7 @@ function C_OP_150_170({ setExcelData, excelData }) {
 
   bigList = dataRange?.map((element) => (
     <Reusable_C_OP150_170
-      key={element[1]}
+      key={element[2]}
       serialNo={element[1]}
       data={element[0]}
       date={element[2]}

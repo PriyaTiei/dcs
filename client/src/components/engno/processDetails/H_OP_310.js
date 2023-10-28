@@ -17,7 +17,7 @@ function H_OP_310({ setExcelData, excelData }) {
   useEffect(() => {
     let bigList2 = dataRange?.map((element) => {
 
-      let H_OP310_list = element[0].split(",");  
+      let H_OP310_list = element[0]?.split(",");  
  
       let f1 = H_OP310_list[0]?.slice(16, 17);
     
@@ -42,45 +42,45 @@ function H_OP_310({ setExcelData, excelData }) {
             correctList[4],
             correctList[5],
             correctList[6],
-            correctList[7].toString() == "1"
+            correctList[7]?.toString() == "1"
             ? "LL NG"
-            : correctList[7].toString() == "2"
+            : correctList[7]?.toString() == "2"
             ? "OK"
-            : correctList[7].toString() == "4"
+            : correctList[7]?.toString() == "4"
             ? "UL NG"
-            : correctList[7].toString() == "9"
+            : correctList[7]?.toString() == "9"
             ? "LL2 NG"
-            : correctList[7].toString() == "D"
+            : correctList[7]?.toString() == "D"
             ? "ERR"
             : "",
             correctList[8],
             correctList[11],
             correctList[12],
             correctList[13],
-            correctList[14].toString() == "1"
+            correctList[14]?.toString() == "1"
             ? "LL NG"
-            : correctList[14].toString() == "2"
+            : correctList[14]?.toString() == "2"
             ? "OK"
-            : correctList[14].toString() == "4"
+            : correctList[14]?.toString() == "4"
             ? "UL NG"
-            : correctList[14].toString() == "9"
+            : correctList[14]?.toString() == "9"
             ? "LL2 NG"
-            : correctList[14].toString() == "D"
+            : correctList[14]?.toString() == "D"
             ? "ERR"
             : "",
             correctList[15],
             correctList[18],
             correctList[19],
             correctList[20],
-            correctList[21].toString() == "1"
+            correctList[21]?.toString() == "1"
             ? "LL NG"
-            : correctList[21].toString() == "2"
+            : correctList[21]?.toString() == "2"
             ? "OK"
-            : correctList[21].toString() == "4"
+            : correctList[21]?.toString() == "4"
             ? "UL NG"
-            : correctList[21].toString() == "9"
+            : correctList[21]?.toString() == "9"
             ? "LL2 NG"
-            : correctList[21].toString() == "D"
+            : correctList[21]?.toString() == "D"
             ? "ERR"
             : "",
             correctList[22],
@@ -104,7 +104,7 @@ function H_OP_310({ setExcelData, excelData }) {
   
   bigList = dataRange?.map((element) => (
     <Reusable_H_OP310
-      key={element[1]}
+      key={element[2]}
       serialNo={element[1]}
       data={element[0]}
       date={element[2]}
