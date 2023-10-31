@@ -47,9 +47,9 @@ function H_OP_50({ setExcelData, excelData }) {
 
   var bigList = null;
   
-  bigList = dataRange?.map((element) => (
+  bigList = dataRange?.map((element, i) => (
     <Reusable_H_OP50
-      key={element[2]}
+      key={i}
       serialNo={element[1]}
       data={element[0]}
       date={element[2]}

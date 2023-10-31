@@ -69,9 +69,9 @@ function C_OP_220({ setExcelData, excelData }) {
 
   var bigList = null;
 
-  bigList = dataRange?.map((element) => (
+  bigList = dataRange?.map((element, i) => (
     <Reusable_C_OP220
-      key={element[2]}
+      key={i}
       serialNo={element[1]}
       data={element[0]}
       date={element[2]}

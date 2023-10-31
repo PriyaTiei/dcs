@@ -43,9 +43,9 @@ function A_OP_HeadNR({setExcelData, excelData}) {
 
   var bigList = null;
   
-  bigList = dataRange?.map((element) => (
+  bigList = dataRange?.map((element, i) => (
     <Reusable_A_HeadNR
-      key={element[2]}
+      key={i}
       serialNo={element[1]}
       data={element[0]}
       date={element[2]}

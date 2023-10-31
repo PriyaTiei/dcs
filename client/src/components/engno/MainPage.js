@@ -17,8 +17,8 @@ import { Search } from "bootstrap-icons-react";
 import { processDataClear } from "../../redux/slices/processData/processActions.js";
 import Loading from "./Loading.js";
 import EntireResultProcess from "./Entire.js";
-import { getProcess3Details} from "../../redux/slices/processData/processActions.js";
-import   {CSVLink} from "react-csv"
+import { getProcess3Details } from "../../redux/slices/processData/processActions.js";
+import { CSVLink } from "react-csv";
 
 function EngNo() {
   const [engineNo, setEngineNo] = useState("");
@@ -102,17 +102,15 @@ function EngNo() {
       });
       // console.log(c3);
       c3.forEach((item) => {
-        getPartData(item[1]);     
+        getPartData(item[1]);
       });
-      dispatch(getProcess3Details(c3[0][1],c3[1][1],c3[2][1] ))
+      dispatch(getProcess3Details(c3[0][1], c3[1][1], c3[2][1]));
     }
   }, [oracleData]);
 
-
-
-  const history = oracleData?.data?.map((item) =>
+  const history = oracleData?.data?.map((item, index) =>
     item[17] != "EGNO" ? (
-      <DateTable key={item[0]} title={item[17]} date={item[21]} />
+      <DateTable key={index} title={item[17]} date={item[21]} />
     ) : null
   );
 
@@ -121,10 +119,11 @@ function EngNo() {
       <div className="d-flex gap-0">
         <div className="p-2 border hist  ">SHIPMENT</div>
         <div className="p-2 border histValue ">
-
-          {shippingRow ?  (shippingRow[3]?moment(shippingRow[3]).format(
-            "YYYY-MM-DD HH:mm:ss"
-          ) : null): null}
+          {shippingRow
+            ? shippingRow[3]
+              ? moment(shippingRow[3]).format("YYYY-MM-DD HH:mm:ss")
+              : null
+            : null}
         </div>
       </div>
       <div className="d-flex gap-0">

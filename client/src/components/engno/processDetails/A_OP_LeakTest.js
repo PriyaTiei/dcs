@@ -37,9 +37,9 @@ function A_OP_LeakTest({ setExcelData, excelData }) {
 
   var bigList = null;
 
-  bigList = dataRange?.map((element) => (
+  bigList = dataRange?.map((element, i) => (
     <Reusable_A_LeakTest
-      key={element[2]}
+      key={i}
       data={element[0]}
       date={element[2]}
       engineNo={element[1]}

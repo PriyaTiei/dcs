@@ -86,9 +86,9 @@ function B_OP_190() {
     }
   }, [processEngineDate]);
 
-  bigList = combineTable.map((element) => (
+  bigList = combineTable.map((element, i) => (
     <Reusable_B_OP190
-      key={element[1]}
+      key={i}
       serialNo={element[1]}
       date={element[8]}
       engineNo={element[10]}

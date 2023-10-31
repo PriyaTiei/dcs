@@ -32,9 +32,9 @@ function C_OP_220({ setExcelData, excelData }) {
 
   var bigList = null;
 
-  bigList = dataRange?.map((element) => (
+  bigList = dataRange?.map((element, i) => (
     <Reusable_C_OP02
-      key={element[2]}
+      key={i}
       data={element[1]}
       date={element[2]}
       engineNo={element[3]}

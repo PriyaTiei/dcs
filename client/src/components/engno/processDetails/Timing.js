@@ -36,9 +36,9 @@ function Timing({selectedProcessName, setExcelData, excelData  }) {
  
   
 
-  bigList = dataRange?.map((element) => (
+  bigList = dataRange?.map((element, i) => (
     <Reusable_Timing
-      key={element[1]}
+      key={i}
       data={element[1]}
       date={element[2]}
       engineNo={element[3]}

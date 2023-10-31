@@ -32,9 +32,9 @@ function B_OP_FG({ setExcelData, excelData }) {
 
   var bigList = null;
 
-  bigList = dataRange?.map((element) => (
+  bigList = dataRange?.map((element, i) => (
     <Reusable_B_FG
-      key={element[2]}
+      key={i}
       data={element[0]}
       date={element[2]}
       engineNo={element[3]}

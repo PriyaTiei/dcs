@@ -65,11 +65,11 @@ function A_OP_Information({ setExcelData, excelData }) {
 
   var bigList = null;
 
-  bigList = dataRange?.map((element) => {
+  bigList = dataRange?.map((element, i) => {
     if (element[1].slice(0, 1) === "N") {
       return (
         <Reusable_A_Information
-          key={element[2]}
+          key={i}
           data={element[0]}
           date={element[2]}
           engineNo={element[1]}

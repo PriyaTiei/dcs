@@ -34,9 +34,9 @@ function A_OP_ONTime({ setExcelData, excelData }) {
 
   var bigList = null;
 
-  bigList = dataRange?.map((element) => (
+  bigList = dataRange?.map((element, i) => (
     <Reusable_A_ONTime
-      key={element[2]}
+      key={i}
       date={element[2]}
       engineNo={element[1]}
       dispatchedDate={element[3]}
