@@ -102,7 +102,7 @@ const uploadMultiple = multer({
 }).array("images");
 
 //handle single image
-const uploadImage2 = (req, res, next) => {  
+const uploadImage2 = (req, res, next) => {
   upload2(req, res, (err) => {
     if (err) {
       return res.status(400).json({ message: err.message });
@@ -118,7 +118,6 @@ const uploadImage2 = (req, res, next) => {
 
 // handle multiple images
 const uploadImageMultiple = (req, res, next) => {
- 
   //here it is not passing req.body
 
   uploadMultiple(req, res, (err) => {
@@ -138,7 +137,6 @@ const uploadImageMultiple = (req, res, next) => {
     //   return res.status(400).json({ message: "No file uploaded! multi" });
     // }
 
-
     // ********/
     const imagePath = "reworkImages/" + req.files[0].filename;
     res.json({ imagePath });
@@ -155,7 +153,7 @@ const getImage = (req, res) => {
     "public",
     "reworkImages",
     imageName
-  ); 
+  );
   res.sendfile(imagePath);
 };
 

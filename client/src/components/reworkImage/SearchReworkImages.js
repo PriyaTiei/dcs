@@ -2,10 +2,15 @@ import React, { useState } from "react";
 import axios from "axios";
 import ReusageImageCards from "./ReusageImageCards";
 import { toast } from "react-toastify";
-import {  Search } from 'bootstrap-icons-react';
+import { Search } from "bootstrap-icons-react";
+import Select from "react-select";
 
 function SearchReworkImages() {
   const [engineNo, setEngineNo] = useState("");
+  const [shift, setShift] = useState("");
+  const [line, setLine] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const [listOfImages, setListOfImages] = useState([]);
 
   const getImages = () => {
@@ -37,6 +42,29 @@ function SearchReworkImages() {
   const images = listOfImages?.map((imageData) => (
     <ReusageImageCards key={imageData._id} imageData={imageData} />
   ));
+
+
+  const fromDateHandler = (e) => {
+    var tempFromDate = new Date(e.target.value);
+
+    tempFromDate.setDate(tempFromDate.getDate() - 1);
+    tempFromDate.setHours(23);
+    tempFromDate.setMinutes(60);
+    tempFromDate.setSeconds(1);
+    setFromDate(tempFromDate.toISOString())   
+  };
+
+  const toDateHandler = (e) => {
+    var tempToDate = new Date(e.target.value);
+    tempToDate.setHours(23);
+    tempToDate.setMinutes(59);
+    tempToDate.setSeconds(59);
+    setToDate(tempToDate.toISOString())
+
+    // dispatch(newToDate(tempToDate.toISOString()));
+    // setToDate(e.target.value);
+    // console.log(e.target.value);
+  };
   return (
     <div>
       <div className="d-flex gap-3">
@@ -46,9 +74,58 @@ function SearchReworkImages() {
           onChange={(e) => setEngineNo(e.target.value)}
           className="form-control w-25"
         />
+     
+        <Select
+          options={[
+            { value: "TNGA_Assembly", label: "TNGA Assembly" },
+            { value: "TNGA_Machining", label: "TNGA Machining" },
+            { value: "GD_Assembly", label: "GD Assembly" },
+            { value: "GD_Machining", label: "GD Machining" },
+            { value: "Others", label: "Others" },
+          ]}
+          // value={{ value: null, label: "select" }}
+          onChange={(option) => {
+            setLine(option.value);
+          }}
+          placeholder="Select Line"
+        />
+        <Select
+          options={[
+            { value: "White", label: "White" },
+            { value: "Yellow", label: "Yellow" },
+            { value: "Blue", label: "Blue" },
+          ]}
+          // value={{ value: null, label: "select" }}
+          onChange={(option) => {
+            setShift(option.value);
+          }}
+          placeholder="Select Shift"
+        />
+<div className="d-flex align-items-center gap-2">
+<p className="">From Date</p>
+ <input
+                  type="date"
+                  // value={fromDateString.slice(0, 10)}
+                  className="bg-warning text-center"
+                  onChange={fromDateHandler}
+              
+                />
+                </div>
+                <div className="d-flex align-items-center gap-2">
+<p className="">To Date</p>
+<input
+                  type="date"
+                  // value={toDateState.slice(0, 10)}
+                  className="bg-warning text-center"
+                  onChange={toDateHandler}
+                />
+                </div>
+
         <button onClick={getImages} className="btn btn-primary">
-        <div className="d-flex gap-2 align-items-center"><Search />
-             Search</div>
+          <div className="d-flex gap-2 align-items-center">
+            <Search />
+            Search
+          </div>
         </button>
       </div>
       <div className="d-flex flex-wrap my-3"> {images}</div>

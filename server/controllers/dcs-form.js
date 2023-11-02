@@ -123,7 +123,7 @@ const storeImageFileName = catchAsyncError(async (req, res, next) => {
 
 // ********store multple data of images*********
 const storeImageFileNameMultiple = catchAsyncError(async (req, res, next) => {
-  const { engineNo, imagesNameList, checkedBy, commonRemarks } = req.body;
+  const { engineNo, imagesNameList, checkedBy, commonRemarks, line, shift } = req.body;
 
 
   imagesNameList.forEach(async (element) => {
@@ -132,6 +132,8 @@ const storeImageFileNameMultiple = catchAsyncError(async (req, res, next) => {
       imageName: element,
       checkedBy,
       commonRemarks,
+      line,
+      shift
     });
     if (!reworkNumber) {
       return next(new ErrorHandler("could not add rework engine number", 500));

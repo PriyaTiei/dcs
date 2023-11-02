@@ -1,6 +1,7 @@
 import React from "react";
 import moment from "moment";
 
+
 function ReusageImageCards({ imageData }) {
   return (
     <div
@@ -20,6 +21,15 @@ function ReusageImageCards({ imageData }) {
       <div className="d-flex gap-1">
         <h6 className="w-50 ">Remarks: </h6>
         <h6 className="w-50 ">{imageData.commonRemarks}</h6>
+      </div>
+      <div className="d-flex gap-1">
+        <h6 className="w-50 ">Line: </h6>
+        <h6 className="w-50 ">{imageData.line}</h6>
+      </div>
+      <div className="d-flex gap-1">
+        <h6 className="w-50 ">Shift: </h6>
+        <h6 className="w-50 ">{imageData.shift}</h6>
+     
       </div>
 
       <img

@@ -13,6 +13,12 @@ const reworkNumberSchema = new mongoose.Schema(
     checkedBy: {
       type: String,
     },
+    shift: {
+      type: String,
+    },
+    line: {
+      type: String,
+    },
     commonRemarks: {
       type: String,
     },

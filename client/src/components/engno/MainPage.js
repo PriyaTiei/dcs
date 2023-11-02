@@ -21,7 +21,7 @@ import { getProcess3Details } from "../../redux/slices/processData/processAction
 import { CSVLink } from "react-csv";
 
 function EngNo() {
-  const [engineNo, setEngineNo] = useState("");
+  const [engineNo, setEngineNo] = useState("NB30000");
 
   const [part, setPart] = useState("");
   const [supplierPart, setSupplierPart] = useState("");
