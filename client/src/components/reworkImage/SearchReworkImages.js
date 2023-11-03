@@ -43,7 +43,6 @@ function SearchReworkImages() {
     <ReusageImageCards key={imageData._id} imageData={imageData} />
   ));
 
-
   const fromDateHandler = (e) => {
     var tempFromDate = new Date(e.target.value);
 
@@ -51,7 +50,7 @@ function SearchReworkImages() {
     tempFromDate.setHours(23);
     tempFromDate.setMinutes(60);
     tempFromDate.setSeconds(1);
-    setFromDate(tempFromDate.toISOString())   
+    setFromDate(tempFromDate.toISOString());
   };
 
   const toDateHandler = (e) => {
@@ -59,14 +58,14 @@ function SearchReworkImages() {
     tempToDate.setHours(23);
     tempToDate.setMinutes(59);
     tempToDate.setSeconds(59);
-    setToDate(tempToDate.toISOString())
+    setToDate(tempToDate.toISOString());
 
     // dispatch(newToDate(tempToDate.toISOString()));
     // setToDate(e.target.value);
     // console.log(e.target.value);
   };
   return (
-    <div>
+    <div className="mt-3" style={{height:"100vh", overflowY:"scroll"}}>
       <div className="d-flex gap-3">
         <input
           placeholder="Engine no"
@@ -74,7 +73,7 @@ function SearchReworkImages() {
           onChange={(e) => setEngineNo(e.target.value)}
           className="form-control w-25"
         />
-     
+
         <Select
           options={[
             { value: "TNGA_Assembly", label: "TNGA Assembly" },
@@ -101,25 +100,24 @@ function SearchReworkImages() {
           }}
           placeholder="Select Shift"
         />
-<div className="d-flex align-items-center gap-2">
-<p className="">From Date</p>
- <input
-                  type="date"
-                  // value={fromDateString.slice(0, 10)}
-                  className="bg-warning text-center"
-                  onChange={fromDateHandler}
-              
-                />
-                </div>
-                <div className="d-flex align-items-center gap-2">
-<p className="">To Date</p>
-<input
-                  type="date"
-                  // value={toDateState.slice(0, 10)}
-                  className="bg-warning text-center"
-                  onChange={toDateHandler}
-                />
-                </div>
+        <div className="d-flex align-items-center gap-2">
+          <p className="">From Date</p>
+          <input
+            type="date"
+            // value={fromDateString.slice(0, 10)}
+            className="bg-warning text-center"
+            onChange={fromDateHandler}
+          />
+        </div>
+        <div className="d-flex align-items-center gap-2">
+          <p className="">To Date</p>
+          <input
+            type="date"
+            // value={toDateState.slice(0, 10)}
+            className="bg-warning text-center"
+            onChange={toDateHandler}
+          />
+        </div>
 
         <button onClick={getImages} className="btn btn-primary">
           <div className="d-flex gap-2 align-items-center">
