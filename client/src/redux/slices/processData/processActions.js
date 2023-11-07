@@ -24,7 +24,8 @@ import {
   PROCESS_CASTING_NO_FETCH,
   PROCESS_CASTING_NO_SUCCESS,
   PROCESS_CASTING_NO_FAILURE,
-  CLEAR
+  CLEAR,
+  EXCEL_TABLE_HEADING
 } from "./processTypes";
 import axios from "axios";
 import {toast} from "react-toastify"
@@ -200,6 +201,14 @@ export const processCastingNoFailure = (error) => {
 export const processDataClear = () => {
   return {
     type: CLEAR,    
+  };
+};
+
+
+export const excelTableHeading = (heading) => {
+  return {
+    type: EXCEL_TABLE_HEADING, 
+    payload:heading
   };
 };
 

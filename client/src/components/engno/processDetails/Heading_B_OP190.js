@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { excelTableHeading } from "../../../redux/slices/processData/processActions";
 
 function Heading_B_OP190({ setExcelData, excelData }) {
+  const dispatch = useDispatch();
   const dataRange = useSelector((state) => state.process.dataRange.data);
   useEffect(() => {
-    setExcelData([[]]);
-    setExcelData([
-      [
+    dispatch(
+      excelTableHeading([
         "Block No.",
         "Process Date & Time",
         "J1",
@@ -17,8 +18,23 @@ function Heading_B_OP190({ setExcelData, excelData }) {
         "Engine No.",
         "Dispatch Status",
         "Dispatched Date & Time",
-      ],
-    ]);
+      ])
+    );
+    // setExcelData([[]]);
+    // setExcelData([
+    //   [
+    //     "Block No.",
+    //     "Process Date & Time",
+    //     "J1",
+    //     "J2",
+    //     "J3",
+    //     "J4",
+    //     "J5",
+    //     "Engine No.",
+    //     "Dispatch Status",
+    //     "Dispatched Date & Time",
+    //   ],
+    // ]);
   }, [dataRange]);
   return (
     <>

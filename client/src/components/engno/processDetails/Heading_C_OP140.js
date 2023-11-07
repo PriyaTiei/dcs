@@ -1,19 +1,28 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { excelTableHeading } from "../../../redux/slices/processData/processActions";
 
 function Heading_C_OP140({ setExcelData, excelData }) {
+  const dispatch = useDispatch();
   const dataRange = useSelector((state) => state.process.dataRange.data);
   useEffect(() => {
-    setExcelData([[]]);
-    setExcelData([
-      [
-        "Crank Shaft No.",
-        "OP140 Date & Time",
-        "Engine No.",
-        "Dispatch Status",
-        "Dispatched Date & Time",
-      ],
-    ]);
+    dispatch(excelTableHeading( [
+      "Crank Shaft No.",
+      "OP140 Date & Time",
+      "Engine No.",
+      "Dispatch Status",
+      "Dispatched Date & Time",
+    ]))
+    // setExcelData([[]]);
+    // setExcelData([
+    //   [
+    //     "Crank Shaft No.",
+    //     "OP140 Date & Time",
+    //     "Engine No.",
+    //     "Dispatch Status",
+    //     "Dispatched Date & Time",
+    //   ],
+    // ]);
   }, [dataRange]);
 
   return (

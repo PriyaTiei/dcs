@@ -1,22 +1,30 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { excelTableHeading } from "../../../redux/slices/processData/processActions";
 
 
 function Heading_C_FG({ setExcelData, excelData }) {
-
+  const dispatch = useDispatch();
   const dataRange = useSelector((state) => state.process.dataRange.data);
 
   useEffect(() => {
-    setExcelData([[]]);
-    setExcelData([
-      [
-        "CrankShaft No.",
-        "FG Date & Time",
-        "Engine No.",
-        "Dispatch Status",
-        "Dispatched Date & Time",
-      ],
-    ]);
+    dispatch(excelTableHeading([
+      "CrankShaft No.",
+      "FG Date & Time",
+      "Engine No.",
+      "Dispatch Status",
+      "Dispatched Date & Time",
+    ]))
+    // setExcelData([[]]);
+    // setExcelData([
+    //   [
+    //     "CrankShaft No.",
+    //     "FG Date & Time",
+    //     "Engine No.",
+    //     "Dispatch Status",
+    //     "Dispatched Date & Time",
+    //   ],
+    // ]);
   }, [dataRange]);
 
 

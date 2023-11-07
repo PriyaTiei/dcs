@@ -1,7 +1,10 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { excelTableHeading } from "../../../redux/slices/processData/processActions";
+
 
 function Heading_B_OP235({ setExcelData, excelData }) {
+  const dispatch = useDispatch();
   const dataRange = useSelector((state) => state.process.dataRange.data);
   let plug = ["P1", "P2", "P3", "P4", "P5", "P6", "SP"];
   useEffect(() => {
@@ -13,9 +16,7 @@ function Heading_B_OP235({ setExcelData, excelData }) {
       dataList1.push(`${plugName} Test pressure(kPa)`);
       dataList1.push(`${plugName} K (Ve) value (mL)`);
     });
-    setExcelData([[]]);
-    // let dataList1 = plug.map((plugName) =>`${plugName} Judgement`,`${plugName} Measurement leak (mL / min)`)
-    setExcelData([
+    dispatch(excelTableHeading(
       [
         "Block No.",
         "Model",
@@ -26,8 +27,22 @@ function Heading_B_OP235({ setExcelData, excelData }) {
         "Engine No.",
         "Dispatch Status",
         "Dispatched Date & Time",
-      ],
-    ]);
+      ]))
+    // setExcelData([[]]);
+    // // let dataList1 = plug.map((plugName) =>`${plugName} Judgement`,`${plugName} Measurement leak (mL / min)`)
+    // setExcelData([
+    //   [
+    //     "Block No.",
+    //     "Model",
+    //     "Lts",
+    //     "Judgement",
+    //     "OP235 process Date & Time",
+    //     ...dataList1,
+    //     "Engine No.",
+    //     "Dispatch Status",
+    //     "Dispatched Date & Time",
+    //   ],
+    // ]);
   }, [dataRange]);
 
   // useEffect(()=>{

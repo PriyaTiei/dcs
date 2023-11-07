@@ -25,6 +25,7 @@ import {
   PROCESS_CASTING_NO_SUCCESS,
   PROCESS_CASTING_NO_FAILURE,
   CLEAR,
+  EXCEL_TABLE_HEADING,
 } from "./processTypes";
 
 var tempFromDate = new Date(Date.now());
@@ -55,6 +56,7 @@ const initialStateProcess = {
   dataRange: {},
   processEngine: {},
   processEngineDate: {},
+  excelTableHeading: [],
 };
 
 const processReducer = (state = initialStateProcess, action) => {
@@ -84,25 +86,25 @@ const processReducer = (state = initialStateProcess, action) => {
         data: [],
         error: action.error,
       };
-      case PROCESS3_FETCH:
-        return {
-          ...state,
-         loading3: true,
-        };
-      case PROCESS3_SUCCESS:
-        return {
-          ...state,
-          loading3: false,
-          data3: action.payload,
-          error3: "",
-        };
-      case PROCESS3_FAILURE:
-        return {
-          ...state,
-          loading3: false,
-          data3: [],
-          error3: action.error,
-        };
+    case PROCESS3_FETCH:
+      return {
+        ...state,
+        loading3: true,
+      };
+    case PROCESS3_SUCCESS:
+      return {
+        ...state,
+        loading3: false,
+        data3: action.payload,
+        error3: "",
+      };
+    case PROCESS3_FAILURE:
+      return {
+        ...state,
+        loading3: false,
+        data3: [],
+        error3: action.error,
+      };
     case PROCESS_ONE_DAY_FETCH:
       return {
         ...state,
@@ -215,6 +217,11 @@ const processReducer = (state = initialStateProcess, action) => {
         loading: false,
         dataRange: {},
         error: action.error,
+      };
+    case EXCEL_TABLE_HEADING:
+      return {
+        ...state,
+        excelTableHeading: action.payload,
       };
     case CLEAR:
       return initialStateProcess;

@@ -1,21 +1,31 @@
 import React, { useEffect } from 'react'
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { excelTableHeading } from "../../../redux/slices/processData/processActions";
 
 function Heading_H_OP05({ setExcelData, excelData }) {
+  const dispatch = useDispatch();
   const dataRange = useSelector((state) => state.process.dataRange.data);
 
   useEffect(() => {
-    setExcelData([[]]);
-    setExcelData([
-      [
-        "Head No.",
-        "Serial No.",
-        "Process Date & Time",
-        "Engine No.",
-        "Dispatch Status",
-        "Dispatched Date & Time",
-      ],
-    ]);
+    dispatch(excelTableHeading([
+      "Head No.",
+      "Serial No.",
+      "Process Date & Time",
+      "Engine No.",
+      "Dispatch Status",
+      "Dispatched Date & Time",
+    ]))
+    // setExcelData([[]]);
+    // setExcelData([
+    //   [
+    //     "Head No.",
+    //     "Serial No.",
+    //     "Process Date & Time",
+    //     "Engine No.",
+    //     "Dispatch Status",
+    //     "Dispatched Date & Time",
+    //   ],
+    // ]);
   }, [dataRange]);
  
     return (

@@ -12,6 +12,7 @@ function A_OP_LeakTest({ setExcelData, excelData }) {
   );
   const [combineTable, setCombineTable] = useState([]);
   const dataRange = useSelector((state) => state.process.dataRange.data);
+  const excelTableHeading = useSelector(state=>state.process.excelTableHeading)
 
   useEffect(() => {
     let bigList2 = dataRange?.map((element) => {
@@ -31,7 +32,7 @@ function A_OP_LeakTest({ setExcelData, excelData }) {
       ];
     });
     if (bigList2 != undefined && bigList2.length > 0) {
-      setExcelData([...excelData, ...bigList2]);
+      setExcelData([excelTableHeading, ...bigList2]);
     }
   }, [dataRange]);
 

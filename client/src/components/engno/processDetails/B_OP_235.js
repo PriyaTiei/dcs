@@ -13,6 +13,7 @@ function B_OP_235({ setExcelData, excelData }) {
   );
   const [combineTable, setCombineTable] = useState([]);
   const dataRange = useSelector((state) => state.process.dataRange.data);
+  const excelTableHeading = useSelector(state=>state.process.excelTableHeading)
 
   var bigList = null;
 
@@ -46,7 +47,7 @@ function B_OP_235({ setExcelData, excelData }) {
       ];
     });
     if (bigList2 != undefined && bigList2.length > 0) {
-      setExcelData([...excelData, ...bigList2]);
+      setExcelData([excelTableHeading, ...bigList2]);
     }
   }, [dataRange]);
 

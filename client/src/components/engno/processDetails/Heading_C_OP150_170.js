@@ -1,6 +1,10 @@
 import React, {useEffect} from "react";
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux";
+import { excelTableHeading } from "../../../redux/slices/processData/processActions";
+
+
 function Heading_C_OP150_170({setExcelData, excelData}) {
+  const dispatch = useDispatch();
   const dataRange = useSelector((state) => state.process.dataRange.data)
    
   let plug = ["1st CW", "2nd CW", "3rd CW","4th CW", "5th CW", "6th CW","7th CW", "8th CW"];
@@ -75,7 +79,8 @@ function Heading_C_OP150_170({setExcelData, excelData}) {
       dataList2Excel.push(`${plugName} 1-sided measurement angle (0.1 °)`)
       dataList2Excel.push(`${plugName} two-sided measurement angle (0.1 °)`)
     })
-    setExcelData([ [ "Crank No.","Process No","Model","process Date & Time",...dataListExcel,...dataList2Excel, "Engine No.", "Dispatch Status", "Dispatched Date & Time" ]])
+    dispatch(excelTableHeading([ "Crank No.","Process No","Model","process Date & Time",...dataListExcel,...dataList2Excel, "Engine No.", "Dispatch Status", "Dispatched Date & Time" ]))
+    // setExcelData([ [ "Crank No.","Process No","Model","process Date & Time",...dataListExcel,...dataList2Excel, "Engine No.", "Dispatch Status", "Dispatched Date & Time" ]])
       },[dataRange])
     
   return (

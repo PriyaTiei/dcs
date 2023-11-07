@@ -1,23 +1,32 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { excelTableHeading } from "../../../redux/slices/processData/processActions";
 
 function Heading_A_INTIME({ setExcelData, excelData }) {
+  const dispatch = useDispatch();
   const dataRange = useSelector((state) => state.process.dataRange.data);
   const processName = useSelector((state) => state.process.processName);
 
   useEffect(() => {
     console.log("test_Heading serial no")
     console.log(excelData)
-    setExcelData([[]]);
-    setExcelData([
-      [
-        "Serial No.",
-        "Process Date & Time",
-        "Engine No.",
-        "Dispatch Status",
-        "Dispatched Date & Time",
-      ],
-    ]);
+    dispatch(excelTableHeading( [
+      "Serial No.",
+      "Process Date & Time",
+      "Engine No.",
+      "Dispatch Status",
+      "Dispatched Date & Time",
+    ]))
+    // setExcelData([[]]);
+    // setExcelData([
+    //   [
+    //     "Serial No.",
+    //     "Process Date & Time",
+    //     "Engine No.",
+    //     "Dispatch Status",
+    //     "Dispatched Date & Time",
+    //   ],
+    // ]);
   }, [processName]);
   return (
     <>

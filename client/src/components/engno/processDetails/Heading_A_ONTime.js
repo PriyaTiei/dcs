@@ -1,14 +1,17 @@
 import React, {useEffect} from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { excelTableHeading } from "../../../redux/slices/processData/processActions";
 
 function Heading_A_ONTime({setExcelData, excelData}) {
+  const dispatch = useDispatch();
   const dataRange = useSelector((state) => state.process.dataRange.data)
   const processName = useSelector((state) => state.process.processName);
   useEffect(()=>{
     console.log("test_Heading engine no")
     console.log(excelData)
-    setExcelData([[]]);
-    setExcelData([ [ "Engine No.","Process Date & Time",  "Dispatch Status", "Dispatched Date & Time" ]])
+    dispatch(excelTableHeading([ "Engine No.","Process Date & Time",  "Dispatch Status", "Dispatched Date & Time" ]))
+    // setExcelData([[]]);
+    // setExcelData([ [ "Engine No.","Process Date & Time",  "Dispatch Status", "Dispatched Date & Time" ]])
       },[processName])
 
       

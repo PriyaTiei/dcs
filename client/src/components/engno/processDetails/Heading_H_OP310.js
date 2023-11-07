@@ -1,44 +1,71 @@
 import React, { useEffect }  from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { excelTableHeading } from "../../../redux/slices/processData/processActions";
 
 function Heading_H_OP310({ setExcelData, excelData }) {
-
+  const dispatch = useDispatch();
   const dataRange = useSelector((state) => state.process.dataRange.data);
 
   useEffect(() => {
 
+    dispatch(excelTableHeading([
+      "Head No.",
+      "Process Date & Time",       
+      "WJ-Judgement",
+      "WJ-Measurement leak (mL / min)",
+      "WJ-Correction (mL / min)",
+      "WJ-Test pressure(kPa)",
+      "WJ-K (Ve) value (mL)",
+      "OH-Judgement",
+      "OH-Measurement leak (mL / min)",
+      "OH-Correction (mL / min)",
+      "OH-Test pressure(kPa)",
+      "OH-K (Ve) value (mL)",
+      "CC-Judgement",
+      "CC-Measurement leak (mL / min)",
+      "CC-Correction (mL / min)",
+      "CC-Test pressure(kPa)",
+      "CC-K (Ve) value (mL)",
+      "EGR-Judgement",
+      "EGR-Measurement leak (mL / min)",
+      "EGR-Correction (mL / min)",
+      "EGR-Test pressure(kPa)",
+      "EGR-K (Ve) value (mL)",
+      "Engine No.",
+      "Dispatch Status",
+      "Dispatched Date & Time",
+    ]))
 
-
-    setExcelData([[]]);
-    setExcelData([
-      [
-        "Head No.",
-        "Process Date & Time",       
-        "WJ-Judgement",
-        "WJ-Measurement leak (mL / min)",
-        "WJ-Correction (mL / min)",
-        "WJ-Test pressure(kPa)",
-        "WJ-K (Ve) value (mL)",
-        "OH-Judgement",
-        "OH-Measurement leak (mL / min)",
-        "OH-Correction (mL / min)",
-        "OH-Test pressure(kPa)",
-        "OH-K (Ve) value (mL)",
-        "CC-Judgement",
-        "CC-Measurement leak (mL / min)",
-        "CC-Correction (mL / min)",
-        "CC-Test pressure(kPa)",
-        "CC-K (Ve) value (mL)",
-        "EGR-Judgement",
-        "EGR-Measurement leak (mL / min)",
-        "EGR-Correction (mL / min)",
-        "EGR-Test pressure(kPa)",
-        "EGR-K (Ve) value (mL)",
-        "Engine No.",
-        "Dispatch Status",
-        "Dispatched Date & Time",
-      ],
-    ]);
+    // setExcelData([[]]);
+    // setExcelData([
+    //   [
+    //     "Head No.",
+    //     "Process Date & Time",       
+    //     "WJ-Judgement",
+    //     "WJ-Measurement leak (mL / min)",
+    //     "WJ-Correction (mL / min)",
+    //     "WJ-Test pressure(kPa)",
+    //     "WJ-K (Ve) value (mL)",
+    //     "OH-Judgement",
+    //     "OH-Measurement leak (mL / min)",
+    //     "OH-Correction (mL / min)",
+    //     "OH-Test pressure(kPa)",
+    //     "OH-K (Ve) value (mL)",
+    //     "CC-Judgement",
+    //     "CC-Measurement leak (mL / min)",
+    //     "CC-Correction (mL / min)",
+    //     "CC-Test pressure(kPa)",
+    //     "CC-K (Ve) value (mL)",
+    //     "EGR-Judgement",
+    //     "EGR-Measurement leak (mL / min)",
+    //     "EGR-Correction (mL / min)",
+    //     "EGR-Test pressure(kPa)",
+    //     "EGR-K (Ve) value (mL)",
+    //     "Engine No.",
+    //     "Dispatch Status",
+    //     "Dispatched Date & Time",
+    //   ],
+    // ]);
   }, [dataRange]);
 
 
