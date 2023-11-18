@@ -9,6 +9,10 @@ function ReusageImageCards({ imageData }) {
       style={{ width: "20%", height: "auto" }}
     >
       <div className="d-flex gap-1">
+        <h6 className="w-50 ">Part / Engine No: </h6>
+        <h6 className="w-50 ">{imageData.engineNo}</h6>
+      </div>
+      <div className="d-flex gap-1">
         <h6 className="w-50 ">Checked by: </h6>
         <h6 className="w-50 ">{imageData.checkedBy}</h6>
       </div>
