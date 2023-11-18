@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import ReusageImageCards from "./ReusageImageCards";
 import { toast } from "react-toastify";
@@ -14,29 +14,29 @@ function SearchReworkImages() {
   const [listOfImages, setListOfImages] = useState([]);
 
   const getImages = () => {
-    if (engineNo == "") {
-      toast.error(
-        `Engine no. input can not be blank, please enter the Engine no.`
-      );
-    } else {
-      try {
-        axios
-          .get(
-            `${process.env.REACT_APP_BACKEND_URL}/dcs/reworkImagesList/${engineNo}`
-          )
-          .then((result) => {
-            setListOfImages(result.data.result);
-          })
-          .catch((e) => {
-            console.log(e);
-            setListOfImages([]);
-            toast.error(`Images of engine number '${engineNo}' not available`);
-          });
-      } catch (e) {
-        console.log(e);
-        toast.error("Please check Network connection");
-      }
+    // if (engineNo == "") {
+    //   toast.error(
+    //     `Engine no. input can not be blank, please enter the Engine no.`
+    //   );
+    // } else {
+    try {
+      axios
+        .get(
+          `${process.env.REACT_APP_BACKEND_URL}/dcs/reworkImagesListQuery?engineNo=${engineNo}&shift=${shift}&line=${line}&fromDate=${fromDate}&toDate=${toDate}`
+        )
+        .then((result) => {
+          setListOfImages(result.data.result);
+        })
+        .catch((e) => {
+          console.log(e);
+          setListOfImages([]);
+          toast.error(`Images of engine number '${engineNo}' not available`);
+        });
+    } catch (e) {
+      console.log(e);
+      toast.error("Please check Network connection");
     }
+    // }
   };
 
   const images = listOfImages?.map((imageData) => (
@@ -64,8 +64,25 @@ function SearchReworkImages() {
     // setToDate(e.target.value);
     // console.log(e.target.value);
   };
+  const elRef = useRef();
+  const elRef2 = useRef();
+  const elRef3 = useRef();
+  const elRef4 = useRef();
+  const clearFilter = () => {
+    setEngineNo("");
+    elRef.current.setValue("");
+    elRef2.current.setValue("");
+    elRef3.current.value=null
+    elRef4.current.value=null
+    setLine("");
+    setShift("");
+    setFromDate("");
+    setToDate("");
+    setListOfImages([]);
+  };
+
   return (
-    <div className="mt-3" style={{height:"100vh", overflowY:"scroll"}}>
+    <div className="mt-3" style={{ height: "100vh", overflowY: "scroll" }}>
       <div className="d-flex gap-3">
         <input
           placeholder="Engine no"
@@ -73,8 +90,8 @@ function SearchReworkImages() {
           onChange={(e) => setEngineNo(e.target.value)}
           className="form-control w-25"
         />
-
         <Select
+          ref={elRef}
           options={[
             { value: "TNGA_Assembly", label: "TNGA Assembly" },
             { value: "TNGA_Machining", label: "TNGA Machining" },
@@ -89,6 +106,7 @@ function SearchReworkImages() {
           placeholder="Select Line"
         />
         <Select
+          ref={elRef2}
           options={[
             { value: "White", label: "White" },
             { value: "Yellow", label: "Yellow" },
@@ -102,7 +120,7 @@ function SearchReworkImages() {
         />
         <div className="d-flex align-items-center gap-2">
           <p className="">From Date</p>
-          <input
+          <input ref={elRef3}
             type="date"
             // value={fromDateString.slice(0, 10)}
             className="bg-warning text-center"
@@ -111,20 +129,23 @@ function SearchReworkImages() {
         </div>
         <div className="d-flex align-items-center gap-2">
           <p className="">To Date</p>
-          <input
+          <input ref={elRef4}
             type="date"
             // value={toDateState.slice(0, 10)}
             className="bg-warning text-center"
             onChange={toDateHandler}
           />
         </div>
-
         <button onClick={getImages} className="btn btn-primary">
           <div className="d-flex gap-2 align-items-center">
             <Search />
             Search
           </div>
         </button>
+        <i
+          className="bi bi-file-earmark-excel btn btn-secondary"
+          onClick={() => clearFilter()}
+        > Clear Filter</i>
       </div>
       <div className="d-flex flex-wrap my-3"> {images}</div>
     </div>

@@ -113,7 +113,6 @@ const storeImageFileName = catchAsyncError(async (req, res, next) => {
   const engineNo = req.body.engineNo;
   const imageName = req.body.imageName;
 
-
   const reworkNumber = await ReworkNumber.create({ engineNo, imageName });
   if (!reworkNumber) {
     return next(new ErrorHandler("could not add rework engine number", 500));
@@ -123,8 +122,8 @@ const storeImageFileName = catchAsyncError(async (req, res, next) => {
 
 // ********store multple data of images*********
 const storeImageFileNameMultiple = catchAsyncError(async (req, res, next) => {
-  const { engineNo, imagesNameList, checkedBy, commonRemarks, line, shift } = req.body;
-
+  const { engineNo, imagesNameList, checkedBy, commonRemarks, line, shift } =
+    req.body;
 
   imagesNameList.forEach(async (element) => {
     const reworkNumber = await ReworkNumber.create({
@@ -133,7 +132,7 @@ const storeImageFileNameMultiple = catchAsyncError(async (req, res, next) => {
       checkedBy,
       commonRemarks,
       line,
-      shift
+      shift,
     });
     if (!reworkNumber) {
       return next(new ErrorHandler("could not add rework engine number", 500));
@@ -145,8 +144,40 @@ const storeImageFileNameMultiple = catchAsyncError(async (req, res, next) => {
 // ***************send list of rework numbers*******
 const reworkNumber = catchAsyncError(async (req, res, next) => {
   const engineNo = req.params.engineNo;
- 
+
   const result = await ReworkNumber.find({ engineNo });
+  if (result.length == 0) {
+    console.log("not found");
+    return next(new ErrorHandler("No image with this number", 404));
+  }
+  res.status(200).json({ result });
+});
+
+// ***************send list of rework numbers*******
+const reworkNumberQuery = catchAsyncError(async (req, res, next) => {
+  for (let key in req.query) {
+    if (req.query[key] === "") delete req.query[key];
+  }
+
+  let modQuery = { ...req.query };
+  if (req.query.fromDate && req.query.toDate) {
+    modQuery = {
+      ...modQuery,
+      createdAt: { $gte: req.query.fromDate, $lte: req.query.toDate },
+    };
+  } else if (req.query.fromDate) {
+    modQuery = {
+      ...modQuery,
+      createdAt: { $gte: req.query.fromDate },
+    };
+  } else if (req.query.toDate) {
+    modQuery = {
+      ...modQuery,
+      createdAt: { $lte: req.query.toDate },
+    };
+  }
+
+  const result = await ReworkNumber.find(modQuery);
   if (result.length == 0) {
     console.log("not found");
     return next(new ErrorHandler("No image with this number", 404));
@@ -161,4 +192,5 @@ module.exports = {
   storeImageFileName,
   storeImageFileNameMultiple,
   reworkNumber,
+  reworkNumberQuery,
 };

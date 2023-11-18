@@ -172,3 +172,102 @@
    text-align:center;
   
 }
+body {
+   font-family: 'Arial', sans-serif !important; 
+   margin: 0 !important; 
+   padding: 0 !important; 
+   background-color: #f4f4f4 !important; 
+}
+
+/* Add this CSS to your styles.css or in a <style> tag in your HTML file */
+
+/* Global Styles */
+/* body {
+   font-family: 'Arial', sans-serif !important; 
+   margin: 0 !important; 
+   padding: 0 !important; 
+   background-color: #f4f4f4 !important; 
+}
+
+.container {
+   max-width: 1200px !important; 
+   margin: 0 auto !important; 
+   padding: 20px !important; 
+} */
+
+/* Search Engine Section */
+/* #search-engine-section {
+   background-color: #ffffff !important; 
+   padding: 20px !important; 
+   margin-bottom: 20px !important; 
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important; 
+}
+
+#search-engine-section input {
+   padding: 10px !important; 
+   margin-right: 10px !important; 
+} */
+
+/* #search-engine-section button {
+   background-color: #007bff !important; 
+   color: #ffffff !important; 
+   padding: 10px !important; 
+   cursor: pointer !important; 
+}
+
+#search-engine-section button:hover {
+   background-color: #0056b3 !important; 
+} */
+
+/* Assembly Data Section */
+/* .assembly-data-section {
+   background-color: #ffffff !important; 
+   padding: 20px !important; 
+   margin-bottom: 20px !important; 
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important; 
+} */
+
+/* .assembly-data-section fieldset {
+   border: 1px solid #007bff !important; 
+   padding: 10px !important; 
+   margin-top: 20px !important; 
+} */
+
+/* Machining Field set */
+/* .machining-fieldset {
+   background-color: #ffffff !important; 
+   padding: 20px !important; 
+   margin-bottom: 20px !important; 
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important; 
+}
+
+.machining-fieldset legend {
+   color: #28a745 !important; 
+} */
+
+/* Detail Traceability Section */
+/* .detail-traceability-section {
+   background-color: #ffffff !important; 
+   padding: 20px !important; 
+   margin-bottom: 20px !important; 
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important; 
+} */
+
+/* Supplier Field set */
+/* .supplier-fieldset {
+   background-color: #ffffff !important; 
+   padding: 20px !important; 
+   margin-bottom: 20px !important; 
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important; 
+}
+
+.supplier-fieldset legend {
+   color: #28a745 !important; 
+} */
+
+/* Additional Styles for Select Component (Assuming it uses react-select) */
+/* .select-container {
+   margin-bottom: 20px !important; 
+}
+
+Add more styles as needed for other components */

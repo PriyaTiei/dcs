@@ -157,4 +157,8 @@ const getImage = (req, res) => {
   res.sendfile(imagePath);
 };
 
-module.exports = { uploadImage, uploadImage2, uploadImageMultiple, getImage };
+
+
+
+
+module.exports = { uploadImage, uploadImage2, uploadImageMultiple, getImage};

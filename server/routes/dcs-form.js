@@ -6,6 +6,7 @@ const {
   storeImageFileName,
   reworkNumber,
   storeImageFileNameMultiple,
+  reworkNumberQuery,
 } = require("../controllers/dcs-form");
 const {
   uploadImage,
@@ -20,6 +21,7 @@ router.post("/dcs-form/upload-image", uploadImage);
 router.post("/reworkImages", uploadImage2, storeImageFileName);
 router.get("/reworkImages/:imageName", getImage);
 router.get("/reworkImagesList/:engineNo", reworkNumber);
+router.get("/reworkImagesListQuery", reworkNumberQuery);
 router.post(
   "/reworkImagesMultiple",
   uploadImageMultiple,

@@ -9,17 +9,17 @@ import MainPage from "./components/engno/MainPage";
 import SupplierPartDeatils from "./components/engno/DetailTraceability.js";
 import SearchReworkImages from "./components/reworkImage/SearchReworkImages";
 import Loading from "./components/engno/Loading";
+import "./styles/styles.css";
 
 export default function App() {
   return (
     <>
-      <ToastContainer  autoClose={500}/>
+      <ToastContainer autoClose={500} />
       <AppSidebar>
         <ContentWrapper>
           <Routes>
             <Route path="/" element={<MainPage />} />
-      
-         
+
             <Route
               path="/supplierPartDeatils"
               element={<SupplierPartDeatils />}
