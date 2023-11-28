@@ -19,7 +19,19 @@ const reworkNumberSchema = new mongoose.Schema(
     line: {
       type: String,
     },
+    plant: {
+      type: String,
+    },
+    troubleCtg: {
+      type: String,
+    },
     commonRemarks: {
+      type: String,
+    },
+    abnormalityDetails: {
+      type: String,
+    },
+    troubleshootingDetails: {
       type: String,
     },
   },
