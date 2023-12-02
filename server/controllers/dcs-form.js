@@ -122,8 +122,18 @@ const storeImageFileName = catchAsyncError(async (req, res, next) => {
 
 // ********store multple data of images*********
 const storeImageFileNameMultiple = catchAsyncError(async (req, res, next) => {
-  const { engineNo, imagesNameList, checkedBy, commonRemarks, line, shift, plant,troubleCtg, abnormalityDetails, troubleshootingDetails } =
-    req.body;
+  const {
+    engineNo,
+    imagesNameList,
+    checkedBy,
+    commonRemarks,
+    line,
+    shift,
+    plant,
+    troubleCtg,
+    abnormalityDetails,
+    troubleshootingDetails,
+  } = req.body;
 
   imagesNameList.forEach(async (element) => {
     const reworkNumber = await ReworkNumber.create({
@@ -136,7 +146,7 @@ const storeImageFileNameMultiple = catchAsyncError(async (req, res, next) => {
       plant,
       troubleCtg,
       abnormalityDetails,
-      troubleshootingDetails
+      troubleshootingDetails,
     });
     if (!reworkNumber) {
       return next(new ErrorHandler("could not add rework engine number", 500));
@@ -148,8 +158,11 @@ const storeImageFileNameMultiple = catchAsyncError(async (req, res, next) => {
 // ***************send list of rework numbers*******
 const reworkNumber = catchAsyncError(async (req, res, next) => {
   const engineNo = req.params.engineNo;
+  const regexPattern = new RegExp(engineNo, "i");
 
-  const result = await ReworkNumber.find({ engineNo });
+  const result = await ReworkNumber.find({
+    engineNo: { $regex: regexPattern },
+  });
   if (result.length == 0) {
     console.log("not found");
     return next(new ErrorHandler("No image with this number", 404));
@@ -179,6 +192,11 @@ const reworkNumberQuery = catchAsyncError(async (req, res, next) => {
       ...modQuery,
       createdAt: { $lte: req.query.toDate },
     };
+  }
+
+  if(req.query["engineNo"] !="" && req.query["engineNo"] != null &&  req.query["engineNo"] != undefined  ){
+      const regexPattern = new RegExp(req.query["engineNo"] , "i")
+      modQuery= {...modQuery, engineNo:{$regex:regexPattern}}
   }
 
   const result = await ReworkNumber.find(modQuery);

@@ -154,7 +154,7 @@ const getImage = (req, res) => {
     "reworkImages",
     imageName
   );
-  res.sendfile(imagePath);
+  res.sendFile(imagePath);
 };
 
 
