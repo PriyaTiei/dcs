@@ -8,7 +8,7 @@ import Select from "react-select";
 function SearchReworkImages() {
   const [engineNo, setEngineNo] = useState("");
   const [shift, setShift] = useState("");
-  const [line, setLine] = useState("");
+  const [plant, setPlant] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [listOfImages, setListOfImages] = useState([]);
@@ -22,7 +22,7 @@ function SearchReworkImages() {
     try {
       axios
         .get(
-          `${process.env.REACT_APP_BACKEND_URL}/dcs/reworkImagesListQuery?engineNo=${engineNo}&shift=${shift}&line=${line}&fromDate=${fromDate}&toDate=${toDate}`
+          `${process.env.REACT_APP_BACKEND_URL}/dcs/reworkImagesListQuery?engineNo=${engineNo}&shift=${shift}&plant=${plant}&fromDate=${fromDate}&toDate=${toDate}`
         )
         .then((result) => {
           setListOfImages(result.data.result);
@@ -74,7 +74,7 @@ function SearchReworkImages() {
     elRef2.current.setValue("");
     elRef3.current.value=null
     elRef4.current.value=null
-    setLine("");
+    setPlant("");
     setShift("");
     setFromDate("");
     setToDate("");
@@ -101,9 +101,9 @@ function SearchReworkImages() {
           ]}
           // value={{ value: null, label: "select" }}
           onChange={(option) => {
-            setLine(option.value);
+            setPlant(option.value);
           }}
-          placeholder="Select Line"
+          placeholder="Select plant"
         />
         <Select
           ref={elRef2}
