@@ -19,7 +19,8 @@ import Loading from "./Loading.js";
 import EntireResultProcess from "./Entire.js";
 import { getProcess3Details } from "../../redux/slices/processData/processActions.js";
 import { CSVLink } from "react-csv";
-
+import { toast } from "react-toastify";
+import ReusageImageCards from "../reworkImage/ReusageImageCards.js";
 
 function EngNo() {
   const [engineNo, setEngineNo] = useState("");
@@ -29,6 +30,8 @@ function EngNo() {
   const hDate = new Date(Date.now()).toUTCString();
 
   const [leakData, setLeakData] = useState();
+
+  const [listOfImages, setListOfImages] = useState([]);
 
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.engine.loading);
@@ -72,6 +75,7 @@ function EngNo() {
   const getOracleData = () => {
     dispatch(processDataClear());
     dispatch(getEngineData(engineNo));
+    getImages();
   };
 
   const getPartData = async (partNo) => {
@@ -141,6 +145,38 @@ function EngNo() {
     </>
   ) : null;
 
+  // list of image _  function
+  const getImages = () => {
+    // if (engineNo == "") {
+    //   toast.error(
+    //     `Engine no. input can not be blank, please enter the Engine no.`
+    //   );
+    // } else {
+    try {
+      axios
+        .get(
+          `${process.env.REACT_APP_BACKEND_URL}/dcs/reworkImagesListQuery?engineNo=${engineNo}`
+        )
+        .then((result) => {
+          setListOfImages(result.data.result);
+        })
+        .catch((e) => {
+          console.log(e);
+          setListOfImages([]);
+          toast.error(`Images of engine number '${engineNo}' not available`);
+        });
+    } catch (e) {
+      console.log(e);
+      toast.error("Please check Network connection");
+    }
+    // }
+  };
+
+  // card with all images
+  const images = listOfImages?.map((imageData) => (
+    <ReusageImageCards key={imageData._id} imageData={imageData} />
+  ));
+
   return (
     <div>
       {/*************** * search engine no */}
@@ -171,6 +207,10 @@ function EngNo() {
       </div>
 
       <EntireResultProcess />
+
+      {/* images display */}
+      <div className="d-flex flex-wrap my-3"> {images}</div>
+
       {/* *****************Assembly fieldset */}
       <fieldset className="border p-3 mt-3 ">
         <legend
@@ -204,6 +244,7 @@ function EngNo() {
           <ChangePointAssembly />
         </div>
       </fieldset>
+
       {/* ************Machining Field set */}
       <fieldset className="border p-3 mt-3 ">
         <legend
