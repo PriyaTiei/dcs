@@ -109,7 +109,9 @@ function EngNo() {
       c3.forEach((item) => {
         getPartData(item[1]);
       });
-      dispatch(getProcess3Details(c3[0][1], c3[1][1], c3[2][1]));
+      if (c3.length > 0) {
+        dispatch(getProcess3Details(c3[0][1], c3[1][1], c3[2][1]));
+      }
     }
   }, [oracleData]);
 

@@ -19,13 +19,30 @@ const oracleDBConnection = async () => {
   }
 };
 
+const oracleDBConnectionHistory = async () => {
+  var connectionHistory;
+  try {
+    connectionHistory = await oracledb.getConnection({
+      user: process.env.ORACLE_USER_HISTORY,
+      password: process.env.ORACLE_USER_HISTORY,
+      connectionString: process.env.ORACLEDB_URL_HISTORY,
+    });
+    console.log("Oracle connection successful to History");
+    connectionHistory.commit();
+    return connectionHistory;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 // Single engine data fetchining
 exports.getEngineData = catchAsyncError(async (req, res, next) => {
   const engineNo = req.params.engineNo;
+  console.log(engineNo);
 
   const con = await oracleDBConnection();
 
-  const result = await con.execute(
+  let result = await con.execute(
     // `select * from todoitem`,
     "select * from KTTMSYS.T_HNSTJHO WHERE EGNO=:value",
     [engineNo],
@@ -35,8 +52,23 @@ exports.getEngineData = catchAsyncError(async (req, res, next) => {
   );
 
   if (result.rows.length == 0) {
-    console.log("Engine not found");
-    return next(new ErrorHandler("Engine no. do not exist", 401));
+    //history check also
+    const conHistory = await oracleDBConnectionHistory();
+
+    const resultHistory = await conHistory.execute(
+      // `select * from todoitem`,
+      "select * from KTTMHIS.T_HNSTJHORRKI WHERE EGNO=:value",
+      [engineNo],
+      {
+        // maxRows: 2
+      }
+    );
+    if (resultHistory.rows.length == 0) {
+      //common message
+      console.log("Engine not found");
+      return next(new ErrorHandler("Engine no. do not exist", 401));
+    }
+    result = resultHistory;
   }
 
   const allColumnNames = result.metaData.map((item) => item.name);
@@ -50,7 +82,7 @@ exports.getPartData = catchAsyncError(async (req, res, next) => {
 
   const con = await oracleDBConnection();
 
-  const result = await con.execute(
+  let result = await con.execute(
     // `select * from todoitem`,s
     "select * from KTTMSYS.T_MCHNSTJHO WHERE SRALNO=:value",
     [partNo],
@@ -60,8 +92,22 @@ exports.getPartData = catchAsyncError(async (req, res, next) => {
   );
 
   if (result.rows.length == 0) {
-    console.log("Machining Parts not found");
-    return next(new ErrorHandler("Machining Parts do not exist", 401));
+    //history check
+    const conHistory = await oracleDBConnectionHistory();
+    const resultHistory = await conHistory.execute(
+      // `select * from todoitem`,s
+      "select * from KTTMHIS.T_MCHNSTJHORRKI WHERE SRALNO=:value",
+      [partNo],
+      {
+        // maxRows: 2
+      }
+    );
+
+    if (resultHistory.rows.length == 0) {
+      console.log("Machining Parts not found");
+      return next(new ErrorHandler("Machining Parts do not exist", 401));
+    }
+    result = resultHistory;
   }
   // console.table(Object.keys(result));
   const allColumnNames = result.metaData.map((item) => item.name);
@@ -79,7 +125,7 @@ exports.getPart3Data = catchAsyncError(async (req, res, next) => {
 
   const con = await oracleDBConnection();
 
-  const result = await con.execute(
+  let result = await con.execute(
     // `select * from todoitem`,s
     "select * from KTTMSYS.T_MCHNSTJHO WHERE SRALNO in (:value0,:value1, :value2 )",
     partNos,
@@ -89,8 +135,21 @@ exports.getPart3Data = catchAsyncError(async (req, res, next) => {
   );
 
   if (result.rows.length == 0) {
-    console.log("Machining Parts not found");
-    return next(new ErrorHandler("Machining Parts do not exist", 401));
+    //history check
+    const conHistory = await oracleDBConnectionHistory();
+    const resultHistory = await conHistory.execute(
+      // `select * from todoitem`,s
+      "select * from KTTMHIS.T_MCHNSTJHORRKI WHERE SRALNO in (:value0,:value1, :value2 )",
+      partNos,
+      {
+        // maxRows: 2
+      }
+    );
+    if (resultHistory.rows.length == 0) {
+      console.log("Machining Parts not found");
+      return next(new ErrorHandler("Machining Parts do not exist", 401));
+    }
+    result = resultHistory;
   }
   // console.table(Object.keys(result));
   // const allColumnNames = result.metaData.map((item) => item.name);
@@ -103,7 +162,7 @@ exports.getDateData = catchAsyncError(async (req, res, next) => {
 
   const con = await oracleDBConnection();
 
-  const result = await con.execute(
+  let result = await con.execute(
     // `select * from todoitem`,
     "select * from KTTMSYS.T_SISNJSSKI WHERE EGNO=:value",
     [engineNo],
@@ -113,8 +172,21 @@ exports.getDateData = catchAsyncError(async (req, res, next) => {
   );
 
   if (result.rows.length == 0) {
-    console.log("Engine not found");
-    return next(new ErrorHandler("Engine no. do not exist", 401));
+    //history check
+    const conHistory = await oracleDBConnectionHistory();
+    const resultHistory = await conHistory.execute(
+      // `select * from todoitem`,
+      "select * from KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO=:value",
+      [engineNo],
+      {
+        // maxRows: 2
+      }
+    );
+    if (resultHistory.rows.length == 0) {
+      console.log("Engine not found");
+      return next(new ErrorHandler("Engine no. do not exist", 401));
+    }
+    result = resultHistory;
   }
   // console.table(Object.keys(result));
   const allColumnNames = result.metaData.map((item) => item.name);
@@ -134,7 +206,7 @@ exports.getDateRangeData = catchAsyncError(async (req, res, next) => {
 
   const con = await oracleDBConnection();
 
-  const result = await con.execute(
+  let result = await con.execute(
     // `select * from todoitem`,
     "select * from KTTMSYS.T_MCHNSTJHO WHERE HNSTKNRIMEI =:value0 AND KSNDTTM BETWEEN :value1 AND :value2",
     [processNo, new Date(fromDate), new Date(toDate)],
@@ -144,8 +216,22 @@ exports.getDateRangeData = catchAsyncError(async (req, res, next) => {
   );
 
   if (result.rows.length == 0) {
-    console.log("Engine not found");
-    return next(new ErrorHandler("Engine no. do not exist", 401));
+    //history check
+    const conHistory = await oracleDBConnectionHistory();
+    const resultHistory = await conHistory.execute(
+      // `select * from todoitem`,
+      "select * from KTTMHIS.T_MCHNSTJHORRKI WHERE HNSTKNRIMEI =:value0 AND KSNDTTM BETWEEN :value1 AND :value2",
+      [processNo, new Date(fromDate), new Date(toDate)],
+      {
+        // maxRows: 2
+      }
+    );
+
+    if (resultHistory.rows.length == 0) {
+      console.log("Engine not found");
+      return next(new ErrorHandler("Engine no. do not exist", 401));
+    }
+    result = resultHistory;
   }
 
   const allColumnNames = result.metaData.map((item) => item.name);
@@ -166,7 +252,7 @@ exports.getEngineNoMatchingSerialNoList = catchAsyncError(
     const placeholders = serialNoList.map((_, i) => `:value${i}`).join(", ");
     const con = await oracleDBConnection();
 
-    const result = await con.execute(
+    let result = await con.execute(
       // `select * from todoitem`,
       `select  ATAI,EGNO from KTTMSYS.T_HNSTJHO WHERE ATAI IN (${placeholders})`,
       serialNoList,
@@ -176,8 +262,22 @@ exports.getEngineNoMatchingSerialNoList = catchAsyncError(
     );
 
     if (result.rows.length == 0) {
-      console.log("Serial no. do not exist & Engine can not be found");
-      return next(new ErrorHandler("Serial no. do not exist", 401));
+      //history check
+      const conHistory = await oracleDBConnectionHistory();
+      const resultHistory = await conHistory.execute(
+        // `select * from todoitem`,
+        `select  ATAI,EGNO from KTTMHIS.T_HNSTJHORRKI WHERE ATAI IN (${placeholders})`,
+        serialNoList,
+        {
+          // maxRows: 2
+        }
+      );
+
+      if (resultHistory.rows.length == 0) {
+        console.log("Serial no. do not exist & Engine can not be found");
+        return next(new ErrorHandler("Serial no. do not exist", 401));
+      }
+      result = resultHistory;
     }
 
     const allColumnNames = result.metaData.map((item) => item.name);
@@ -199,7 +299,7 @@ exports.getDispatchDatesMatchingEnigneNoList = catchAsyncError(
 
     const con = await oracleDBConnection();
 
-    const result = await con.execute(
+    let result = await con.execute(
       `SELECT EGNO, JSSKIDTTM FROM KTTMSYS.T_SISNJSSKI WHERE EGNO IN (${placeholders}) AND KTEINO = :valueDispatched`,
       engineNoList,
       {
@@ -208,8 +308,21 @@ exports.getDispatchDatesMatchingEnigneNoList = catchAsyncError(
     );
 
     if (result.rows.length == 0) {
-      console.log("Engine no. do not exist & Engine can not be found");
-      return next(new ErrorHandler("Engine no. do not exist", 401));
+      //history check
+      const conHistory = await oracleDBConnectionHistory();
+
+      const resultHistory = await conHistory.execute(
+        `SELECT EGNO, JSSKIDTTM FROM KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO IN (${placeholders}) AND KTEINO = :valueDispatched`,
+        engineNoList,
+        {
+          //     // maxRows: 2
+        }
+      );
+      if (resultHistory.rows.length == 0) {
+        console.log("Engine no. do not exist & Engine can not be found");
+        return next(new ErrorHandler("Engine no. do not exist", 401));
+      }
+      result = resultHistory;
     }
 
     const allColumnNames = result.metaData.map((item) => item.name);
@@ -225,7 +338,7 @@ exports.getCastNoDateRangeData = catchAsyncError(async (req, res, next) => {
   // const castingNo = "11236142";
   const con = await oracleDBConnection();
 
-  const result = await con.execute(
+  let result = await con.execute(
     // `select * from todoitem`,
     // REGEXP_LIKE(product_name, 'apple', 'i');
     // "select * from KTTMSYS.T_MCHNSTJHO WHERE SUBSTR(ATAI, 21, LENGTH(ATAI) - 28) LIKE :value0 ",
@@ -238,16 +351,29 @@ exports.getCastNoDateRangeData = catchAsyncError(async (req, res, next) => {
   );
 
   if (result.rows.length == 0) {
-    console.log("Engine not found");
-    res.status(401).json({ messgage: "engine not found" });
-    return next(new ErrorHandler("Engine no. do not exist", 401));
+    //history check
+    const conHistory = await oracleDBConnectionHistory();
+    const resultHistory = await conHistory.execute(
+      "select ATAI, SRALNO, JSSKIDTTM  from KTTMHIS.T_MCHNSTJHORRKI WHERE REGEXP_LIKE(ATAI, :value0 ) ",
+      [castingNo],
+      {
+        // maxRows: 2
+      }
+    );
+
+    if (resultHistory.rows.length == 0) {
+      console.log("Engine not found");
+      // res.status(401).json({ messgage: "engine not found" });
+      return next(new ErrorHandler("Engine no. do not exist", 401));
+    }
+    result = resultHistory;
   }
 
   let serialNoList = result.rows.map((item) => item[1].trim());
 
   const placeholders = serialNoList.map((_, i) => `:value${i}`).join(", ");
 
-  const result2 = await con.execute(
+  let result2 = await con.execute(
     // `select * from todoitem`,
     `select  ATAI, EGNO from KTTMSYS.T_HNSTJHO WHERE ATAI IN (${placeholders})`,
     serialNoList,
@@ -257,15 +383,28 @@ exports.getCastNoDateRangeData = catchAsyncError(async (req, res, next) => {
   );
 
   if (result2.rows.length == 0) {
-    console.log("Serial no. do not exist & Engine can not be found");
-    return next(new ErrorHandler("Serial no. do not exist", 401));
+    //history check
+    const conHistory = await oracleDBConnectionHistory();
+    let result2History = await conHistory.execute(
+      // `select * from todoitem`,
+      `select  ATAI, EGNO from KTTMHIS.T_HNSTJHORRKI WHERE ATAI IN (${placeholders})`,
+      serialNoList,
+      {
+        // maxRows: 2
+      }
+    );
+    if (result2History.rows.length == 0) {
+      console.log("Serial no. do not exist & Engine can not be found");
+      return next(new ErrorHandler("Serial no. do not exist", 401));
+    }
+    result2 = result2History;
   }
 
   let engineNoList = result2.rows.map((item) => item[1]);
   const placeholders2 = engineNoList.map((_, i) => `:value${i}`).join(", ");
   engineNoList.push("200");
 
-  const result3 = await con.execute(
+  let result3 = await con.execute(
     `SELECT EGNO, JSSKIDTTM FROM KTTMSYS.T_SISNJSSKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
     engineNoList,
     {
@@ -274,8 +413,21 @@ exports.getCastNoDateRangeData = catchAsyncError(async (req, res, next) => {
   );
 
   if (result3.rows.length == 0) {
-    console.log("Engine no. do not exist & Engine can not be found");
-    return next(new ErrorHandler("Engine no. do not exist", 401));
+    //history check
+    const conHistory = await oracleDBConnectionHistory();
+
+    const result3History = await conHistory.execute(
+      `SELECT EGNO, JSSKIDTTM FROM KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
+      engineNoList,
+      {
+        //     // maxRows: 2
+      }
+    );
+    if (result3History.rows.length == 0) {
+      console.log("Engine no. do not exist & Engine can not be found");
+      return next(new ErrorHandler("Engine no. do not exist", 401));
+    }
+    result3 = result3History;
   }
 
   // ************combine 3 datas
@@ -333,7 +485,7 @@ exports.getFullData = catchAsyncError(async (req, res, next) => {
 
   const con = await oracleDBConnection();
 
-  const result = await con.execute(
+  let result = await con.execute(
     // `select * from todoitem`,
     "select ATAI, SRALNO, JSSKIDTTM from KTTMSYS.T_MCHNSTJHO WHERE HNSTKNRIMEI =:value0 AND KSNDTTM BETWEEN :value1 AND :value2",
     [processNo, new Date(fromDate), new Date(toDate)],
@@ -343,66 +495,78 @@ exports.getFullData = catchAsyncError(async (req, res, next) => {
   );
 
   if (result.rows.length == 0) {
-    console.log("Engine not found");
-    return next(new ErrorHandler("Engine no. do not exist", 401));
+    //history check
+    const conHistory = await oracleDBConnectionHistory();
+    const resultHistory = await conHistory.execute(
+      // `select * from todoitem`,
+      "select ATAI, SRALNO, JSSKIDTTM from KTTMHIS.T_MCHNSTJHORRKI WHERE HNSTKNRIMEI =:value0 AND KSNDTTM BETWEEN :value1 AND :value2",
+      [processNo, new Date(fromDate), new Date(toDate)],
+      {
+        // maxRows: 2
+      }
+    );
+    if (resultHistory.rows.length == 0) {
+      console.log("Engine not found");
+      return next(new ErrorHandler("Engine no. do not exist", 401));
+    }
+    result = resultHistory;
   }
 
   let serialNoList = result.rows.map((item) => item[1].trim());
 
-  // const placeholders = serialNoList.map((_, i) => `:value${i}`).join(", ");
-
-  // const result2 = await con.execute(
-  //   // `select * from todoitem`,
-  //   `select  ATAI, EGNO from KTTMSYS.T_HNSTJHO WHERE ATAI IN (${placeholders})`,
-  //   serialNoList,
-  //   {
-  //     // maxRows: 2
-  //   }
-  // );
-  // if (result2.rows.length == 0) {
-  //   console.log("Serial no. do not exist & Engine can not be found");
-  //   return next(new ErrorHandler("Serial no. do not exist", 401));
-  // }
-
   //**** breaking the list into smaller chunks */
-const chunkSize = 1000;
-const serialNoChunks = [];
-for (let i = 0; i < serialNoList.length; i += chunkSize) {
-  serialNoChunks.push(serialNoList.slice(i, i + chunkSize));
-}
-
-//**** applyig query for each chunk */
-const tempList = [];
-for (const chunk of serialNoChunks) {
-  const placeholders = chunk.map((_, i) => `:value${i}`).join(", ");
-  const query = `select ATAI, EGNO from KTTMSYS.T_HNSTJHO WHERE ATAI IN (${placeholders})`;
-
-  const queryResult = await con.execute(query, chunk, {
-    // maxRows: 2
-  });
-
-  tempList.push(...queryResult.rows);
-}
-
- if (tempList.length == 0) {
-    console.log("Serial no. do not exist & Engine can not be found");
-    return next(new ErrorHandler("Serial no. do not exist", 401));
+  const chunkSize = 1000;
+  const serialNoChunks = [];
+  for (let i = 0; i < serialNoList.length; i += chunkSize) {
+    serialNoChunks.push(serialNoList.slice(i, i + chunkSize));
   }
- let result2= {rows:null}
-  result2.rows = tempList  
+
+  //**** applyig query for each chunk */
+  const tempList = [];
+  for (const chunk of serialNoChunks) {
+    const placeholders = chunk.map((_, i) => `:value${i}`).join(", ");
+    const query = `select ATAI, EGNO from KTTMSYS.T_HNSTJHO WHERE ATAI IN (${placeholders})`;
+
+    const queryResult = await con.execute(query, chunk, {
+      // maxRows: 2
+    });
+
+    tempList.push(...queryResult.rows);
+  }
+
+  if (tempList.length == 0) {
+    //history check
+    const conHistory = await oracleDBConnectionHistory();
+    for (const chunk of serialNoChunks) {
+      const placeholders = chunk.map((_, i) => `:value${i}`).join(", ");
+      const query = `select ATAI, EGNO from KTTMHIS.T_HNSTJHORRKI WHERE ATAI IN (${placeholders})`;
+
+      const queryResultHistory = await conHistory.execute(query, chunk, {
+        // maxRows: 2
+      });
+
+      tempList.push(...queryResultHistory.rows);
+    }
+    if (tempList.length == 0) {
+      console.log("Serial no. do not exist & Engine can not be found");
+      return next(new ErrorHandler("Serial no. do not exist", 401));
+    }
+  }
+  let result2 = { rows: null };
+  result2.rows = tempList;
   let engineNoList = result2.rows.map((item) => item[1]);
   // ********creates chunks of engineNoList & store in array
-  const engineNoChuncks =[]
-  for(let i =0; i < engineNoList.length; i+=chunkSize){
-      engineNoChuncks.push(engineNoList.slice(i, i+chunkSize))    
+  const engineNoChuncks = [];
+  for (let i = 0; i < engineNoList.length; i += chunkSize) {
+    engineNoChuncks.push(engineNoList.slice(i, i + chunkSize));
   }
 
   // ********query for each chunk & store the result in  tempList2
-  const tempList2 =[]
-  for(const chunck2 of engineNoChuncks){
+  const tempList2 = [];
+  for (const chunck2 of engineNoChuncks) {
     const placeholders2 = chunck2.map((_, i) => `:value${i}`).join(", ");
     chunck2.push("200");
-  
+
     const queryResult2 = await con.execute(
       `SELECT EGNO, JSSKIDTTM FROM KTTMSYS.T_SISNJSSKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
       chunck2,
@@ -410,16 +574,33 @@ for (const chunk of serialNoChunks) {
         //     // maxRows: 2
       }
     );
-    tempList2.push(...queryResult2.rows)
+    tempList2.push(...queryResult2.rows);
   }
-  console.log("tempList2")
-console.log(tempList2)
+  console.log("tempList2");
+  console.log(tempList2);
   if (tempList2.length == 0) {
-    console.log("Engine no. do not exist & Engine can not be found");
-    return next(new ErrorHandler("Engine no. do not exist", 401));
+    //history check
+    const conHistory = await oracleDBConnectionHistory();
+    for (const chunck2 of engineNoChuncks) {
+      const placeholders2 = chunck2.map((_, i) => `:value${i}`).join(", ");
+      chunck2.push("200");
+
+      const queryResult2History = await conHistory.execute(
+        `SELECT EGNO, JSSKIDTTM FROM KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
+        chunck2,
+        {
+          //     // maxRows: 2
+        }
+      );
+      tempList2.push(...queryResult2History.rows);
+    }
+    if (tempList2.length == 0) {
+      console.log("Engine no. do not exist & Engine can not be found");
+      return next(new ErrorHandler("Engine no. do not exist", 401));
+    }
   }
-  let result3 = {rows:null}
-  result3.rows = tempList2
+  let result3 = { rows: null };
+  result3.rows = tempList2;
   // ************combine 3 datas
   const resultList2 = [];
 
@@ -486,7 +667,7 @@ exports.getFullDataAssy = catchAsyncError(async (req, res, next) => {
 
   const con = await oracleDBConnection();
 
-  const result = await con.execute(
+  let result = await con.execute(
     // `select * from todoitem`,
     "select ATAI,  EGNO ,JSSKIDTTM  from KTTMSYS.T_HNSTJHO WHERE HNSTKNRIMEI=:value AND KSNDTTM BETWEEN :value1 AND :value2",
     [processNo, new Date(fromDate), new Date(toDate)],
@@ -495,35 +676,40 @@ exports.getFullDataAssy = catchAsyncError(async (req, res, next) => {
     }
   );
 
-  // const result = await con.execute(
-  //   // `select * from todoitem`,
-  //   "select ATAI, SRALNO, JSSKIDTTM from KTTMSYS.T_MCHNSTJHO WHERE HNSTKNRIMEI =:value0 AND KSNDTTM BETWEEN :value1 AND :value2",
-  //   [processNo, new Date(fromDate), new Date(toDate)],
-  //   {
-  //     // maxRows: 2
-  //   }
-  // );
-
   if (result.rows.length == 0) {
-    console.log("Engine not found");
-    return next(new ErrorHandler("Engine no. do not exist", 401));
+    //history check
+    const conHistory = await oracleDBConnectionHistory();
+
+    let resultHistory = await conHistory.execute(
+      // `select * from todoitem`,
+      "select ATAI,  EGNO ,JSSKIDTTM  from KTTMHIS.T_HNSTJHORRKI WHERE HNSTKNRIMEI=:value AND KSNDTTM BETWEEN :value1 AND :value2",
+      [processNo, new Date(fromDate), new Date(toDate)],
+      {
+        // maxRows: 2
+      }
+    );
+    if (resultHistory.rows.length == 0) {
+      console.log("Engine not found");
+      return next(new ErrorHandler("Engine no. do not exist", 401));
+    }
+    result = resultHistory;
   }
 
   let engineNoList = result.rows.map((item) => item[1].trim());
-  console.log('engineNoList')
-  console.log(engineNoList)
+  console.log("engineNoList");
+  console.log(engineNoList);
   // ******** creating chunk of engine list
-  const chunkSize = 1000
-  const engineNoChuncks =[]
-  for(let i =0; i<engineNoList.length; i += chunkSize){
-    engineNoChuncks.push(engineNoList.slice(i, i+chunkSize))
+  const chunkSize = 1000;
+  const engineNoChuncks = [];
+  for (let i = 0; i < engineNoList.length; i += chunkSize) {
+    engineNoChuncks.push(engineNoList.slice(i, i + chunkSize));
   }
 
-  // ******** query for each chunk & pushing result in tempList  
-  const tempList=[]
-  for (const chunck of engineNoChuncks){
+  // ******** query for each chunk & pushing result in tempList
+  const tempList = [];
+  for (const chunck of engineNoChuncks) {
     const placeholders2 = chunck.map((_, i) => `:value${i}`).join(", ");
-    chunck.push("200");  
+    chunck.push("200");
     const queryResult = await con.execute(
       `SELECT EGNO, JSSKIDTTM FROM KTTMSYS.T_SISNJSSKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
       chunck,
@@ -531,19 +717,34 @@ exports.getFullDataAssy = catchAsyncError(async (req, res, next) => {
         //     // maxRows: 2
       }
     );
-      tempList.push(...queryResult.rows)
+    tempList.push(...queryResult.rows);
+  }
 
-  }
-  
-  // ******* check if dispatch dates exits 
+  // ******* check if dispatch dates exits
   if (tempList.length == 0) {
-    console.log("Engine no. do not exist & Engine can not be found");
-    return next(new ErrorHandler("Engine no. do not exist", 401));
+    //history check
+    const conHistory = await oracleDBConnectionHistory();
+    for (const chunck of engineNoChuncks) {
+      const placeholders2 = chunck.map((_, i) => `:value${i}`).join(", ");
+      chunck.push("200");
+      const queryResultHistory = await conHistory.execute(
+        `SELECT EGNO, JSSKIDTTM FROM KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
+        chunck,
+        {
+          //     // maxRows: 2
+        }
+      );
+      tempList.push(...queryResultHistory.rows);
+    }
+    if (tempList.length == 0) {
+      console.log("Engine no. do not exist & Engine can not be found");
+      return next(new ErrorHandler("Engine no. do not exist", 401));
+    }
   }
-  console.log('tempList')
-  console.log(tempList)
-  const result3 = {rows:null}
-  result3.rows=tempList
+  console.log("tempList");
+  console.log(tempList);
+  const result3 = { rows: null };
+  result3.rows = tempList;
   // ************combine 3 datas
   const resultList2 = [];
 

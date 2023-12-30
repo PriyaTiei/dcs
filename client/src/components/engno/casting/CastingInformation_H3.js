@@ -11,7 +11,6 @@ function CastingInformation_H({ castingNo }) {
   var castingYear;
   var castingDate;
 
-
   if (castingNo != null) {
     castingYear = `20${castingNo.slice(8, 10)}`;
     castingDayOfMonth = castingNo.slice(11, 13);
@@ -57,10 +56,20 @@ function CastingInformation_H({ castingNo }) {
         castingMonth = ``;
         break;
     }
-   
-    castingDate = new Date(
-      `${castingYear}-${castingMonth}-${castingDayOfMonth}`
-    ).toISOString();
+
+    // check date validation
+    if (
+      new Date(`${castingYear}-${castingMonth}-${castingDayOfMonth}`) ==
+      "Invalid Date"
+    ) {
+      console.log("invalid cating date");
+      castingDate = new Date(Date.now()).toISOString();
+    } else {
+      castingDate = new Date(
+        `${castingYear}-${castingMonth}-${castingDayOfMonth}`
+      ).toISOString();
+    }
+
     // console.log(castingYear);
     // console.log(castingMonth);
     // console.log(castingDayOfMonth);
