@@ -536,6 +536,10 @@ exports.getFullData = catchAsyncError(async (req, res, next) => {
 
   if (tempList.length == 0) {
     //history check
+    const serialNoChunks = [];
+    for (let i = 0; i < serialNoList.length; i += chunkSize) {
+      serialNoChunks.push(serialNoList.slice(i, i + chunkSize));
+    }
     const conHistory = await oracleDBConnectionHistory();
     for (const chunk of serialNoChunks) {
       const placeholders = chunk.map((_, i) => `:value${i}`).join(", ");
@@ -580,6 +584,11 @@ exports.getFullData = catchAsyncError(async (req, res, next) => {
   console.log(tempList2);
   if (tempList2.length == 0) {
     //history check
+    // ********creates chunks of engineNoList & store in array
+  const engineNoChuncks = [];
+  for (let i = 0; i < engineNoList.length; i += chunkSize) {
+    engineNoChuncks.push(engineNoList.slice(i, i + chunkSize));
+  }
     const conHistory = await oracleDBConnectionHistory();
     for (const chunck2 of engineNoChuncks) {
       const placeholders2 = chunck2.map((_, i) => `:value${i}`).join(", ");
@@ -679,7 +688,7 @@ exports.getFullDataAssy = catchAsyncError(async (req, res, next) => {
   if (result.rows.length == 0) {
     //history check
     const conHistory = await oracleDBConnectionHistory();
-  
+
     let resultHistory = await conHistory.execute(
       // `select * from todoitem`,
       "select ATAI,  EGNO ,JSSKIDTTM  from KTTMHIS.T_HNSTJHORRKI WHERE HNSTKNRIMEI=:value AND JSSKIDTTM BETWEEN :value1 AND :value2",
@@ -696,22 +705,20 @@ exports.getFullDataAssy = catchAsyncError(async (req, res, next) => {
   }
 
   let engineNoList = result.rows.map((item) => item[1].trim());
-  
- 
 
-  console.log("engineNoList");
-  console.log(engineNoList);
+
   // ******** creating chunk of engine list
   const chunkSize = 1000;
   const engineNoChuncks = [];
   for (let i = 0; i < engineNoList.length; i += chunkSize) {
-    engineNoChuncks.push(engineNoList.slice(i, i + chunkSize));
+    engineNoChuncks.push(engineNoList.slice(i, i + chunkSize));  
   }
+ 
 
   // ******** query for each chunk & pushing result in tempList
   const tempList = [];
-  for (const chunck of engineNoChuncks) {
-    const placeholders2 = chunck.map((_, i) => `:value${i}`).join(", ");
+  for (const chunck of engineNoChuncks) {   
+    const placeholders2 = chunck.map((_, i) => `:value${i}`).join(", ");   
     chunck.push("200");
     const queryResult = await con.execute(
       `SELECT EGNO, JSSKIDTTM FROM KTTMSYS.T_SISNJSSKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
@@ -723,15 +730,24 @@ exports.getFullDataAssy = catchAsyncError(async (req, res, next) => {
     tempList.push(...queryResult.rows);
   }
 
+
   // ******* check if dispatch dates exits
   if (tempList.length == 0) {
     //history check
+    const engineNoChuncks = [];
+    for (let i = 0; i < engineNoList.length; i += chunkSize) {
+      engineNoChuncks.push(engineNoList.slice(i, i + chunkSize));
+    }
     const conHistory = await oracleDBConnectionHistory();
     for (const chunck of engineNoChuncks) {
-      const placeholders2 = chunck.map((_, i) => `:value${i}`).join(", ");
+      
+      const placeholders2History = chunck
+        .map((_, i) => `:value${i}`)
+        .join(", ");
+
       chunck.push("200");
       const queryResultHistory = await conHistory.execute(
-        `SELECT EGNO, JSSKIDTTM FROM KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
+        `SELECT EGNO, JSSKIDTTM FROM KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO IN (${placeholders2History}) AND KTEINO = :valueDispatched`,
         chunck,
         {
           //     // maxRows: 2
@@ -744,8 +760,8 @@ exports.getFullDataAssy = catchAsyncError(async (req, res, next) => {
       return next(new ErrorHandler("Engine no. do not exist", 401));
     }
   }
-  console.log("tempList");
-  console.log(tempList);
+  // console.log("tempList");
+  // console.log(tempList);
   const result3 = { rows: null };
   result3.rows = tempList;
   // ************combine 3 datas
