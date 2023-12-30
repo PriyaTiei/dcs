@@ -208,7 +208,7 @@ exports.getDateRangeData = catchAsyncError(async (req, res, next) => {
 
   let result = await con.execute(
     // `select * from todoitem`,
-    "select * from KTTMSYS.T_MCHNSTJHO WHERE HNSTKNRIMEI =:value0 AND KSNDTTM BETWEEN :value1 AND :value2",
+    "select * from KTTMSYS.T_MCHNSTJHO WHERE HNSTKNRIMEI =:value0 AND JSSKIDTTM BETWEEN :value1 AND :value2",
     [processNo, new Date(fromDate), new Date(toDate)],
     {
       // maxRows: 2
@@ -220,7 +220,7 @@ exports.getDateRangeData = catchAsyncError(async (req, res, next) => {
     const conHistory = await oracleDBConnectionHistory();
     const resultHistory = await conHistory.execute(
       // `select * from todoitem`,
-      "select * from KTTMHIS.T_MCHNSTJHORRKI WHERE HNSTKNRIMEI =:value0 AND KSNDTTM BETWEEN :value1 AND :value2",
+      "select * from KTTMHIS.T_MCHNSTJHORRKI WHERE HNSTKNRIMEI =:value0 AND JSSKIDTTM BETWEEN :value1 AND :value2",
       [processNo, new Date(fromDate), new Date(toDate)],
       {
         // maxRows: 2
@@ -487,7 +487,7 @@ exports.getFullData = catchAsyncError(async (req, res, next) => {
 
   let result = await con.execute(
     // `select * from todoitem`,
-    "select ATAI, SRALNO, JSSKIDTTM from KTTMSYS.T_MCHNSTJHO WHERE HNSTKNRIMEI =:value0 AND KSNDTTM BETWEEN :value1 AND :value2",
+    "select ATAI, SRALNO, JSSKIDTTM from KTTMSYS.T_MCHNSTJHO WHERE HNSTKNRIMEI =:value0 AND JSSKIDTTM BETWEEN :value1 AND :value2",
     [processNo, new Date(fromDate), new Date(toDate)],
     {
       // maxRows: 2
@@ -499,7 +499,7 @@ exports.getFullData = catchAsyncError(async (req, res, next) => {
     const conHistory = await oracleDBConnectionHistory();
     const resultHistory = await conHistory.execute(
       // `select * from todoitem`,
-      "select ATAI, SRALNO, JSSKIDTTM from KTTMHIS.T_MCHNSTJHORRKI WHERE HNSTKNRIMEI =:value0 AND KSNDTTM BETWEEN :value1 AND :value2",
+      "select ATAI, SRALNO, JSSKIDTTM from KTTMHIS.T_MCHNSTJHORRKI WHERE HNSTKNRIMEI =:value0 AND JSSKIDTTM BETWEEN :value1 AND :value2",
       [processNo, new Date(fromDate), new Date(toDate)],
       {
         // maxRows: 2
@@ -669,7 +669,7 @@ exports.getFullDataAssy = catchAsyncError(async (req, res, next) => {
 
   let result = await con.execute(
     // `select * from todoitem`,
-    "select ATAI,  EGNO ,JSSKIDTTM  from KTTMSYS.T_HNSTJHO WHERE HNSTKNRIMEI=:value AND KSNDTTM BETWEEN :value1 AND :value2",
+    "select ATAI,  EGNO ,JSSKIDTTM  from KTTMSYS.T_HNSTJHO WHERE HNSTKNRIMEI=:value AND JSSKIDTTM BETWEEN :value1 AND :value2",
     [processNo, new Date(fromDate), new Date(toDate)],
     {
       // maxRows: 2
@@ -679,10 +679,10 @@ exports.getFullDataAssy = catchAsyncError(async (req, res, next) => {
   if (result.rows.length == 0) {
     //history check
     const conHistory = await oracleDBConnectionHistory();
-
+  
     let resultHistory = await conHistory.execute(
       // `select * from todoitem`,
-      "select ATAI,  EGNO ,JSSKIDTTM  from KTTMHIS.T_HNSTJHORRKI WHERE HNSTKNRIMEI=:value AND KSNDTTM BETWEEN :value1 AND :value2",
+      "select ATAI,  EGNO ,JSSKIDTTM  from KTTMHIS.T_HNSTJHORRKI WHERE HNSTKNRIMEI=:value AND JSSKIDTTM BETWEEN :value1 AND :value2",
       [processNo, new Date(fromDate), new Date(toDate)],
       {
         // maxRows: 2
@@ -696,6 +696,9 @@ exports.getFullDataAssy = catchAsyncError(async (req, res, next) => {
   }
 
   let engineNoList = result.rows.map((item) => item[1].trim());
+  
+ 
+
   console.log("engineNoList");
   console.log(engineNoList);
   // ******** creating chunk of engine list
