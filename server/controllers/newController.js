@@ -33,6 +33,23 @@ const getCrankinfoById = async (req, res) => {
     }
   };
 
+  const getCrankinfoByEngineNo = async (req, res) => {
+    const { engineNo } = req.params; 
+  
+    try {
+        const crank = await Crankinfo.findOne({ engineNo: engineNo }); 
+  
+        if (!crank) {
+            return res.status(404).json({ message: "Info not found" });
+        }
+  
+        res.status(200).json(crank);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to retrieve Info", error: error.message });
+    }
+};
+
 
 //to update crank info using id
 const updateCrankinfoById = async (req, res) => {
@@ -53,6 +70,30 @@ const updateCrankinfoById = async (req, res) => {
   };
 
 
+  const updateCrankinfoByEngineNo = async (req, res) => {
+    const { engineNo } = req.params;
+    const { crankHousingNum, crankHousingCastingNum } = req.body; 
+  
+    try {
+        const updatedCrank = await Crankinfo.findOneAndUpdate(
+            { engineNo },
+            { crankHousingNum, crankHousingCastingNum },
+            { new: true }
+        );
+  
+        if (!updatedCrank) {
+            return res.status(404).json({ message: "Info not found" });
+        }
+  
+        res.status(200).json({ message: "Crank Info updated successfully", updatedCrank});;
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to update Info", error });
+    }
+};
+
+
+
 
 // to delete crank info by id
   const deleteCrankinfoById = async (req, res) => {
@@ -71,6 +112,24 @@ const updateCrankinfoById = async (req, res) => {
       res.status(500).json({ message: "Failed to delete Crank info", error });
     }
   };
+
+  const deleteCrankinfoByEngineNo = async (req, res) => {
+    const { engineNo } = req.params;
+  
+    try {
+        const deletedCrank = await Crankinfo.findOneAndDelete({ engineNo });
+  
+        if (!deletedCrank) {
+            return res.status(404).json({ message: "Info not found" });
+        }
+  
+        res.status(200).json({ message: "Info deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to delete Info", error });
+    }
+};
+
 
   //to create a new document in Db
 
@@ -100,4 +159,4 @@ const updateCrankinfoById = async (req, res) => {
   
 
 
-module.exports = {crankDisplay,getCrankinfoById, updateCrankinfoById,deleteCrankinfoById,createNewCrankinfo };
+module.exports = {crankDisplay,getCrankinfoById, getCrankinfoByEngineNo, updateCrankinfoById,deleteCrankinfoById,createNewCrankinfo,updateCrankinfoByEngineNo, deleteCrankinfoByEngineNo };
