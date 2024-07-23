@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const dcsFormRoutes = require("./routes/dcs-form");
+const crankRoutes = require("./routes/crankRoute");
+
 const cors = require("cors");
 const app = express();
 const changePoint = require("./routes/changepoint");
@@ -44,5 +46,10 @@ app.use(bodyParser.json()); // Parse JSON data
 app.use("/dcs", dcsFormRoutes);
 app.use("/changePoint", changePoint);
 app.use("/oracle", oracleRouter);
+app.use("/crank",crankRoutes);
+
+
+
+
 
 app.use(error);
