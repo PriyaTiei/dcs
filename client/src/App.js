@@ -8,6 +8,7 @@ import ChangePoints from "./components/changePoints/ChangePoints";
 import MainPage from "./components/engno/MainPage";
 import SupplierPartDeatils from "./components/engno/DetailTraceability.js";
 import SearchReworkImages from "./components/reworkImage/SearchReworkImages";
+import CrankInfo from "./components/crank/CrankInfo.js";
 import Loading from "./components/engno/Loading";
 import "./styles/styles.css";
 
@@ -33,6 +34,10 @@ export default function App() {
             <Route
               path="/searchReworkImages"
               element={<SearchReworkImages />}
+            />
+            <Route
+              path="/crank"
+              element={<CrankInfo />}
             />
           </Routes>
         </ContentWrapper>
