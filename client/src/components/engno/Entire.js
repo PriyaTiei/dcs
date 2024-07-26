@@ -2052,6 +2052,7 @@ function EntireResultProcess({crankinfo}) {
     <div className="d-flex flex-column gap-3 mt-3">
       <hr></hr>
       <div className="h4 text-primary"> Assembly data</div>
+      
       <button
         className="btn btn-primary"
         style={{ width: "150px" }}
@@ -2059,7 +2060,7 @@ function EntireResultProcess({crankinfo}) {
       >
         Export to Excel
       </button>
-      <CrankInfo crankinfo={crankinfo}/>
+      {/* <CrankInfo crankinfo={crankinfo}/> */}
      
       <>{display}</>
 
@@ -2090,6 +2091,7 @@ function EntireResultProcess({crankinfo}) {
         <>{display_Block_S_N}</>
       </div>
       <>{display_HeadboltNR}</>
+      <CrankInfo crankinfo={crankinfo}/>
       <hr></hr>
       
       <div className="h4 text-primary"> Machining Data</div>
