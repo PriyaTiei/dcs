@@ -6,7 +6,7 @@ import axios from "axios";
 import DateTable from "./ReusableEngineHistoryValues.js";
 import moment from "moment";
 import ShippingDetails from "./ShippingDetails.js";
-import CrankDetails from "./testing.js";
+// import CrankDetails from "./testing.js";
 import ChangePointAssembly from "./ChangePointAssembly.js";
 import DetailTraceability from "./DetailTraceability.js";
 import ChangePointMachining from "./ChangePointMachining.js";
@@ -266,7 +266,7 @@ const fetchCrankData = async () => {
 
 
        {/* *****************Crank fieldset */}
-       <fieldset className="border p-3 mt-3 ">
+       {/* <fieldset className="border p-3 mt-3 ">
         <legend
           className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-primary"
           style={{ fontSize: "16px" }}
@@ -276,9 +276,9 @@ const fetchCrankData = async () => {
         <div className="d-flex gap-3 mt-0">
          
           <EntireResultProcess crankinfo = {crankinfo}/>
-          <CrankDetails />
+          {/* <CrankDetails /> 
         </div>
-      </fieldset>
+      </fieldset> */}
 
       {/* ************Machining Field set */}
       <fieldset className="border p-3 mt-3 ">
