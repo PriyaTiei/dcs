@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './CrankStyle.css'; 
+import moment from "moment";
 // import { Search } from "bootstrap-icons-react";
 
 
@@ -52,15 +53,15 @@ const CrankInfo = ({crankinfo}) => {
 // export default CrankInfo;
 return (
   <div className="crank-info-container">
-    <h2>Crank Information</h2>
+    <h5>Crank Information</h5>
 
     {crankinfo && (
       <table className="info-table">
         <tbody>
-          <tr>
+          {/* <tr>
             <td className="info-label">Engine Number:</td>
             <td className="info-value">{crankinfo.engineNo}</td>
-          </tr>
+          </tr> */}
           <tr>
             <td className="info-label">Crank Housing Number:</td>
             <td className="info-value">{crankinfo.crankHousingNum}</td>
@@ -69,14 +70,10 @@ return (
             <td className="info-label">Crank Housing Casting Number:</td>
             <td className="info-value">{crankinfo.crankHousingCastingNum}</td>
           </tr>
-          <tr>
-            <td className="info-label">Date Created:</td>
-            <td className="info-value">{new Date(crankinfo.createdAt).toLocaleDateString()}</td>
-          </tr>
-          <tr>
-            <td className="info-label">Time Created:</td>
-            <td className="info-value">{new Date(crankinfo.createdAt).toLocaleTimeString()}</td>
-          </tr>
+              <td className="info-label">Date and Time Assembled:</td>
+              <td className="info-value">
+                {moment(crankinfo.createdAt).format('YYYY-MM-DDTHH:mm:ssZ')}
+              </td>
         </tbody>
       </table>
     )}
