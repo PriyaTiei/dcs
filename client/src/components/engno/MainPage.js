@@ -6,6 +6,7 @@ import axios from "axios";
 import DateTable from "./ReusableEngineHistoryValues.js";
 import moment from "moment";
 import ShippingDetails from "./ShippingDetails.js";
+import CrankDetails from "./testing.js";
 import ChangePointAssembly from "./ChangePointAssembly.js";
 import DetailTraceability from "./DetailTraceability.js";
 import ChangePointMachining from "./ChangePointMachining.js";
@@ -30,6 +31,8 @@ function EngNo() {
   const hDate = new Date(Date.now()).toUTCString();
 
   const [leakData, setLeakData] = useState();
+  const [crankinfo,setCrankInfo] = useState();
+  const [error, setError] = useState('');
 
   const [listOfImages, setListOfImages] = useState([]);
 
@@ -75,9 +78,23 @@ function EngNo() {
   const getOracleData = () => {
     dispatch(processDataClear());
     dispatch(getEngineData(engineNo));
+    fetchCrankData();
     getImages();
   };
-
+const fetchCrankData = async () => {
+    try {
+      const response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/crank/crankinformation/${engineNo}`);
+     
+      setCrankInfo(response.data);
+      setError(''); 
+      console.log(response);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      setError('Failed to fetch data. Please try again.');
+      setCrankInfo(null); 
+    }
+  };
   const getPartData = async (partNo) => {
     // console.log("part nos are", partNo);
     await axios
@@ -208,7 +225,7 @@ function EngNo() {
         </div>
       </div>
 
-      <EntireResultProcess />
+      <EntireResultProcess crankinfo = {crankinfo}/>
 
       {/* images display */}
       <div className="d-flex flex-wrap my-3"> {images}</div>
@@ -244,6 +261,22 @@ function EngNo() {
 
           {/* Change point information  */}
           <ChangePointAssembly />
+        </div>
+      </fieldset>
+
+
+       {/* *****************Crank fieldset */}
+       <fieldset className="border p-3 mt-3 ">
+        <legend
+          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-primary"
+          style={{ fontSize: "16px" }}
+        >
+         Crank Information
+        </legend>
+        <div className="d-flex gap-3 mt-0">
+         
+          <EntireResultProcess crankinfo = {crankinfo}/>
+          <CrankDetails />
         </div>
       </fieldset>
 
