@@ -15,8 +15,11 @@ import { decodeHead50 } from "./processDetails/func_H_50";
 import { decode_C_150_170 } from "./processDetails/func_C_150_170";
 import { decodeAssyHeadBoltNR } from "./processDetails/func_A_HeadBoltNR";
 import ExcelJS from "exceljs";
+import CrankInfo from "../crank/CrankInfo";
 
-function EntireResultProcess() {
+
+function EntireResultProcess({crankinfo}) {
+
   const dispatch = useDispatch();
   const data = useSelector((state) => state.engine.engineData.data);
   const section = useSelector((state) => state.engine.section);
@@ -107,6 +110,10 @@ function EntireResultProcess() {
       moment(processNoFiltered[0][8]).format("DD-MMMM-YYYY HH:mm:ss"),
     ];
   }
+  
+
+
+
   display_B1_ENGRAVED =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
       <div className="d-flex flex-column dt1">
@@ -2052,7 +2059,8 @@ function EntireResultProcess() {
       >
         Export to Excel
       </button>
-
+      <CrankInfo crankinfo={crankinfo}/>
+     
       <>{display}</>
 
       <div className="d-flex flex-row gap-3">
@@ -2083,7 +2091,8 @@ function EntireResultProcess() {
       </div>
       <>{display_HeadboltNR}</>
       <hr></hr>
-      <div className="h4 text-primary"> Machining data</div>
+      
+      <div className="h4 text-primary"> Machining Data</div>
       <div className="d-flex flex-row gap-3">
         <>{display_B1_ENGRAVED}</>
         <>{castingDetails_B1_ENGRAVED}</>
