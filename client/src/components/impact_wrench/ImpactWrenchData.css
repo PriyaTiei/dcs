@@ -77,5 +77,11 @@
 
 /* Highlight rows */
 .highlight-green {
-    background-color: #acf5bb !important;
+    background-color: #acf5bb !important; /* Default green highlight */
+    transition: background-color 0.3s ease-in-out; /* Smooth transition effect */
+}
+
+/* Hover effect for highlighted rows */
+.highlight-green:hover {
+    background-color: #8fd69f !important; /* Slightly darker green on hover */
 }
