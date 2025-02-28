@@ -1,0 +1,81 @@
+.wrench-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+}
+
+/* Table styling */
+.wrench-table {
+    width: auto; /* Only as wide as needed */
+    border-collapse: collapse;
+    table-layout: auto; /* Allow columns to adjust dynamically */
+}
+
+/* Table headers */
+.wrench-table th {
+    border: 1px solid #b4b3b3;
+    padding: 8px;
+    text-align: center;
+    white-space: normal; /* Allow line breaks */
+    overflow: hidden;
+    word-wrap: break-word; /* Break only after full words */
+    background-color: #c4d3d6;
+    font-weight: bold;
+    max-height: 48px; /* Limit height to prevent excessive row size */
+    line-height: 1.2; /* Ensure readable spacing */
+}
+
+/* Table data cells */
+.wrench-table td {
+    border: 1px solid #b4b3b3;
+    padding: 6px;
+    text-align: center;
+    white-space: nowrap; /* Prevent wrapping in data */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Ensure headers break words properly */
+.wrench-table th span {
+    display: block;
+    word-break: break-word; /* Break at whole words */
+}
+
+/* Alternating row colors */
+.wrench-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.wrench-table tbody tr:hover {
+    background-color: #e0e0e0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .wrench-table {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 768px) {
+    .wrench-table {
+        font-size: 10px;
+    }
+
+    .wrench-table td {
+        padding: 4px;
+    }
+
+    .wrench-table th {
+        padding: 6px;
+        max-height: 48px; /* Prevent header from growing too tall */
+    }
+}
+
+/* Highlight rows */
+.highlight-green {
+    background-color: #acf5bb !important;
+}

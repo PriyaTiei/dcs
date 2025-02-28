@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Menu, Icon } from "semantic-ui-react";
 import { navBarSlice } from "../redux/slices/navbarSlice";
 import './fonts.css';
-import engine2 from "../assets/engine2.png";
+import engine from "../assets/engine.png";
 export default function Navbar() {
   const dispatch = useDispatch();
   const { visible } = useSelector((state) => state.navBar);
@@ -17,7 +17,7 @@ export default function Navbar() {
         <Icon name={visible ? "close" : "bars"} size="large" />
         
       </Menu.Item>
-      <h1 className="mx-auto custom-font-text ">Engine Traceability <span className="mr-0"><img src={engine2} style={{height:"40px"}}></img></span></h1>
+      <h1 className="mx-auto custom-font-text ">Engine Traceability <span className="mr-0"><img src={engine} style={{height:"40px"}}></img></span></h1>
     </Menu>
   );
 }

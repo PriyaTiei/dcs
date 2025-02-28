@@ -16,9 +16,9 @@ import { decode_C_150_170 } from "./processDetails/func_C_150_170";
 import { decodeAssyHeadBoltNR } from "./processDetails/func_A_HeadBoltNR";
 import ExcelJS from "exceljs";
 import CrankInfo from "../crank/CrankInfo";
+import ImpactWrenchTable from "../impact_wrench/ImpactWrenchData";
 
-
-function EntireResultProcess({crankinfo}) {
+function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
 
   const dispatch = useDispatch();
   const data = useSelector((state) => state.engine.engineData.data);
@@ -2060,7 +2060,18 @@ function EntireResultProcess({crankinfo}) {
       >
         Export to Excel
       </button>
-      {/* <CrankInfo crankinfo={crankinfo}/> */}
+      {/* Add ImpactWrenchTable in a container with some styling */}
+      <div className="wrench-section" style={{ width: '100%' }}>
+          <div className="card">
+            <div className="card-body">
+              <h5 className="card-title">Impact Wrench Data</h5>
+              <ImpactWrenchTable 
+                engineNo={engineNo}    
+                triggerSearch={triggerSearch}
+              /> 
+            </div>
+          </div>
+      </div>
      
       <>{display}</>
 
@@ -2092,8 +2103,7 @@ function EntireResultProcess({crankinfo}) {
       </div>
       <>{display_HeadboltNR}</>
       <CrankInfo crankinfo={crankinfo}/>
-      <hr></hr>
-      
+           
       <div className="h4 text-primary"> Machining Data</div>
       <div className="d-flex flex-row gap-3">
         <>{display_B1_ENGRAVED}</>

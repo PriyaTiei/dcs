@@ -23,8 +23,10 @@ import { CSVLink } from "react-csv";
 import { toast } from "react-toastify";
 import ReusageImageCards from "../reworkImage/ReusageImageCards.js";
 
+
 function EngNo() {
   const [engineNo, setEngineNo] = useState("");
+  const [searchEngineNo, setSearchEngineNo] = useState(""); 
 
   const [part, setPart] = useState("");
   const [supplierPart, setSupplierPart] = useState("");
@@ -75,7 +77,11 @@ function EngNo() {
   // const machinedParts = ["Head S / N"];
   const machinedParts = ["Block S / N", "Crank S / N", "Head S / N"];
 
+  const [searchTriggered, setSearchTriggered] = useState(false);
+
   const getOracleData = () => {
+    setSearchEngineNo(engineNo); 
+    setSearchTriggered(true);
     dispatch(processDataClear());
     dispatch(getEngineData(engineNo));
     fetchCrankData();
@@ -224,9 +230,13 @@ const fetchCrankData = async () => {
           <div>{leakData}</div>
         </div>
       </div>
-
-      <EntireResultProcess crankinfo = {crankinfo}/>
-
+     
+      <EntireResultProcess 
+        crankinfo = {crankinfo} 
+        engineNo={searchEngineNo}
+        triggerSearch={searchTriggered}
+        />
+      
       {/* images display */}
       <div className="d-flex flex-wrap my-3"> {images}</div>
 
