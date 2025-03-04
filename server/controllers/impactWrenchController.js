@@ -10,23 +10,23 @@
 //                 SELECT  
 //                     stm.station,
 //                     stm.tool_name,  
-//                     sav.tightening_datetime,
-//                     sav.work_no,
-//                     sav.axis_number,
-//                     sav.count,
-//                     sav.torque,
-//                     sav.angle,
-//                     sav.number_of_pulses,
-//                     sav.tightening_time,
-//                     sav.free_run_angle,
-//                     sav.snug_angle,
-//                     sav.torque_angle_change,
-//                     sav.judgement
+//                     sa.tightening_datetime,
+//                     sa.work_no,
+//                     sa.axis_number,
+//                     sa.count,
+//                     sa.torque,
+//                     sa.angle,
+//                     sa.number_of_pulses,
+//                     sa.tightening_time,
+//                     sa.free_run_angle,
+//                     sa.snug_angle,
+//                     sa.torque_angle_change,
+//                     sa.judgement
 //                 FROM station_tool_map stm
-//                 LEFT JOIN sub_assy_values sav
-//                 ON stm.folder = sav.folder
-//                 AND CAST(stm.station AS TEXT) = CAST(sav.station_number AS TEXT)
-//                 AND sav.engine_number = $1
+//                 LEFT JOIN sub_assy_values sa
+//                 ON stm.folder = sa.folder
+//                 AND CAST(stm.station AS TEXT) = CAST(sa.station_number AS TEXT)
+//                 AND sa.engine_number = $1
 
 //                 UNION  
 
@@ -155,23 +155,23 @@ const getImpactWrenchData = async (req, res) => {
             SELECT 
                 at.station,
                 at.tool_name,
-                COALESCE(fv.tightening_datetime, sav.tightening_datetime, fv2.tightening_datetime, fv3.tightening_datetime) AS tightening_datetime,
-                COALESCE(fv.work_no, sav.work_no, fv2.work_no, fv3.work_no) AS work_no,
-                COALESCE(fv.axis_number, sav.axis_number, fv2.axis_number, fv3.axis_number) AS axis_number,
-                COALESCE(fv.count, sav.count, fv2.count, fv3.count) AS count,
-                COALESCE(fv.torque, sav.torque, fv2.torque, fv3.torque) AS torque,
-                COALESCE(fv.angle, sav.angle, fv2.angle, fv3.angle) AS angle,
-                COALESCE(fv.number_of_pulses, sav.number_of_pulses, fv2.number_of_pulses, fv3.number_of_pulses) AS number_of_pulses,
-                COALESCE(fv.tightening_time, sav.tightening_time, fv2.tightening_time, fv3.tightening_time) AS tightening_time,
-                COALESCE(fv.free_run_angle, sav.free_run_angle, fv2.free_run_angle, fv3.free_run_angle) AS free_run_angle,
-                COALESCE(fv.snug_angle, sav.snug_angle, fv2.snug_angle, fv3.snug_angle) AS snug_angle,
-                COALESCE(fv.torque_angle_change, sav.torque_angle_change, fv2.torque_angle_change, fv3.torque_angle_change) AS torque_angle_change,
-                COALESCE(fv.judgement, sav.judgement, fv2.judgement, fv3.judgement) AS judgement
+                COALESCE(fv.tightening_datetime, sa.tightening_datetime, fv2.tightening_datetime, fv3.tightening_datetime) AS tightening_datetime,
+                COALESCE(fv.work_no, sa.work_no, fv2.work_no, fv3.work_no) AS work_no,
+                COALESCE(fv.axis_number, sa.axis_number, fv2.axis_number, fv3.axis_number) AS axis_number,
+                COALESCE(fv.count, sa.count, fv2.count, fv3.count) AS count,
+                COALESCE(fv.torque, sa.torque, fv2.torque, fv3.torque) AS torque,
+                COALESCE(fv.angle, sa.angle, fv2.angle, fv3.angle) AS angle,
+                COALESCE(fv.number_of_pulses, sa.number_of_pulses, fv2.number_of_pulses, fv3.number_of_pulses) AS number_of_pulses,
+                COALESCE(fv.tightening_time, sa.tightening_time, fv2.tightening_time, fv3.tightening_time) AS tightening_time,
+                COALESCE(fv.free_run_angle, sa.free_run_angle, fv2.free_run_angle, fv3.free_run_angle) AS free_run_angle,
+                COALESCE(fv.snug_angle, sa.snug_angle, fv2.snug_angle, fv3.snug_angle) AS snug_angle,
+                COALESCE(fv.torque_angle_change, sa.torque_angle_change, fv2.torque_angle_change, fv3.torque_angle_change) AS torque_angle_change,
+                COALESCE(fv.judgement, sa.judgement, fv2.judgement, fv3.judgement) AS judgement
             FROM all_tools at
-            LEFT JOIN sub_assy_values sav 
-                ON at.folder = sav.folder 
-                AND CAST(at.station AS TEXT) = CAST(sav.station_number AS TEXT) 
-                AND sav.engine_number = $1
+            LEFT JOIN sub_assy sa
+                ON at.folder = sa.folder 
+                AND CAST(at.station AS TEXT) = CAST(sa.station_number AS TEXT) 
+                AND sa.engine_number = $1
             LEFT JOIN final_values fv 
                 ON at.folder = fv.folder 
                 AND CAST(at.station AS TEXT) = CAST(fv.station_number AS TEXT) 
