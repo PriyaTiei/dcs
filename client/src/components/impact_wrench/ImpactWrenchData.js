@@ -132,9 +132,12 @@ const ImpactWrenchTable = ({ engineNo, triggerSearch }) => {
           ) : (
             wrenchData.map((record, index) => (
               <tr 
-              key={index} className={
+                key={index} 
+                className={
                   record.judgement && record.judgement.toLowerCase() === 'ok'
                     ? 'highlight-green'
+                    : record.judgement && record.judgement.toLowerCase() === 'ng'
+                    ? 'highlight-red'
                     : ''
                 }>
                 <td>{record.station}</td>
