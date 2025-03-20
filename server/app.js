@@ -10,7 +10,7 @@ const changePoint = require("./routes/changepoint");
 const { error } = require("./middleware/error");
 const oracleRouter = require("./routes/oracleDDRoutes");
 const bodyParser = require("body-parser");
-const impactWrenchRoutes = require('./routes/impactWrenchRoute');
+const postgresqlRoutes = require('./routes/postgresqlDBR');
 const pool = require('./connections/postgresDB');
 
 
@@ -50,7 +50,7 @@ app.use("/dcs", dcsFormRoutes);
 app.use("/changePoint", changePoint);
 app.use("/oracle", oracleRouter);
 app.use("/crank",crankRoutes);
-app.use('/api/impactWrench', impactWrenchRoutes);
+app.use('/api', postgresqlRoutes);
 
 
 

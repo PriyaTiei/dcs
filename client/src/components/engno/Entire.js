@@ -17,6 +17,7 @@ import { decodeAssyHeadBoltNR } from "./processDetails/func_A_HeadBoltNR";
 import ExcelJS from "exceljs";
 import CrankInfo from "../crank/CrankInfo";
 import ImpactWrenchTable from "../impact_wrench/ImpactWrenchData";
+import PTTable from "../part_traceability/pt_table";
 
 function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
 
@@ -2102,7 +2103,19 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
         <>{display_Block_S_N}</>
       </div>
       <>{display_HeadboltNR}</>
+
       <CrankInfo crankinfo={crankinfo}/>
+
+      <div>
+        <h5 className="part-traceability">Ignition Coil & Chain Cover</h5>
+        <div>
+              <PTTable 
+                engineNo={engineNo}    
+                triggerSearch={triggerSearch}
+              /> 
+        </div>
+      </div>
+
            
       <div className="h4 text-primary"> Machining Data</div>
       <div className="d-flex flex-row gap-3">

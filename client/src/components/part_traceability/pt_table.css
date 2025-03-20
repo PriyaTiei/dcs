@@ -1,0 +1,30 @@
+.pt-info-container {
+    margin-top: 20px;
+  }
+  
+  h5 {
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  
+  .info-table {
+    width: 40%;
+    border-collapse: collapse;
+  }
+  
+  .info-table td {
+    padding: 8px;
+    border: 1px solid #6e6e6e;
+  }
+  
+  .info-label {
+    font-weight: Medium;
+  }
+  
+  .info-value {
+    text-align: left;
+  }
+  
+  .error-message {
+    color: red;
+  }

@@ -19,7 +19,13 @@ const ImpactWrenchTable = ({ engineNo, triggerSearch }) => {
           `${process.env.REACT_APP_BACKEND_URL}/api/impactWrench/${engineNo}`
         );
 
-        // Station sort logic
+        // Check if all records have null values for tightening_datetime
+        const allDataEmpty = response.data.every(item => item.tightening_datetime === null);
+
+        if (allDataEmpty) {
+          setWrenchData([]);
+        } else {
+          // Station sort logic
         const sortedData = [...response.data].sort((a, b) => {
           const isANumeric = /^\d+$/.test(a.station);
           const isBNumeric = /^\d+$/.test(b.station);
@@ -44,7 +50,9 @@ const ImpactWrenchTable = ({ engineNo, triggerSearch }) => {
           const dateB = new Date(b.tightening_datetime || '1970-01-01');
           return dateA - dateB;
         });
-
+          setWrenchData(sortedData);
+        }
+        
         // let data = response.data;
 
         // data.sort((a, b) => {
@@ -69,7 +77,6 @@ const ImpactWrenchTable = ({ engineNo, triggerSearch }) => {
         //   return 0;
         // });
 
-        setWrenchData(sortedData);
         setError(null);
       } catch (err) {
         setError('Error fetching wrench data');
