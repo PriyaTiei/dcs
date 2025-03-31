@@ -2107,7 +2107,6 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
       <CrankInfo crankinfo={crankinfo}/>
 
       <div>
-        <h5 className="part-traceability">Ignition Coil & Chain Cover</h5>
         <div>
               <PTTable 
                 engineNo={engineNo}    

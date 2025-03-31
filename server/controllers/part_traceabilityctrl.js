@@ -1,6 +1,6 @@
 const pool = require('../connections/postgresDB');
 
-const getPartTraceabilityData = async (req, res) => {
+const getIgCoil_ChainCoverData = async (req, res) => {
     try {
         const { engineNo } = req.params;
 
@@ -16,7 +16,7 @@ const getPartTraceabilityData = async (req, res) => {
 
         if (result.rows.length === 0) {
             return res.status(404).json({ 
-                message: 'No part traceability data found for this engine number' 
+                message: 'No data found for this engine number' 
             });
         }
 
@@ -24,9 +24,39 @@ const getPartTraceabilityData = async (req, res) => {
     } catch (error) {
         console.error('Database error:', error);
         res.status(500).json({ 
-            message: 'Error fetching part traceability data' 
+            message: 'Error fetching data' 
         });
     }
 };
 
-module.exports = { getPartTraceabilityData };
+// Controller for fetching camshaft data
+const getCamShaftData = async (req, res) => {
+    try {
+        const { engineNo } = req.params;
+
+        const query = `
+            SELECT cam_housing_sl_no, cam_shaft_intake_sl_no, cam_shaft_exhaust_sl_no, time_of_scan
+            FROM camshaft_data
+            WHERE engine_number = $1
+        `;
+
+        console.log('Executing Query for Camshaft Data (Engine No):', engineNo);
+
+        const result = await pool.query(query, [engineNo]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ 
+                message: 'No camshaft data found for this engine number' 
+            });
+        }
+
+        res.json(result.rows[0]); // Return the first row (latest record)
+    } catch (error) {
+        console.error('Database error:', error);
+        res.status(500).json({ 
+            message: 'Error fetching camshaft data' 
+        });
+    }
+};
+
+module.exports = { getIgCoil_ChainCoverData, getCamShaftData };
