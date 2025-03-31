@@ -5,7 +5,7 @@ const getIgCoil_ChainCoverData = async (req, res) => {
         const { engineNo } = req.params;
 
         const query = `
-            SELECT ig_coil_sl_no, chain_cover_sl_no, created_at
+            SELECT ig_coil_sl_no, chain_cover_sl_no, time_of_scan
             FROM ig_coil_chain_cover
             WHERE engine_number = $1
         `;
