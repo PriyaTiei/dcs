@@ -36,7 +36,7 @@ const getCamShaftData = async (req, res) => {
 
         const query = `
             SELECT cam_housing_sl_no, cam_shaft_intake_sl_no, cam_shaft_exhaust_sl_no, time_of_scan
-            FROM camshaft_data
+            FROM camshaft_rfid
             WHERE engine_number = $1
         `;
 
