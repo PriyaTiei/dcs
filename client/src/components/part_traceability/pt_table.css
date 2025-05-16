@@ -32,3 +32,13 @@
   .error-message {
     color: red;
   }
+  .tables-row{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  .tables-row>div{
+    flex: 1 1 300px;
+    min-width: 250px;
+  }

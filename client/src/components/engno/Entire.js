@@ -1061,7 +1061,7 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
           <div className="d-flex flex-row flex-wrap mt-2">
             <div className="d-flex flex-column dt3">
               <div className="bg-dark text-light">J1 - ⌀1</div>{" "}
-              <div>{correctList[2] * 0.0001}</div>
+              <div>{correctList[2]}</div>
             </div>
             <div className="d-flex flex-column dt3">
               <div className="bg-dark text-light">J1 - ⌀2</div>{" "}

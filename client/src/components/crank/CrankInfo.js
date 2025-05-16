@@ -53,7 +53,7 @@ const CrankInfo = ({crankinfo}) => {
 // export default CrankInfo;
 return (
   <div className="crank-info-container">
-    <h5>Crank Information</h5>
+    <h5>Crank Case Stiffner</h5>
 
     {crankinfo && (
       <table className="info-table">
