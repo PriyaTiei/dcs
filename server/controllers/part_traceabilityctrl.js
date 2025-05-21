@@ -1941,6 +1941,277 @@ const getChainCaseImageByEngineNumber = async (req, res) => {
     }
 };
 
+
+const getIGCoilImagesByEngineNumber = async (req, res) => {
+    try {
+        const { engineNo } = req.params;
+        
+        console.log('Searching for IG Coil images for Engine No:', engineNo);
+        
+        // Query to get timestamp from ig_coil_chain_cover table where engine_number matches
+        const query = `
+            SELECT time_of_scan 
+            FROM ig_coil_chain_cover 
+            WHERE engine_number = $1 
+            ORDER BY time_of_scan DESC 
+            LIMIT 1
+        `;
+        
+        const result = await pool.query(query, [engineNo]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                message: 'No IG coil record found for this engine number'
+            });
+        }
+        
+        // Get scan time from result
+        const scanTime = result.rows[0].time_of_scan;
+        console.log('Found scan time:', scanTime);
+        
+        // Format date parts for folder structure (YYYY_MM_DD_0)
+        const year = scanTime.getFullYear();
+        const month = String(scanTime.getMonth() + 1).padStart(2, '0');
+        const day = String(scanTime.getDate()).padStart(2, '0');
+        const folderDateFormat = `${year}_${month}_${day}_0`;
+        
+        console.log('Folder date format:', folderDateFormat);
+        
+        // Format time parts for file name matching (HH_MM_SS)
+        const hours = String(scanTime.getHours()).padStart(2, '0');
+        const minutes = String(scanTime.getMinutes()).padStart(2, '0');
+        const seconds = String(scanTime.getSeconds()).padStart(2, '0');
+        
+        // Target time string for filename matching
+        const targetTimeString = `${year}_${month}_${day}_${hours}_${minutes}_${seconds}`;
+        console.log('Target time string for matching:', targetTimeString);
+        
+        // Define the base share path (mounted Windows share)
+        const baseSharePath = '/mnt/windowsshareimages';
+        
+        // Define the IG coil folder paths to search
+        const igFolders = ['ig1', 'ig2', 'ig3', 'ig4'];
+        const allFoundImages = [];
+        
+        // Search in each IG folder
+        for (const igFolder of igFolders) {
+            const specificPath = `${baseSharePath}/${igFolder}/${folderDateFormat}`;
+            console.log(`Looking for images in path: ${specificPath}`);
+            
+            try {
+                // Check if the directory exists
+                if (!fs.existsSync(specificPath)) {
+                    console.log(`Directory does not exist: ${specificPath}`);
+                    continue; // Skip to next folder if this one doesn't exist
+                }
+                
+                // List all files in the directory
+                const files = fs.readdirSync(specificPath);
+                console.log(`Found ${files.length} files in directory ${igFolder}`);
+                
+                // Filter for image files
+                const imageFiles = files.filter(file => {
+                    return file.endsWith('.jpg') || file.endsWith('.png') || file.endsWith('.jpeg');
+                });
+                
+                console.log(`Found ${imageFiles.length} image files in ${igFolder}`);
+                
+                if (imageFiles.length === 0) {
+                    continue; // Skip to next folder if no images found
+                }
+                
+                // Find exact match first
+                let matchedFiles = imageFiles.filter(file => file.includes(targetTimeString));
+                console.log(`${matchedFiles.length} exact matches found in ${igFolder}`);
+                
+                // If no exact match, find the closest file by timestamp
+                if (matchedFiles.length === 0) {
+                    console.log(`Looking for closest match by timestamp in ${igFolder}`);
+                    const targetTime = new Date(scanTime).getTime();
+                    
+                    let closestFile = null;
+                    let smallestDiff = Infinity;
+                    
+                    for (const file of imageFiles) {
+                        try {
+                            // Extract timestamp from filename like "NG2025_04_07_07_51_04.jpg"
+                            const fileNameParts = file.split('.');
+                            const baseName = fileNameParts[0];
+                            const timeStr = baseName.replace(/^NG/, '');
+                            
+                            // Parse the file timestamp
+                            const [fileYear, fileMonth, fileDay, fileHour, fileMin, fileSec] = timeStr.split('_');
+                            
+                            if (!fileYear || !fileMonth || !fileDay || !fileHour || !fileMin || !fileSec) {
+                                console.log(`Skipping file with invalid format: ${file}`);
+                                continue;
+                            }
+                            
+                            const fileDate = new Date(
+                                parseInt(fileYear),
+                                parseInt(fileMonth) - 1,
+                                parseInt(fileDay),
+                                parseInt(fileHour),
+                                parseInt(fileMin),
+                                parseInt(fileSec)
+                            );
+                            
+                            if (isNaN(fileDate.getTime())) {
+                                console.log(`Invalid date from file: ${file}`);
+                                continue;
+                            }
+                            
+                            const fileTime = fileDate.getTime();
+                            const diff = Math.abs(fileTime - targetTime);
+                            
+                            if (diff < smallestDiff) {
+                                smallestDiff = diff;
+                                closestFile = file;
+                            }
+                        } catch (parseError) {
+                            console.error(`Error parsing file: ${file}`, parseError);
+                        }
+                    }
+                    
+                    if (closestFile) {
+                        matchedFiles = [closestFile];
+                    }
+                }
+                
+                // Add full paths of matched files to results
+                for (const matchedFile of matchedFiles) {
+                    const imagePath = path.join(specificPath, matchedFile);
+                    allFoundImages.push({
+                        folder: igFolder,
+                        filename: matchedFile,
+                        path: imagePath
+                    });
+                }
+                
+            } catch (error) {
+                console.error(`File system error in ${igFolder}:`, error);
+                // Continue with other folders even if one fails
+            }
+        }
+        
+        if (allFoundImages.length === 0) {
+            return res.status(404).json({
+                message: 'No IG coil images found for this engine number across any folder'
+            });
+        }
+        
+        console.log(`Total images found: ${allFoundImages.length}`);
+        
+        // Return information about all found images
+        res.status(200).json({
+            engineNumber: engineNo,
+            scanTime: scanTime,
+            imagesFound: allFoundImages.length,
+            images: allFoundImages.map(img => ({
+                folder: img.folder,
+                filename: img.filename,
+                url: `/api/ig-coil-images/${engineNo}/${img.folder}/${img.filename}`
+            }))
+        });
+        
+    } catch (error) {
+        console.error('Database or system error:', error);
+        res.status(500).json({
+            message: 'Error fetching IG coil images',
+            error: error.message
+        });
+    }
+};
+
+// Endpoint to serve individual IG coil images
+const getIndividualIGCoilImage = async (req, res) => {
+    try {
+        const { engineNo, folder, filename } = req.params;
+        
+        // Validate parameters
+        if (!engineNo || !folder || !filename) {
+            return res.status(400).json({
+                message: 'Missing required parameters'
+            });
+        }
+        
+        // Check that folder is one of the valid IG folders
+        if (!['ig1', 'ig2', 'ig3', 'ig4'].includes(folder)) {
+            return res.status(400).json({
+                message: 'Invalid folder specified'
+            });
+        }
+        
+        // Query to get the time_of_scan for this engine
+        const query = `
+            SELECT time_of_scan 
+            FROM ig_coil_chain_cover 
+            WHERE engine_number = $1 
+            ORDER BY time_of_scan DESC 
+            LIMIT 1
+        `;
+        
+        const result = await pool.query(query, [engineNo]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                message: 'No IG coil record found for this engine number'
+            });
+        }
+        
+        // Get scan time and format for folder path
+        const scanTime = result.rows[0].time_of_scan;
+        const year = scanTime.getFullYear();
+        const month = String(scanTime.getMonth() + 1).padStart(2, '0');
+        const day = String(scanTime.getDate()).padStart(2, '0');
+        const folderDateFormat = `${year}_${month}_${day}_0`;
+        
+        // Construct path to the specific image
+        const baseSharePath = '/mnt/windowsshareimages';
+        const imagePath = path.join(baseSharePath, folder, folderDateFormat, filename);
+        
+        // Validate file exists
+        if (!fs.existsSync(imagePath)) {
+            return res.status(404).json({
+                message: 'Image file not found'
+            });
+        }
+        
+        // Determine content type based on file extension
+        let contentType = 'image/jpeg'; // Default
+        if (filename.endsWith('.png')) {
+            contentType = 'image/png';
+        } else if (filename.endsWith('.gif')) {
+            contentType = 'image/gif';
+        }
+        
+        // Send the file
+        res.sendFile(imagePath, {
+            headers: {
+                'Content-Type': contentType
+            }
+        }, (err) => {
+            if (err) {
+                console.error('Error sending file:', err);
+                res.status(500).json({ message: 'Error sending image file' });
+            }
+        });
+        
+    } catch (error) {
+        console.error('Error serving individual IG coil image:', error);
+        res.status(500).json({
+            message: 'Error serving image',
+            error: error.message
+        });
+    }
+};
+
+
+   
+
+
+
+
 module.exports = { 
     getIgCoil_ChainCoverData, 
     getChainCaseData, 
@@ -1952,4 +2223,7 @@ module.exports = {
     getConnectingRodData,
     getPortInjectorData,
     getChainCaseImageByEngineNumber,
+    getIGCoilImagesByEngineNumber,
+    getIGCoilImagesByEngineNumber,
+    getIndividualIGCoilImage,
 };

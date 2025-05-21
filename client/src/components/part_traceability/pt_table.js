@@ -6,10 +6,12 @@ import './pt_table.css';
 import Lightbox from 'react-image-lightbox';
 import 'react-image-lightbox/style.css';
 
-
 const PTTable = ({ engineNo, triggerSearch }) => {
   const [isChainCaseImageOpen, setIsChainCaseImageOpen] = useState(false);
   const [igData, setIGData] = useState([]);
+  const [igCoilImages, setIGCoilImages] = useState([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isIGCoilImageOpen, setIsIGCoilImageOpen] = useState(false);
   const [conData, setConData] = useState([]);
   const [chainCaseData, setChainCaseData] = useState([]);
   const [chainCoverData, setChainCoverData] = useState([]);
@@ -25,6 +27,7 @@ const PTTable = ({ engineNo, triggerSearch }) => {
   const [error, setError] = useState(null);
 
   const engineData = useSelector((state) => state.engine.engineData.data);
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,22 +40,33 @@ const PTTable = ({ engineNo, triggerSearch }) => {
         // Fetch ignition coil & chain cover data
         try {
           const igResponse = await axios.get(
-            `${process.env.REACT_APP_BACKEND_URL}/api/ig_coil_chain_cover/${engineNo}`
+            `${BACKEND_URL}/api/ig_coil_chain_cover/${engineNo}`
           );
           setIGData(igResponse.data);
-        } catch (err) {
 
-          console.error('Error fetching ignition coil data:', err);
+          // Fetch IG Coil images
+          const igCoilImagesResponse = await axios.get(
+            `${BACKEND_URL}/api/ig-coil-images/${engineNo}`
+          );
+          
+          // Make sure each image URL uses the correct backend URL
+          const processedImages = igCoilImagesResponse.data.images?.map(image => ({
+            ...image,
+            // Ensure the URL uses the correct backend URL
+            url: image.url.startsWith('http') ? image.url : `${BACKEND_URL}${image.url.startsWith('/') ? '' : '/'}${image.url}`
+          })) || [];
+          
+          setIGCoilImages(processedImages);
+        } catch (err) {
+          console.error('Error fetching ignition coil data or images:', err);
           setIGData([]);
+          setIGCoilImages([]);
         }
 
-
-
-
-         // Fetch Connecting data
+        // Fetch Connecting data
         try {
           const conResponse = await axios.get(
-            `${process.env.REACT_APP_BACKEND_URL}/api/connecting_rod/${engineNo}`
+            `${BACKEND_URL}/api/connecting_rod/${engineNo}`
           );
           setConData(conResponse.data);
         } catch (err) {
@@ -60,31 +74,20 @@ const PTTable = ({ engineNo, triggerSearch }) => {
           setConData([]);
         }
 
-
-        setChainCaseData({
-          imageUrl: `${process.env.REACT_APP_BACKEND_URL}/api/chaincase/${engineNo}`
-        });
-        
-        
-
         // Fetch chain case data
         try {
           const chainCaseResponse = await axios.get(
-            `${process.env.REACT_APP_BACKEND_URL}/api/chaincase/${engineNo}`
+            `${BACKEND_URL}/api/chaincase/${engineNo}`
           );
           setChainCaseData(chainCaseResponse.data);
         } catch (err) {
           console.error('Error fetching chain case data:', err);
           setChainCaseData([]);
         }
-
-
         
-        
-
         try {
           const chainCoverResponse = await axios.get(
-            `${process.env.REACT_APP_BACKEND_URL}/api/chaincover/${engineNo}`
+            `${BACKEND_URL}/api/chaincover/${engineNo}`
           );
           setChainCoverData(chainCoverResponse.data);
         } catch (err) {
@@ -95,7 +98,7 @@ const PTTable = ({ engineNo, triggerSearch }) => {
         // Fetch fuel delivery pipe data
         try {
           const fuelDeliveryPipeResponse = await axios.get(
-            `${process.env.REACT_APP_BACKEND_URL}/api/fueldeliverypipe/${engineNo}`
+            `${BACKEND_URL}/api/fueldeliverypipe/${engineNo}`
           );
           setFuelDeliveryPipeData(fuelDeliveryPipeResponse.data);
         } catch (err) {
@@ -106,7 +109,7 @@ const PTTable = ({ engineNo, triggerSearch }) => {
         // Fetch PCV data
         try {
           const pcvResponse = await axios.get(
-            `${process.env.REACT_APP_BACKEND_URL}/api/pcv/${engineNo}`
+            `${BACKEND_URL}/api/pcv/${engineNo}`
           );
           setPCVData(pcvResponse.data);
         } catch (err) {
@@ -117,7 +120,7 @@ const PTTable = ({ engineNo, triggerSearch }) => {
         // Fetch wire harness data
         try {
           const wireHarnessResponse = await axios.get(
-            `${process.env.REACT_APP_BACKEND_URL}/api/wireharness/${engineNo}`
+            `${BACKEND_URL}/api/wireharness/${engineNo}`
           );
           setWireHarnessData(wireHarnessResponse.data);
         } catch (err) {
@@ -125,149 +128,63 @@ const PTTable = ({ engineNo, triggerSearch }) => {
           setWireHarnessData([]);
         }
 
-  try {
-    const igResponse = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/api/ig_coil_chain_cover/${engineNo}`
-    );
-    setConData(igResponse.data);
-  } catch (err) {
-    console.error('Error fetching ignition coil data:', err);
-    setConData([]);
-  }
+        // Fetch CamHousing data from engineData
+        if (engineData && engineData.length > 0) {
+          const foundCamHousingSN = engineData.find((item) => item[17] === 'CamHousing S/N');
+          if (foundCamHousingSN) {
+            const camHousingSN = foundCamHousingSN[1].trim(); // Trim any extra spaces
+            setCamHousingSN(camHousingSN);
 
+            // Fetch corresponding CamHousing data based on SN
+            try {
+              const camHousingResponse = await axios.get(
+                `${BACKEND_URL}/api/camhousing/${camHousingSN}`
+              );
+              setCamHousingExhaust(camHousingResponse.data.cam_shaft_exhaust_sl_no || '-');
+              setCamHousingIntake(camHousingResponse.data.cam_shaft_intake_sl_no || '-');
+            } catch (err) {
+              console.error('Error fetching cam housing data:', err);
+              setCamHousingExhaust('-');
+              setCamHousingIntake('-');
+            }
+          } else {
+            setCamHousingSN(null);
+            setCamHousingExhaust(null);
+            setCamHousingIntake(null);
+          }
+          
+          // Fetch Head S/N data from engineData
+          const foundHeadSN = engineData.find((item) => item[17] === 'Head S / N');
+          if (foundHeadSN) {
+            const headSN = foundHeadSN[1]; // No trim needed as per requirement
+            setHeadSN(headSN);
 
-  try {
-    const conResponse = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/api/connecting_rod/${engineNo}`
-    );
-    setConData(conResponse.data);
-  } catch (err) {
-    console.error('Error fetching connecting rod data:', err);
-    setConData([]);
-  }
+            // Fetch corresponding Port Injector data based on Head S/N
+            try {
+              const portInjectorResponse = await axios.get(
+                `${BACKEND_URL}/api/portinjector/${headSN}`
+              );
+              setPortInjectorData(portInjectorResponse.data);
+            } catch (err) {
+              console.error('Error fetching port injector data:', err);
+              setPortInjectorData(null);
+            }
+          } else {
+            setHeadSN(null);
+            setPortInjectorData(null);
+          }
+        }
+      } catch (err) {
+        setError('Error fetching data');
+        console.error('Error fetching data', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-
-
-
-
-  // Fetch chain case data
-  try {
-    const chainCaseResponse = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/api/chaincase/${engineNo}`
-    );
-    setChainCaseData(chainCaseResponse.data);
-  } catch (err) {
-    console.error('Error fetching chain case data:', err);
-    setChainCaseData([]);
-  }
-
-
-  try {
-    const chainCoverResponse = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/api/chaincover/${engineNo}`
-    );
-    setChainCoverData(chainCoverResponse.data);
-  } catch (err) {
-    console.error('Error fetching chain case data:', err);
-    setChainCoverData([]);
-  }
-
-
-
-
-
-
-  // Fetch fuel delivery pipe data
-  try {
-    const fuelDeliveryPipeResponse = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/api/fueldeliverypipe/${engineNo}`
-    );
-    setFuelDeliveryPipeData(fuelDeliveryPipeResponse.data);
-  } catch (err) {
-    console.error('Error fetching fuel delivery pipe data:', err);
-    setFuelDeliveryPipeData([]);
-  }
-
-  // Fetch PCV data
-  try {
-    const pcvResponse = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/api/pcv/${engineNo}`
-    );
-    setPCVData(pcvResponse.data);
-  } catch (err) {
-    console.error('Error fetching PCV data:', err);
-    setPCVData([]);
-  }
-
-  // Fetch wire harness data
-  try {
-    const wireHarnessResponse = await axios.get(
-      `${process.env.REACT_APP_BACKEND_URL}/api/wireharness/${engineNo}`
-    );
-    setWireHarnessData(wireHarnessResponse.data);
-  } catch (err) {
-    console.error('Error fetching wire harness data:', err);
-    setWireHarnessData([]);
-  }
- // Fetch CamHousing data from engineData
- if (engineData && engineData.length > 0) {
-  const foundCamHousingSN = engineData.find((item) => item[17] === 'CamHousing S/N');
-  if (foundCamHousingSN) {
-    const camHousingSN = foundCamHousingSN[1].trim(); // Trim any extra spaces
-    setCamHousingSN(camHousingSN);
-
-    // Fetch corresponding CamHousing data based on SN
-    try {
-      const camHousingResponse = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/camhousing/${camHousingSN}`
-      );
-      setCamHousingExhaust(camHousingResponse.data.cam_shaft_exhaust_sl_no || '-');
-      setCamHousingIntake(camHousingResponse.data.cam_shaft_intake_sl_no || '-');
-    } catch (err) {
-      console.error('Error fetching cam housing data:', err);
-      setCamHousingExhaust('-');
-      setCamHousingIntake('-');
-    }
-  } else {
-    setCamHousingSN(null);
-    setCamHousingExhaust(null);
-    setCamHousingIntake(null);
-  }
-  
-  // Fetch Head S/N data from engineData
-  const foundHeadSN = engineData.find((item) => item[17] === 'Head S / N');
-  if (foundHeadSN) {
-    const headSN = foundHeadSN[1]; // No trim needed as per requirement
-    setHeadSN(headSN);
-
-    // Fetch corresponding Port Injector data based on Head S/N
-    try {
-      const portInjectorResponse = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/api/portinjector/${headSN}`
-      );
-      setPortInjectorData(portInjectorResponse.data);
-    } catch (err) {
-      console.error('Error fetching port injector data:', err);
-      setPortInjectorData(null);
-    }
-  } else {
-    setHeadSN(null);
-    setPortInjectorData(null);
-  }
-}
-} catch (err) {
-setError('Error fetching data');
-console.error('Error fetching data', err);
-} finally {
-setLoading(false);
-}
-};
-
-fetchData();
-}, [engineNo, triggerSearch, engineData]);
+    fetchData();
+  }, [engineNo, triggerSearch, engineData, BACKEND_URL]);
     
-    
-
   // Get the latest record from the data if available
   const latestIGRecord = igData && igData.length > 0 ? igData[0] : null;
   const latestConRecord = conData && conData.length > 0 ? conData[0] : null;
@@ -277,10 +194,33 @@ fetchData();
   const latestPCVRecord = pcvData && pcvData.length > 0 ? pcvData[0] : null;
   const latestWireHarnessRecord = wireHarnessData && wireHarnessData.length > 0 ? wireHarnessData[0] : null;
   
+  // Handler for next image
+  const nextImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      (prevIndex + 1) % igCoilImages.length
+    );
+  };
+
+  // Handler for previous image
+  const prevImage = () => {
+    setCurrentImageIndex((prevIndex) => 
+      (prevIndex + igCoilImages.length - 1) % igCoilImages.length
+    );
+  };
+  
+  // Ensure we have correct image URLs with proper backend URL
+  const getImageUrl = (path) => {
+    if (path && path.startsWith('http')) {
+      return path; // Already an absolute URL
+    }
+    return `${BACKEND_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+  };
+  
   return (
+  
     <div className="pt-info-container">
       <div className='tables-row'>
-      {/* Ignition Coil & Chain Cover Section */}
+      
         <div className="ig-info-container">
           <h5>Ignition coil</h5>
           {loading ? (
@@ -290,37 +230,74 @@ fetchData();
               <p>No data found for this engine</p>
             </div>
           ) : (
-            <table className="info-table">
-              <tbody>
-                {latestIGRecord.ig_coil_sl_no && Array.isArray(latestIGRecord.ig_coil_sl_no) ? 
-                  latestIGRecord.ig_coil_sl_no.map((coil, index) => (
-                    <tr key={`coil-${index}`}>
-                      <td className="info-label">IG Coil {index + 1}:</td>
-                      <td className="info-value">{coil || '-'}</td>
+            <>
+              <table className="info-table">
+                <tbody>
+                  {latestIGRecord.ig_coil_sl_no && Array.isArray(latestIGRecord.ig_coil_sl_no) ? 
+                    latestIGRecord.ig_coil_sl_no.map((coil, index) => (
+                      <tr key={`coil-${index}`}>
+                        <td className="info-label">IG Coil {index + 1}:</td>
+                        <td className="info-value">{coil || '-'}</td>
+                      </tr>
+                    )) 
+                    : 
+                    <tr>
+                      <td className="info-label">IG Coil:</td>
+                      <td className="info-value">-</td>
                     </tr>
-                  )) 
-                  : 
+                  }
                   <tr>
-                    <td className="info-label">IG Coil:</td>
-                    <td className="info-value">-</td>
+                    <td className="info-label">Date and Time:</td>
+                    <td className="info-value">
+                      {latestIGRecord.time_of_scan ? moment(latestIGRecord.time_of_scan).format('M/DD/YYYY, h:mm:ss A') : '-'}
+                    </td>
                   </tr>
-                }
-                {/* <tr>
-                  <td className="info-label">Chain Cover:</td>
-                  <td className="info-value">{latestIGRecord.chain_cover_sl_no || '-'}</td>
-                </tr> */}
-                <tr>
-                  <td className="info-label">Date and Time:</td>
-                  <td className="info-value">
-                    {latestIGRecord.time_of_scan ? moment(latestIGRecord.time_of_scan).format('M/DD/YYYY, h:mm:ss A') : '-'}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+              
+              {/* IG Coil Images Section */}
+              {igCoilImages.length > 0 && (
+                <div className="ig-coil-images-container" style={{ marginTop: '15px' }}>
+                  <h6>IG Coil Images</h6>
+                  <div className="image-thumbnails" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                    {igCoilImages.map((image, index) => (
+                      <img
+                        key={index}
+                        src={image.url}
+                        alt={`IG Coil ${image.folder || index + 1}`}
+                        style={{ 
+                          width: '100px', 
+                          height: '75px', 
+                          objectFit: 'cover', 
+                          cursor: 'zoom-in',
+                          border: '1px solid #ccc' 
+                        }}
+                        onClick={() => {
+                          setCurrentImageIndex(index);
+                          setIsIGCoilImageOpen(true);
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Lightbox for IG Coil Images */}
+              {isIGCoilImageOpen && igCoilImages.length > 0 && (
+                <Lightbox
+                  mainSrc={igCoilImages[currentImageIndex].url}
+                  nextSrc={igCoilImages[(currentImageIndex + 1) % igCoilImages.length].url}
+                  prevSrc={igCoilImages[(currentImageIndex + igCoilImages.length - 1) % igCoilImages.length].url}
+                  onCloseRequest={() => setIsIGCoilImageOpen(false)}
+                  onMovePrevRequest={prevImage}
+                  onMoveNextRequest={nextImage}
+                  imageTitle={igCoilImages[currentImageIndex].filename}
+                  imageCaption={`Folder: ${igCoilImages[currentImageIndex].folder || 'Unknown'}`}
+                />
+              )}
+            </>
           )}
         </div>
-
-
 
         {/* Connecting Section */}
         <div className="ig-info-container">
@@ -358,14 +335,8 @@ fetchData();
           )}
         </div>
 
-
-
-
-
-
-
-    {/* Chain Cover Section */}
-    <div className="chain-cover-info-container" style={{ marginTop: '20px' }}>
+        {/* Chain Cover Section */}
+        <div className="chain-cover-info-container" style={{ marginTop: '20px' }}>
           <h5>Chain cover</h5>
           {loading ? (
             <p>Loading Chain Cover data...</p>
@@ -391,64 +362,51 @@ fetchData();
           )}
         </div>
 
-
-
-
-
-  <div className="chain-case-info-container" style={{ marginTop: '20px' }}>
-    <h5>Chain Case</h5>
-    {loading ? (
-      <p>Loading Chain Case data...</p>
-    ) : !latestChainCaseRecord ? (
-      <div className='error-message'>
-        <p>No data found for this engine</p>
-      </div>
-    ) : (
-      <>
-        <table className="info-table">
-          <tbody>
-            <tr>
-              <td className="info-label">Part Number:</td>
-              <td className="info-value">{latestChainCaseRecord.part_number || '-'}</td>
-            </tr>
-            <tr>
-              <td className="info-label">Scan Time:</td>
-              <td className="info-value">
-                {latestChainCaseRecord.scan_time
-                  ? moment(latestChainCaseRecord.scan_time).format('M/DD/YYYY, h:mm:ss A')
-                  : '-'}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        
-        {/* Add the clickable image */}
-        <img
-          src={`${process.env.REACT_APP_BACKEND_URL}/api/chaincase-image/${engineNo}`}
-          alt="Chain Case"
-          style={{ width: '100%', maxWidth: '500px', marginTop: '15px', cursor: 'zoom-in', border: '1px solid #ccc' }}
-          onClick={() => setIsChainCaseImageOpen(true)}
-        />
-        
-        {/* Lightbox for zooming */}
-        {isChainCaseImageOpen && (
-          <Lightbox
-            mainSrc={`${process.env.REACT_APP_BACKEND_URL}/api/chaincase-image/${engineNo}`}
-            onCloseRequest={() => setIsChainCaseImageOpen(false)}
-          />
-        )}
-      </>
-    )}
-  </div>
-
-
-
-
-
-
-
-
-
+        <div className="chain-case-info-container" style={{ marginTop: '20px' }}>
+          <h5>Chain Case</h5>
+          {loading ? (
+            <p>Loading Chain Case data...</p>
+          ) : !latestChainCaseRecord ? (
+            <div className='error-message'>
+              <p>No data found for this engine</p>
+            </div>
+          ) : (
+            <>
+              <table className="info-table">
+                <tbody>
+                  <tr>
+                    <td className="info-label">Part Number:</td>
+                    <td className="info-value">{latestChainCaseRecord.part_number || '-'}</td>
+                  </tr>
+                  <tr>
+                    <td className="info-label">Scan Time:</td>
+                    <td className="info-value">
+                      {latestChainCaseRecord.scan_time
+                        ? moment(latestChainCaseRecord.scan_time).format('M/DD/YYYY, h:mm:ss A')
+                        : '-'}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              
+              {/* Add the clickable image with proper URL construction */}
+              <img
+                src={`${BACKEND_URL}/api/chaincase-image/${engineNo}`}
+                alt="Chain Case"
+                style={{ width: '100%', maxWidth: '500px', marginTop: '15px', cursor: 'zoom-in', border: '1px solid #ccc' }}
+                onClick={() => setIsChainCaseImageOpen(true)}
+              />
+              
+              {/* Lightbox for zooming with proper URL construction */}
+              {isChainCaseImageOpen && (
+                <Lightbox
+                  mainSrc={`${BACKEND_URL}/api/chaincase-image/${engineNo}`}
+                  onCloseRequest={() => setIsChainCaseImageOpen(false)}
+                />
+              )}
+            </>
+          )}
+        </div>
 
         {/* Fuel Delivery Pipe Section */}
         <div className="fuel-delivery-pipe-info-container" style={{ marginTop: '20px' }}>
@@ -548,80 +506,81 @@ fetchData();
           )}
         </div>
 
-    <div className="cam-info-container" style={{ marginTop: '20px' }}>
-          <h5>Cam Housing Data</h5>
-          {loading ? (
-            <p>Loading Cam Housing data...</p>
-          ) : error ? (
-            <p>{error}</p>
-          ) : !camHousingSN ? (
-            <div className='error-message'>
-              <p>No Cam Housing data found for this engine</p>
-            </div>
-          ) : (
-            <table className="info-table">
-              <tbody>
-                <tr>
-                  <td className="info-label">Cam Housing SL No:</td>
-                  <td claPINssName="info-value">{camHousingSN || '-'}</td>
-                </tr>
-                <tr>
-                  <td className="info-label">Cam Housing Exhaust:</td>
-                  <td className="info-value">{camHousingExhaust || '-'}</td>
-                </tr>
-                <tr>
-                  <td className="info-label">Cam Housing Intake:</td>
-                  <td className="info-value">{camHousingIntake || '-'}</td>
-                </tr>
-              </tbody>
-            </table>
-          )}
-        </div>
-    {/* Port Injector Section */}
-    <div className="port-injector-info-container" style={{ marginTop: '20px' }}>
-          <h5>Port Injector Data</h5>
-          {loading ? (
-            <p>Loading Port Injector data...</p>
-          ) : error ? (
-            <p>{error}</p>
-          ) : !headSN ? (
-            <div className='error-message'>
-              <p>No Head S/N data found for this engine</p>
-            </div>
-          ) : !portInjectorData ? (
-            <div className='error-message'>
-              <p>No Port Injector data found for this Head S/N</p>
-            </div>
-          ) : (
-            <table className="info-table">
-              <tbody>
-                <tr>
-                  <td className="info-label">Head Serial Number:</td>
-                  <td className="info-value">{headSN || '-'}</td>
-                </tr>
-                {portInjectorData.port_injector_sl_no && Array.isArray(portInjectorData.port_injector_sl_no) ? 
-                  portInjectorData.port_injector_sl_no.map((injector, index) => (
-                    <tr key={`injector-${index}`}>
-                      <td className="info-label">Port Injector Serial Number {index + 1}:</td>
-                      <td className="info-value">{injector || '-'}</td>
-                    </tr>
-                  )) 
-                  : 
-                  <tr>
-                    <td className="info-label">Port Injector Serial Number:</td>
-                    <td className="info-value">{portInjectorData.port_injector_sl_no || '-'}</td>
+      <div className="cam-info-container" style={{ marginTop: '20px' }}>
+        <h5>Cam Housing Data</h5>
+        {loading ? (
+          <p>Loading Cam Housing data...</p>
+        ) : error ? (
+          <p>{error}</p>
+        ) : !camHousingSN ? (
+          <div className='error-message'>
+            <p>No Cam Housing data found for this engine</p>
+          </div>
+        ) : (
+          <table className="info-table">
+            <tbody>
+              <tr>
+                <td className="info-label">Cam Housing SL No:</td>
+                <td className="info-value">{camHousingSN || '-'}</td>
+              </tr>
+              <tr>
+                <td className="info-label">Cam Housing Exhaust:</td>
+                <td className="info-value">{camHousingExhaust || '-'}</td>
+              </tr>
+              <tr>
+                <td className="info-label">Cam Housing Intake:</td>
+                <td className="info-value">{camHousingIntake || '-'}</td>
+              </tr>
+            </tbody>
+          </table>
+        )}
+      </div>
+      
+      {/* Port Injector Section */}
+      <div className="port-injector-info-container" style={{ marginTop: '20px' }}>
+        <h5>Port Injector Data</h5>
+        {loading ? (
+          <p>Loading Port Injector data...</p>
+        ) : error ? (
+          <p>{error}</p>
+        ) : !headSN ? (
+          <div className='error-message'>
+            <p>No Head S/N data found for this engine</p>
+          </div>
+        ) : !portInjectorData ? (
+          <div className='error-message'>
+            <p>No Port Injector data found for this Head S/N</p>
+          </div>
+        ) : (
+          <table className="info-table">
+            <tbody>
+              <tr>
+                <td className="info-label">Head Serial Number:</td>
+                <td className="info-value">{headSN || '-'}</td>
+              </tr>
+              {portInjectorData.port_injector_sl_no && Array.isArray(portInjectorData.port_injector_sl_no) ? 
+                portInjectorData.port_injector_sl_no.map((injector, index) => (
+                  <tr key={`injector-${index}`}>
+                    <td className="info-label">Port Injector Serial Number {index + 1}:</td>
+                    <td className="info-value">{injector || '-'}</td>
                   </tr>
-                }
+                )) 
+                : 
                 <tr>
-                  <td className="info-label">Time of Scan:</td>
-                  <td className="info-value">
-                    {portInjectorData.time_of_scan ? moment(portInjectorData.time_of_scan).format('M/DD/YYYY, h:mm:ss A') : '-'}
-                  </td>
+                  <td className="info-label">Port Injector Serial Number:</td>
+                  <td className="info-value">{portInjectorData.port_injector_sl_no || '-'}</td>
                 </tr>
-              </tbody>
-            </table>
-          )}
-        </div>
+              }
+              <tr>
+                <td className="info-label">Time of Scan:</td>
+                <td className="info-value">
+                  {portInjectorData.time_of_scan ? moment(portInjectorData.time_of_scan).format('M/DD/YYYY, h:mm:ss A') : '-'}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        )}
+      </div>
       </div>
     </div>
   );
