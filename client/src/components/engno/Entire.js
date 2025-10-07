@@ -17,6 +17,7 @@ import { decodeAssyHeadBoltNR } from "./processDetails/func_A_HeadBoltNR";
 import ExcelJS from "exceljs";
 import CrankInfo from "../crank/CrankInfo";
 import ImpactWrenchTable from "../impact_wrench/ImpactWrenchData";
+import YokotaToolTable from "../yokota_tools/YokotaToolData";
 import PTTable from "../part_traceability/pt_table";
 
 function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
@@ -2067,6 +2068,20 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
             <div className="card-body">
               <h5 className="card-title">Impact Wrench Data</h5>
               <ImpactWrenchTable 
+                engineNo={engineNo}    
+                triggerSearch={triggerSearch}
+              /> 
+            </div>
+          </div>
+      </div>
+
+
+
+      <div className="wrench-section" style={{ width: '100%' }}>
+          <div className="card">
+            <div className="card-body">
+              <h5 className="card-title">Impact Wrench Data</h5>
+              <YokotaToolTable
                 engineNo={engineNo}    
                 triggerSearch={triggerSearch}
               /> 

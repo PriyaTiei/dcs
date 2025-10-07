@@ -1,0 +1,165 @@
+/* Yokota Tool Data Container */
+.yokota-container {
+    width: 100%;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Table Scroll Container */
+  .table-scroll-container {
+    overflow-x: auto;
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Yokota Table Styles */
+  .yokota-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    font-size: 14px;
+    min-width: 1200px; /* Ensure table doesn't shrink too much */
+  }
+  
+  .yokota-table thead {
+    background-color: #343a40;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  .yokota-table th {
+    padding: 12px 8px;
+    text-align: left;
+    font-weight: 600;
+    border-right: 1px solid #495057;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+  
+  .yokota-table th:last-child {
+    border-right: none;
+  }
+  
+  .yokota-table tbody tr {
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s ease;
+  }
+  
+  .yokota-table tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .yokota-table td {
+    padding: 10px 8px;
+    border-right: 1px solid #e9ecef;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+  
+  .yokota-table td:last-child {
+    border-right: none;
+  }
+  
+  /* Highlight Classes for Judgement */
+  .highlight-green {
+    background-color: #d4edda !important;
+    border-left: 4px solid #28a745;
+  }
+  
+  .highlight-green:hover {
+    background-color: #c3e6cb !important;
+  }
+  
+  .highlight-red {
+    background-color: #f8d7da !important;
+    border-left: 4px solid #dc3545;
+  }
+  
+  .highlight-red:hover {
+    background-color: #f1b0b7 !important;
+  }
+  
+  /* Loading Spinner */
+  .loading-spinner {
+    text-align: center;
+    padding: 40px;
+  }
+  
+  .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Error Message */
+  .error-message {
+    text-align: center;
+    color: #dc3545;
+    font-weight: 500;
+    padding: 20px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+  }
+  
+  /* Empty State */
+  .yokota-table tbody tr td {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+  }
+  
+  .yokota-table tbody tr:not(.highlight-green):not(.highlight-red) td:not(.loading-spinner):not(.error-message) {
+    text-align: left;
+    color: inherit;
+    font-style: normal;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .yokota-container {
+      padding: 10px;
+    }
+    
+    .yokota-table {
+      font-size: 12px;
+    }
+    
+    .yokota-table th,
+    .yokota-table td {
+      padding: 8px 6px;
+    }
+  }
+  
+  /* Scrollbar Styling */
+  .table-scroll-container::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  .table-scroll-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+  
+  .table-scroll-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+  }
+  
+  .table-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }

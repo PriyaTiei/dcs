@@ -9,6 +9,8 @@ import MainPage from "./components/engno/MainPage";
 import SupplierPartDeatils from "./components/engno/DetailTraceability.js";
 import SearchReworkImages from "./components/reworkImage/SearchReworkImages";
 import CrankInfo from "./components/crank/CrankInfo.js";
+// import EditToolDetails from './components/EditToolDetails';
+import EditToolDetails from './components/editToolDetails/editToolDetails.js';
 import Loading from "./components/engno/Loading";
 import "./styles/styles.css";
 
@@ -25,6 +27,10 @@ export default function App() {
               path="/supplierPartDeatils"
               element={<SupplierPartDeatils />}
             />
+           <Route 
+           path="/edit-tool-details"
+            element={<EditToolDetails />} />
+
             <Route
               path="/traceability"
               element={<DefectTraceabilityScreen />}

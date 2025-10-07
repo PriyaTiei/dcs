@@ -84,21 +84,11 @@ const storage2 = multer.diskStorage({
 
 const upload2 = multer({
   storage: storage2,
-  // fileFilter: function (req, file, cb) {
-  //   if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-  //     return cb(new Error("Only image files are allowed!"));
-  //   }
-  //   cb(null, true);
-  // },
+
 }).single("image");
 const uploadMultiple = multer({
   storage: storage2,
-  // fileFilter: function (req, file, cb) {
-  //   if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-  //     return cb(new Error("Only image files are allowed!"));
-  //   }
-  //   cb(null, true);
-  // },
+
 }).array("images");
 
 //handle single image
@@ -128,16 +118,6 @@ const uploadImageMultiple = (req, res, next) => {
       return res.status(400).json({ message: "No file uploaded! multi" });
     }
 
-    // **********
-
-    // if (err) {
-    //   return res.status(400).json({ message: err.message });
-    // }
-    // if (!req.files || req.files.length === 0) {
-    //   return res.status(400).json({ message: "No file uploaded! multi" });
-    // }
-
-    // ********/
     const imagePath = "reworkImages/" + req.files[0].filename;
     res.json({ imagePath });
     next();
@@ -156,9 +136,6 @@ const getImage = (req, res) => {
   );
   res.sendFile(imagePath);
 };
-
-
-
 
 
 module.exports = { uploadImage, uploadImage2, uploadImageMultiple, getImage};
