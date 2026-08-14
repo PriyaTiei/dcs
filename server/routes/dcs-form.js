@@ -22,9 +22,5 @@ router.post("/reworkImages", uploadImage2, storeImageFileName);
 router.get("/reworkImages/:imageName", getImage);
 router.get("/reworkImagesList/:engineNo", reworkNumber);
 router.get("/reworkImagesListQuery", reworkNumberQuery);
-router.post(
-  "/reworkImagesMultiple",
-  uploadImageMultiple,
-  storeImageFileNameMultiple
-);
+router.post("/reworkImagesMultiple", uploadImageMultiple, storeImageFileNameMultiple);
 module.exports = router;
