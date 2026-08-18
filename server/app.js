@@ -29,6 +29,9 @@ mongoose
   })
   .catch((err) => console.log(err));
 
+app.use(cors());
+app.options("*", cors());
+
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -36,11 +39,11 @@ app.use((req, res, next) => {
     "GET, POST, PUT, DELETE, OPTIONS"
   );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
   next();
 });
-
-app.use(express.static("public"));
-app.use(cors());
 // app.use(express.urlencoded({ extended: true }));
 // app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true })); //
