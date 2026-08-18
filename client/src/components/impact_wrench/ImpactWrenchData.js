@@ -379,27 +379,30 @@ const ImpactWrenchTable = ({ engineNo, triggerSearch }) => {
         } else {
           // Station sort logic
           const sortedData = [...response.data].sort((a, b) => {
-            const isANumeric = /^\d+$/.test(a.station);
-            const isBNumeric = /^\d+$/.test(b.station);
+            const stationA = String(a?.station ?? '');
+            const stationB = String(b?.station ?? '');
+
+            const isANumeric = /^\d+$/.test(stationA);
+            const isBNumeric = /^\d+$/.test(stationB);
 
             if (isANumeric !== isBNumeric) {
               return isANumeric ? 1 : -1; // Text stations come first
             }
 
             // Same station type, but different stations
-            if (a.station !== b.station) {
+            if (stationA !== stationB) {
               if (!isANumeric) {
                 // Both are text - sort alphabetically
-                return a.station.localeCompare(b.station);
+                return stationA.localeCompare(stationB);
               } else {
                 // Both are numeric - sort numerically
-                return Number(a.station) - Number(b.station);
+                return Number(stationA) - Number(stationB);
               }
             }
 
             // Same station - sort by datetime
-            const dateA = new Date(a.tightening_datetime || '1970-01-01');
-            const dateB = new Date(b.tightening_datetime || '1970-01-01');
+            const dateA = new Date(a?.tightening_datetime || '1970-01-01');
+            const dateB = new Date(b?.tightening_datetime || '1970-01-01');
             return dateA - dateB;
           });
           setWrenchData(sortedData);
