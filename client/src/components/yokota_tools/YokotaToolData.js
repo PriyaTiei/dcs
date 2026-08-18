@@ -15,8 +15,9 @@ const YokotaToolTable = ({ engineNo, triggerSearch }) => {
       
       try {
         setLoading(true);
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://10.82.126.73:5081';
         const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/api/yokota/${engineNo}`
+          `${backendUrl}/api/yokota/${engineNo}`
         );
 
         // Check if all records have null values for timeDate
