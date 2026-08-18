@@ -108,7 +108,10 @@ const trackingQuery = `
                 }
 
                 const date = new Date(arrival_time);
-                const formattedDate = date.toISOString().split('T')[0].replace(/-/g, '');
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const formattedDate = `${year}${month}${day}`;
 
                 const url = `http://10.82.126.73:8121/api/torque-data?station=${station_number}&date=${formattedDate}`;
 
