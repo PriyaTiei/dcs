@@ -113,7 +113,7 @@ const trackingQuery = `
                 const url = `http://10.82.126.73:8121/api/torque-data?station=${station_number}&date=${formattedDate}`;
 
                 try {
-                    const torqueResponse = await axios.get(url);
+                    const torqueResponse = await axios.get(url, { timeout: 3000 });
                     
                     // Filter torque data to only include rows within the calculated time window AND same date
                     const startTimeMs = startTime.getTime();

@@ -349,7 +349,7 @@ const getYokotaData = async (req, res) => {
                 console.log(`API URL: ${url}`);
 
                 try {
-                    const yokotaResponse = await axios.get(url);
+                    const yokotaResponse = await axios.get(url, { timeout: 3000 });
                     
                     // Filter Yokota data to only include rows within the calculated time window
                     const startTimeMs = startTime.getTime();
