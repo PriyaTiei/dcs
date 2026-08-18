@@ -267,14 +267,17 @@ const getYokotaData = async (req, res) => {
             });
         }
 
+        const minArrivalTime = result.rows[result.rows.length - 1].arrival_time;
+        const maxArrivalTime = result.rows[0].arrival_time;
+
         // Get all tracking data for time window calculation
         const allTrackingQuery = `
             WITH all_tracking AS (
-                SELECT 'engine_tracking' AS source, engine_number, arrival_time, station_number FROM engine_tracking
+                SELECT 'engine_tracking' AS source, engine_number, arrival_time, station_number FROM engine_tracking WHERE arrival_time >= ($1::timestamp - INTERVAL '2 hours') AND arrival_time <= ($2::timestamp + INTERVAL '2 hours')
                 UNION ALL
-                SELECT 'engine_tracking_two' AS source, engine_number, arrival_time, station_number FROM engine_tracking_two
+                SELECT 'engine_tracking_two' AS source, engine_number, arrival_time, station_number FROM engine_tracking_two WHERE arrival_time >= ($1::timestamp - INTERVAL '2 hours') AND arrival_time <= ($2::timestamp + INTERVAL '2 hours')
                 UNION ALL
-                SELECT 'engine_tracking_three' AS source, engine_number, arrival_time, station_number FROM engine_tracking_three
+                SELECT 'engine_tracking_three' AS source, engine_number, arrival_time, station_number FROM engine_tracking_three WHERE arrival_time >= ($1::timestamp - INTERVAL '2 hours') AND arrival_time <= ($2::timestamp + INTERVAL '2 hours')
             )
             SELECT 
                 engine_number,
@@ -284,7 +287,7 @@ const getYokotaData = async (req, res) => {
             ORDER BY station_number, arrival_time;
         `;
 
-        const allTrackingResult = await pool.query(allTrackingQuery);
+        const allTrackingResult = await pool.query(allTrackingQuery, [minArrivalTime, maxArrivalTime]);
         const allTrackingData = allTrackingResult.rows;
 
         // Define stations that should return null if no data found

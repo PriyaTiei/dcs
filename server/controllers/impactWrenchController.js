@@ -44,26 +44,28 @@ const trackingQuery = `
             });
         }
 
-const allTrackingQuery = `
-    WITH all_tracking AS (
-        SELECT 'engine_tracking' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking
-        UNION ALL
-        SELECT 'engine_tracking_two' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_two
-        UNION ALL
-        SELECT 'engine_tracking_three' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_three
-        UNION ALL
-        SELECT 'sub_assy' AS source, engine_number, arrival_time, station_name as station_number FROM sub_assy
-    )
-    SELECT 
-        engine_number,
-        arrival_time,
-        station_number
-    FROM all_tracking
-    ORDER BY station_number, arrival_time;
-`;
+        const minArrivalTime = result.rows[result.rows.length - 1].arrival_time;
+        const maxArrivalTime = result.rows[0].arrival_time;
 
+        const allTrackingQuery = `
+            WITH all_tracking AS (
+                SELECT 'engine_tracking' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking WHERE arrival_time >= ($1::timestamp - INTERVAL '2 hours') AND arrival_time <= ($2::timestamp + INTERVAL '2 hours')
+                UNION ALL
+                SELECT 'engine_tracking_two' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_two WHERE arrival_time >= ($1::timestamp - INTERVAL '2 hours') AND arrival_time <= ($2::timestamp + INTERVAL '2 hours')
+                UNION ALL
+                SELECT 'engine_tracking_three' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_three WHERE arrival_time >= ($1::timestamp - INTERVAL '2 hours') AND arrival_time <= ($2::timestamp + INTERVAL '2 hours')
+                UNION ALL
+                SELECT 'sub_assy' AS source, engine_number, arrival_time, station_name as station_number FROM sub_assy WHERE arrival_time >= ($1::timestamp - INTERVAL '2 hours') AND arrival_time <= ($2::timestamp + INTERVAL '2 hours')
+            )
+            SELECT 
+                engine_number,
+                arrival_time,
+                station_number
+            FROM all_tracking
+            ORDER BY station_number, arrival_time;
+        `;
 
-        const allTrackingResult = await pool.query(allTrackingQuery);
+        const allTrackingResult = await pool.query(allTrackingQuery, [minArrivalTime, maxArrivalTime]);
         const allTrackingData = allTrackingResult.rows;
 
         // Track all unique stations in the tracking data
