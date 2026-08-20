@@ -359,106 +359,54 @@ const getYokotaData = async (req, res) => {
                     console.log(`Filtering for date: ${arrivalDate}, time window: ${startTime.toLocaleTimeString()} - ${endTime.toLocaleTimeString()}`);
                     
                     const filteredYokotaData = yokotaResponse.data.data.filter(item => {
-                        if (!item["timeDate"]) {
-                            console.log('Missing timeDate for item:', item);
-                            return false;
-                        }
-                        
-                        try {
-                            // Parse timeDate format "05/30 05:35:40" with current year
-                            const currentYear = new Date().getFullYear();
-                            const timeDateParts = item["timeDate"].split(' ');
-                            
-                            if (timeDateParts.length !== 2) {
-                                console.log('Invalid timeDate format:', item["timeDate"]);
-                                return false;
-                            }
-                            
-                            const [monthDay, time] = timeDateParts;
-                            const monthDayParts = monthDay.split('/');
-                            
-                            if (monthDayParts.length !== 2) {
-                                console.log('Invalid monthDay format:', monthDay);
-                                return false;
-                            }
-                            
-                            const [month, day] = monthDayParts;
-                            
-                            // Check if month and day are valid
-                            if (!month || !day) {
-                                console.log('Missing month or day:', { month, day, original: item["timeDate"] });
-                                return false;
-                            }
-                            
-                            // Ensure month and day are numeric
-                            if (isNaN(parseInt(month)) || isNaN(parseInt(day))) {
-                                console.log('Non-numeric month or day:', { month, day, original: item["timeDate"] });
-                                return false;
-                            }
-                            
-                            // Construct datetime (both DB and Yokota data are in IST)
-                            const dateTimeStr = `${currentYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${time}`;
-                            const recordDateTime = new Date(dateTimeStr);
-                            
-                            // Check if the parsed date is valid
-                            if (isNaN(recordDateTime.getTime())) {
-                                console.log('Invalid parsed date:', dateTimeStr, 'from original:', item["timeDate"]);
-                                return false;
-                            }
-                            
-                            const recordTime = recordDateTime.getTime();
-                            const recordDate = recordDateTime.toDateString();
-                            
-                            // Check both date match AND time window
-                            const isWithinWindow = recordDate === arrivalDate && 
-                                                  recordTime >= startTimeMs && 
-                                                  recordTime <= endTimeMs;
-                            
-                            if (isWithinWindow) {
-                                console.log(`✓ Found matching record: ${item["timeDate"]} -> ${dateTimeStr} (within window)`);
-                            } else {
-                                // Optional: log why it didn't match (comment out if too verbose)
-                                if (recordDate === arrivalDate) {
-                                    console.log(`✗ Record ${item["timeDate"]} on correct date but outside time window: ${new Date(recordTime).toLocaleTimeString()} not in ${startTime.toLocaleTimeString()}-${endTime.toLocaleTimeString()}`);
-                                }
-                            }
-                            
-                            return isWithinWindow;
-                            
-                        } catch (parseError) {
-                            console.error('Error parsing timeDate:', item["timeDate"], 'Error:', parseError.message);
-                            return false;
-                        }
-                    });
-                    
-                    console.log(`Station ${station_number}: Found ${filteredYokotaData.length} Yokota records in time window out of ${yokotaResponse.data.data.length} total records`);
-                    
-                    // Check if this is a critical station and no data found
-                    if (criticalStations.includes(parseInt(station_number)) && filteredYokotaData.length === 0) {
-                        console.log(`Station ${station_number}: Critical station with no data - returning null`);
-                        return [{
-                            engine_number: engine_number,
-                            station: station_number,
-                            folder: null,
-                            program: null,
-                            unknownValue1: null,
-                            torqueDuplicate: null,
-                            unknownValue2: null,
-                            unknownValue3: null,
-                            unknownValue4: null,
-                            unknownValue5: null,
-                            torque: null,
-                            judgement: null,
-                            timeDate: null,
-                            tool_name: toolNameMapping[station_number] || null
-                        }];
-                    }
-                    
-                    // If not a critical station and no data found, return empty array (will be filtered out)
-                    if (filteredYokotaData.length === 0) {
-                        console.log(`Station ${station_number}: Non-critical station with no data - ignoring`);
-                        return [];
-                    }
+    return item.timeDate;
+});
+
+console.log(
+    'Engine:',
+    engine_number,
+    'Station:',
+    station_number,
+    'Records:',
+    filteredYokotaData.length
+);
+
+console.log('DB Arrival Time:', startTime);
+console.log('DB Arrival Time ISO:', startTime.toISOString());
+console.log('Window End:', endTime.toISOString());
+
+filteredYokotaData.slice(0, 10).forEach(r => {
+    console.log({
+        timeDate: r.timeDate,
+        torque: r.torque,
+        judgement: r.judgement,
+        folder: r.folder,
+        program: r.program
+    });
+});
+
+console.log(
+    `Station ${station_number}: Found ${filteredYokotaData.length} Yokota records in time window out of ${yokotaResponse.data.data.length} total records`
+);
+
+console.log(
+    'Engine:',
+    engine_number,
+    'Station:',
+    station_number,
+    'Records:',
+    filteredYokotaData.length
+);
+
+filteredYokotaData.forEach(r => {
+    console.log({
+        timeDate: r.timeDate,
+        torque: r.torque,
+        judgement: r.judgement,
+        folder: r.folder,
+        program: r.program
+    });
+});
                     
                     // Map all filtered Yokota data and add engine number and tool_name
                     return filteredYokotaData.map(item => ({

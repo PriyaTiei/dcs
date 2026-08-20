@@ -21,9 +21,8 @@ const YokotaToolTable = ({ engineNo, triggerSearch }) => {
         );
 
         // Check if all records have null values for timeDate
-        const allDataEmpty = response.data.every(item => item.timeDate === null);
 
-        if (allDataEmpty) {
+        if (!response.data || response.data.length === 0) {
           setYokotaData([]);
         } else {
           // Station sort logic

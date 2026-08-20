@@ -10,11 +10,11 @@ const getImpactWrenchData = async (req, res) => {
             SELECT station, tool_name, folder 
             FROM station_tool_map
         `;
-        
+
         const toolMapResult = await pool.query(toolMapQuery);
         const stationToolMap = toolMapResult.rows;
-        
-const trackingQuery = `
+
+        const trackingQuery = `
     WITH all_tracking AS (
         SELECT 'engine_tracking' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking
         UNION ALL
@@ -32,15 +32,15 @@ const trackingQuery = `
     WHERE engine_number = $1
     ORDER BY arrival_time DESC;
 `;
-   
+
 
         console.log('Executing Query for Engine No:', engineNo);
 
         const result = await pool.query(trackingQuery, [engineNo]);
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ 
-                message: 'No data found for this engine number' 
+            return res.status(404).json({
+                message: 'No data found for this engine number'
             });
         }
 
@@ -70,7 +70,7 @@ const trackingQuery = `
 
         // Track all unique stations in the tracking data
         const trackedStations = new Set(result.rows.map(row => row.station_number.toString()));
-        
+
         // Process all tracking data and get torque data for each station
         const processedData = await Promise.all(
             result.rows.map(async (row) => {
@@ -80,22 +80,22 @@ const trackingQuery = `
                 const currentStationData = allTrackingData.filter(
                     item => item.station_number.toString() === station_number.toString()
                 );
-                
+
                 // Sort by arrival_time to find the next arrival after our engine
-                const sortedStationData = currentStationData.sort((a, b) => 
+                const sortedStationData = currentStationData.sort((a, b) =>
                     new Date(a.arrival_time) - new Date(b.arrival_time)
                 );
-                
+
                 // Find current engine's index in the sorted data
                 const currentEngineIndex = sortedStationData.findIndex(
-                    item => item.engine_number === engine_number && 
-                           new Date(item.arrival_time).getTime() === new Date(arrival_time).getTime()
+                    item => item.engine_number === engine_number &&
+                        new Date(item.arrival_time).getTime() === new Date(arrival_time).getTime()
                 );
-                
+
                 let startTime = new Date(arrival_time);
                 let endTime;
                 let useTimeWindow = false;
-                
+
                 // Check if there's a next engine at this station
                 if (currentEngineIndex !== -1 && currentEngineIndex < sortedStationData.length - 1) {
                     endTime = new Date(sortedStationData[currentEngineIndex + 1].arrival_time);
@@ -117,39 +117,47 @@ const trackingQuery = `
 
                 try {
                     const torqueResponse = await axios.get(url, { timeout: 3000 });
-                    
+
+                    console.log('================================');
+                    console.log('Engine:', engineNo);
+                    console.log('Station:', station_number);
+                    console.log('API URL:', url);
+                    console.log('Torque data count:', torqueResponse.data?.length);
+                    console.log('First record:', torqueResponse.data?.[0]);
+                    console.log('================================');
+
                     // Filter torque data to only include rows within the calculated time window AND same date
                     const startTimeMs = startTime.getTime();
                     const endTimeMs = endTime.getTime();
                     const arrivalDate = new Date(arrival_time).toDateString(); // Get just the date part for comparison
-                    
+
                     const filteredTorqueData = torqueResponse.data.data.filter(item => {
                         if (!item["Reception date/time"]) return false;
-                        
+
                         const receptionDateTime = new Date(item["Reception date/time"]);
                         const receptionTime = receptionDateTime.getTime();
                         const receptionDate = receptionDateTime.toDateString();
-                        
+
                         // Check both date match AND time window
-                        return receptionDate === arrivalDate && 
-                               receptionTime >= startTimeMs && 
-                               receptionTime <= endTimeMs;
+                        return receptionDate === arrivalDate &&
+                            receptionTime >= startTimeMs &&
+                            receptionTime <= endTimeMs;
                     });
-                    
+
                     console.log(`Station ${station_number}: Found ${filteredTorqueData.length} torque records in time window`);
-                    
+
                     // Find tools for this station
                     const stationTools = stationToolMap.filter(
                         tool => tool.station.toString() === station_number.toString()
                     );
-                    
+
                     // Create entries for tools with data
                     const toolDataEntries = stationTools.flatMap(tool => {
                         // Find matching torque data for this tool's folder
-                        const toolData = filteredTorqueData.filter(item => 
+                        const toolData = filteredTorqueData.filter(item =>
                             item.folder === tool.folder
                         );
-                        
+
                         if (toolData.length > 0) {
                             // Map torque data to our desired format
                             return toolData.map(item => ({
@@ -169,7 +177,7 @@ const trackingQuery = `
                                 judgement: item["Judgement"]
                             }));
                         }
-                        
+
                         // For tools without data, return null entry
                         return [{
                             station: station_number,
@@ -188,17 +196,17 @@ const trackingQuery = `
                             judgement: null
                         }];
                     });
-                    
+
                     return toolDataEntries;
-                    
+
                 } catch (torqueErr) {
                     console.warn(`Torque API error for station ${station_number} on ${formattedDate}:`, torqueErr.message);
-                    
+
                     // Even if API fails, return null entries for all tools for this station
                     const stationTools = stationToolMap.filter(
                         tool => tool.station.toString() === station_number.toString()
                     );
-                    
+
                     return stationTools.map(tool => ({
                         station: station_number,
                         tool_name: tool.tool_name,
@@ -221,19 +229,19 @@ const trackingQuery = `
 
         // Flatten all results into a single array
         const finalData = processedData.flat();
-        
+
         // Also include tools from stations that weren't in the tracking data
         const allStations = stationToolMap.map(tool => tool.station.toString());
         const missingStations = [...new Set(allStations)].filter(
             station => !trackedStations.has(station)
         );
-        
+
         // Add null entries for tools from missing stations
         missingStations.forEach(station => {
             const stationTools = stationToolMap.filter(
                 tool => tool.station.toString() === station
             );
-            
+
             stationTools.forEach(tool => {
                 finalData.push({
                     station: station,
@@ -260,9 +268,9 @@ const trackingQuery = `
         console.error('Database error:', error);
         console.error('Error details:', error.message);
         console.error('Error stack:', error.stack);
-        res.status(500).json({ 
-            message: 'Error fetching engine tracking data' ,
-            error: error.message 
+        res.status(500).json({
+            message: 'Error fetching engine tracking data',
+            error: error.message
         });
     }
 };
@@ -276,24 +284,24 @@ const getTorqueDataByDateRange = async (req, res) => {
 
         // Validate required parameters
         if (!startDate || !endDate) {
-            return res.status(400).json({ 
-                message: 'Both startDate and endDate are required as query parameters (format: YYYY-MM-DD)' 
+            return res.status(400).json({
+                message: 'Both startDate and endDate are required as query parameters (format: YYYY-MM-DD)'
             });
         }
 
         // Validate date format
         const startDateObj = new Date(startDate);
         const endDateObj = new Date(endDate);
-        
+
         if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())) {
-            return res.status(400).json({ 
-                message: 'Invalid date format. Please use YYYY-MM-DD format' 
+            return res.status(400).json({
+                message: 'Invalid date format. Please use YYYY-MM-DD format'
             });
         }
 
         if (startDateObj > endDateObj) {
-            return res.status(400).json({ 
-                message: 'Start date cannot be later than end date' 
+            return res.status(400).json({
+                message: 'Start date cannot be later than end date'
             });
         }
 
@@ -305,13 +313,13 @@ const getTorqueDataByDateRange = async (req, res) => {
             FROM station_tool_map
             WHERE station = $1
         `;
-        
+
         const toolMapResult = await pool.query(toolMapQuery, [stationNumber]);
         const stationToolMap = toolMapResult.rows;
 
         if (stationToolMap.length === 0) {
-            return res.status(404).json({ 
-                message: `No tools found for station ${stationNumber}` 
+            return res.status(404).json({
+                message: `No tools found for station ${stationNumber}`
             });
         }
 
@@ -338,14 +346,14 @@ const getTorqueDataByDateRange = async (req, res) => {
         `;
 
         const result = await pool.query(trackingQuery, [
-            stationNumber, 
-            startDate + ' 00:00:00', 
+            stationNumber,
+            startDate + ' 00:00:00',
             endDate + ' 23:59:59'
         ]);
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ 
-                message: `No engines found for station ${stationNumber} between ${startDate} and ${endDate}` 
+            return res.status(404).json({
+                message: `No engines found for station ${stationNumber} between ${startDate} and ${endDate}`
             });
         }
 
@@ -380,19 +388,19 @@ const getTorqueDataByDateRange = async (req, res) => {
                 const { station_number, arrival_time, engine_number } = row;
 
                 // Find the next engine arrival time for this station
-                const sortedStationData = allStationTrackingData.sort((a, b) => 
+                const sortedStationData = allStationTrackingData.sort((a, b) =>
                     new Date(a.arrival_time) - new Date(b.arrival_time)
                 );
-                
+
                 // Find current engine's index in the sorted data
                 const currentEngineIndex = sortedStationData.findIndex(
-                    item => item.engine_number === engine_number && 
-                           new Date(item.arrival_time).getTime() === new Date(arrival_time).getTime()
+                    item => item.engine_number === engine_number &&
+                        new Date(item.arrival_time).getTime() === new Date(arrival_time).getTime()
                 );
-                
+
                 let startTime = new Date(arrival_time);
                 let endTime;
-                
+
                 // Check if there's a next engine at this station
                 if (currentEngineIndex !== -1 && currentEngineIndex < sortedStationData.length - 1) {
                     endTime = new Date(sortedStationData[currentEngineIndex + 1].arrival_time);
@@ -410,34 +418,34 @@ const getTorqueDataByDateRange = async (req, res) => {
 
                 try {
                     const torqueResponse = await axios.get(url);
-                    
+
                     // Filter torque data to only include rows within the calculated time window AND same date
                     const startTimeMs = startTime.getTime();
                     const endTimeMs = endTime.getTime();
                     const arrivalDate = new Date(arrival_time).toDateString();
-                    
+
                     const filteredTorqueData = torqueResponse.data.data.filter(item => {
                         if (!item["Reception date/time"]) return false;
-                        
+
                         const receptionDateTime = new Date(item["Reception date/time"]);
                         const receptionTime = receptionDateTime.getTime();
                         const receptionDate = receptionDateTime.toDateString();
-                        
+
                         // Check both date match AND time window
-                        return receptionDate === arrivalDate && 
-                               receptionTime >= startTimeMs && 
-                               receptionTime <= endTimeMs;
+                        return receptionDate === arrivalDate &&
+                            receptionTime >= startTimeMs &&
+                            receptionTime <= endTimeMs;
                     });
-                    
+
                     console.log(`Engine ${engine_number}: Found ${filteredTorqueData.length} torque records in time window`);
-                    
+
                     // Create entries for tools with data
                     const toolDataEntries = stationToolMap.flatMap(tool => {
                         // Find matching torque data for this tool's folder
-                        const toolData = filteredTorqueData.filter(item => 
+                        const toolData = filteredTorqueData.filter(item =>
                             item.folder === tool.folder
                         );
-                        
+
                         if (toolData.length > 0) {
                             // Map torque data to our desired format
                             return toolData.map(item => ({
@@ -459,7 +467,7 @@ const getTorqueDataByDateRange = async (req, res) => {
                                 judgement: item["Judgement"]
                             }));
                         }
-                        
+
                         // For tools without data, return null entry
                         return [{
                             engine_number: engine_number,
@@ -480,12 +488,12 @@ const getTorqueDataByDateRange = async (req, res) => {
                             judgement: null
                         }];
                     });
-                    
+
                     return toolDataEntries;
-                    
+
                 } catch (torqueErr) {
                     console.warn(`Torque API error for engine ${engine_number} at station ${station_number} on ${formattedDate}:`, torqueErr.message);
-                    
+
                     // Even if API fails, return null entries for all tools for this engine
                     return stationToolMap.map(tool => ({
                         engine_number: engine_number,
@@ -511,7 +519,7 @@ const getTorqueDataByDateRange = async (req, res) => {
 
         // Flatten all results into a single array
         const finalData = processedData.flat();
-        
+
         // Group data by engine number for better organization
         const groupedData = finalData.reduce((acc, item) => {
             if (!acc[item.engine_number]) {
@@ -522,7 +530,7 @@ const getTorqueDataByDateRange = async (req, res) => {
                     tools: []
                 };
             }
-            
+
             acc[item.engine_number].tools.push({
                 tool_name: item.tool_name,
                 tightening_datetime: item.tightening_datetime,
@@ -538,7 +546,7 @@ const getTorqueDataByDateRange = async (req, res) => {
                 torque_angle_change: item.torque_angle_change,
                 judgement: item.judgement
             });
-            
+
             return acc;
         }, {});
 
@@ -558,9 +566,9 @@ const getTorqueDataByDateRange = async (req, res) => {
         console.error('Database error:', error);
         console.error('Error details:', error.message);
         console.error('Error stack:', error.stack);
-        res.status(500).json({ 
+        res.status(500).json({
             message: 'Error fetching torque data by date range and station',
-            error: error.message 
+            error: error.message
         });
     }
 };

@@ -270,7 +270,7 @@ const fetchCrankData = async () => {
           {/*  */}
 
           {/* Change point information  */}
-          <ChangePointAssembly />
+          {/* <ChangePointAssembly /> */}
         </div>
       </fieldset>
 
@@ -299,7 +299,7 @@ const fetchCrankData = async () => {
           Machining Data
         </legend>
         {/* Change point information for Machining */}
-        <ChangePointMachining />
+        {/* <ChangePointMachining /> */}
       </fieldset>
       {/* ****************Detail Traceability */}
       <div className="d-flex gap-3 mt-0">
