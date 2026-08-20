@@ -107,6 +107,37 @@ const getImpactWrenchData = async (req, res) => {
                     console.log(`Station ${station_number}: Using 72-second fallback window from ${startTime.toISOString()} to ${endTime.toISOString()}`);
                 }
 
+                // Check if arrival date is today
+                const arrivalDateObj = new Date(arrival_time);
+                const todayObj = new Date();
+                const isToday = arrivalDateObj.getFullYear() === todayObj.getFullYear() &&
+                                arrivalDateObj.getMonth() === todayObj.getMonth() &&
+                                arrivalDateObj.getDate() === todayObj.getDate();
+
+                if (isToday) {
+                    console.log(`Station ${station_number}: Engine arrived today - skipping external API call.`);
+                    const stationTools = stationToolMap.filter(
+                        tool => tool.station.toString() === station_number.toString()
+                    );
+
+                    return stationTools.map(tool => ({
+                        station: station_number,
+                        tool_name: tool.tool_name,
+                        tightening_datetime: null,
+                        work_no: null,
+                        axis_number: null,
+                        count: null,
+                        torque: null,
+                        angle: null,
+                        number_of_pulses: null,
+                        tightening_time: null,
+                        free_run_angle: null,
+                        snug_angle: null,
+                        torque_angle_change: null,
+                        judgement: "⚡ Live assembly in progress. Today's tool data will be available after shift completion or via Date Range Search."
+                    }));
+                }
+
                 const date = new Date(arrival_time);
                 const year = date.getFullYear();
                 const month = String(date.getMonth() + 1).padStart(2, '0');

@@ -325,39 +325,53 @@ const getYokotaData = async (req, res) => {
                            new Date(item.arrival_time).getTime() === new Date(arrival_time).getTime()
                 );
                 
-                // Both DB and Yokota data are in IST, so no timezone conversion needed
+                // Calculate stay window for current engine (with 1-min buffer before arrival)
                 let startTime = new Date(arrival_time);
                 let endTime;
-                let useTimeWindow = false;
-                
-                // Check if there's a next engine at this station
+
                 if (currentEngineIndex !== -1 && currentEngineIndex < sortedStationData.length - 1) {
                     endTime = new Date(sortedStationData[currentEngineIndex + 1].arrival_time);
-                    useTimeWindow = true;
-                    console.log(`Station ${station_number}: Using time window from ${startTime.toISOString()} to ${endTime.toISOString()} (IST)`);
                 } else {
-                    // Fallback to 72-second window
-                    endTime = new Date(startTime.getTime() + 72 * 1000);
-                    console.log(`Station ${station_number}: Using 72-second fallback window from ${startTime.toISOString()} to ${endTime.toISOString()} (IST)`);
+                    // Fallback to 10-minute window for station stay
+                    endTime = new Date(startTime.getTime() + 10 * 60 * 1000);
                 }
-                
-                console.log(`Station ${station_number}: Time window from ${startTime.toLocaleString()} to ${endTime.toLocaleString()}`);
+
+                // Check if arrival date is today
+                const arrivalDateObj = new Date(arrival_time);
+                const todayObj = new Date();
+                const isToday = arrivalDateObj.getFullYear() === todayObj.getFullYear() &&
+                                arrivalDateObj.getMonth() === todayObj.getMonth() &&
+                                arrivalDateObj.getDate() === todayObj.getDate();
+
+                if (isToday) {
+                    console.log(`Station ${station_number}: Engine arrived today - skipping external API call.`);
+                    return [{
+                        engine_number: engine_number,
+                        station: station_number,
+                        folder: null,
+                        program: null,
+                        unknownValue1: null,
+                        torqueDuplicate: null,
+                        unknownValue2: null,
+                        unknownValue3: null,
+                        unknownValue4: null,
+                        unknownValue5: null,
+                        torque: null,
+                        judgement: "⚡ Live assembly in progress. Today's tool data will be available after shift completion or via Date Range Search.",
+                        timeDate: null,
+                        tool_name: toolNameMapping[station_number] || null
+                    }];
+                }
 
                 // Format arrival time for API - use the string version from database
                 const url = `http://10.82.126.73:8127/api/station/${station_number}/date/${arrival_time_str}`;
                 
-                console.log(`API URL: ${url}`);
+                console.log(`Station ${station_number} API URL: ${url}`);
 
                 try {
                     const yokotaResponse = await axios.get(url, { timeout: 3000 });
                     
-                    // Filter Yokota data to only include rows within the calculated time window
-                    const startTimeMs = startTime.getTime();
-                    const endTimeMs = endTime.getTime();
-                    const arrivalDate = startTime.toDateString(); // Get the date for comparison
-                    
-                    console.log(`Filtering for date: ${arrivalDate}, time window: ${startTime.toLocaleTimeString()} - ${endTime.toLocaleTimeString()}`);
-                    
+                    // Filter Yokota data to include only rows within this engine's station stay window
                     const filteredYokotaData = yokotaResponse.data.data.filter(item => {
                         if (!item || !item.timeDate) return false;
 
@@ -388,14 +402,14 @@ const getYokotaData = async (req, res) => {
                             if (!recordDateTime || isNaN(recordDateTime.getTime())) return false;
 
                             const recordTime = recordDateTime.getTime();
-                            return recordTime >= startTimeMs && recordTime <= endTimeMs;
+                            return recordTime >= filterStartTimeMs && recordTime <= filterEndTimeMs;
                         } catch (err) {
                             return false;
                         }
                     });
 
                     console.log(
-                        `Station ${station_number}: Found ${filteredYokotaData.length} Yokota records in time window (${startTime.toLocaleTimeString()} - ${endTime.toLocaleTimeString()}) out of ${yokotaResponse.data.data.length} total records`
+                        `Station ${station_number}: Matched ${filteredYokotaData.length} torque records for engine ${engine_number} out of ${yokotaResponse.data.data.length} total station records`
                     );
                     
                     // Map all filtered Yokota data and add engine number and tool_name
