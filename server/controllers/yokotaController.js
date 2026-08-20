@@ -306,47 +306,27 @@ const getYokotaData = async (req, res) => {
         const processedData = await Promise.all(
             result.rows.map(async (row) => {
                 const { station_number, arrival_time, arrival_time_str, engine_number } = row;
-                
-                console.log(`Raw arrival time from DB: ${arrival_time_str}`);
 
-                // Find the next engine arrival time for this station
-                const currentStationData = allTrackingData.filter(
-                    item => item.station_number.toString() === station_number.toString()
-                );
-                
-                // Sort by arrival_time to find the next arrival after our engine
-                const sortedStationData = currentStationData.sort((a, b) => 
-                    new Date(a.arrival_time) - new Date(b.arrival_time)
-                );
-                
-                // Find current engine's index in the sorted data
-                const currentEngineIndex = sortedStationData.findIndex(
-                    item => item.engine_number === engine_number && 
-                           new Date(item.arrival_time).getTime() === new Date(arrival_time).getTime()
-                );
-                
-                // Calculate stay window for current engine (with 1-min buffer before arrival)
-                let startTime = new Date(arrival_time);
-                let endTime;
+                console.log(`Engine ${engine_number} Station ${station_number} Arrival ${arrival_time}`);
 
-                if (currentEngineIndex !== -1 && currentEngineIndex < sortedStationData.length - 1) {
-                    endTime = new Date(sortedStationData[currentEngineIndex + 1].arrival_time);
-                } else {
-                    // Fallback to 10-minute window for station stay
-                    endTime = new Date(startTime.getTime() + 10 * 60 * 1000);
-                }
+                // Use arrival time as center point
+                const startTime = new Date(arrival_time);
+
+                // Window around engine arrival
+                const filterStartTimeMs = startTime.getTime() - (60 * 1000);   // 1 minute before
+                const filterEndTimeMs = startTime.getTime() + (120 * 1000);     // 2 minutes after
 
                 // Check if arrival date is today
                 const arrivalDateObj = new Date(arrival_time);
                 const todayObj = new Date();
-                const isToday = arrivalDateObj.getFullYear() === todayObj.getFullYear() &&
-                                arrivalDateObj.getMonth() === todayObj.getMonth() &&
-                                arrivalDateObj.getDate() === todayObj.getDate();
+                const isToday =
+                    arrivalDateObj.getFullYear() === todayObj.getFullYear() &&
+                    arrivalDateObj.getMonth() === todayObj.getMonth() &&
+                    arrivalDateObj.getDate() === todayObj.getDate();
 
                 if (isToday) {
-                    console.log(`Station ${station_number}: Engine arrived today - skipping external API call.`);
                     return [{
-                        engine_number: engine_number,
+                        engine_number,
                         station: station_number,
                         folder: null,
                         program: null,
@@ -363,82 +343,60 @@ const getYokotaData = async (req, res) => {
                     }];
                 }
 
-                // Format arrival time for API - use the string version from database
                 const url = `http://10.82.126.73:8127/api/station/${station_number}/date/${arrival_time_str}`;
-                
-                console.log(`Station ${station_number} API URL: ${url}`);
+                console.log("Yokota URL:", url);
 
                 try {
-                    const yokotaResponse = await axios.get(url, { timeout: 3000 });
-                    
-                    // Filter Yokota data to include only rows within this engine's station stay window
-                    const filteredYokotaData = yokotaResponse.data.data.filter(item => {
+                    const yokotaResponse = await axios.get(url, { timeout: 5000 });
+                    const apiData = yokotaResponse?.data?.data || [];
+
+                    const filteredYokotaData = apiData.filter(item => {
                         if (!item || !item.timeDate) return false;
 
                         try {
-                            let recordDateTime;
                             const timeDateStr = item.timeDate.trim();
+                            let recordDateTime;
 
+                            // Format: 2025-05-30 05:35:40
                             if (timeDateStr.includes('-')) {
-                                recordDateTime = new Date(timeDateStr);
+                                recordDateTime = new Date(timeDateStr.replace(' ', 'T'));
                             } else {
-                                const parts = timeDateStr.split(' ');
-                                if (parts.length === 2 && parts[0].includes('/')) {
-                                    const [monthDay, time] = parts;
-                                    const monthDayParts = monthDay.split('/');
-                                    if (monthDayParts.length === 2) {
-                                        const year = startTime.getFullYear();
-                                        const month = monthDayParts[0].padStart(2, '0');
-                                        const day = monthDayParts[1].padStart(2, '0');
-                                        recordDateTime = new Date(`${year}-${month}-${day} ${time}`);
-                                    } else if (monthDayParts.length === 3) {
-                                        recordDateTime = new Date(`${monthDay} ${time}`);
-                                    }
-                                } else {
-                                    recordDateTime = new Date(timeDateStr);
-                                }
+                                // Format: 05/30 05:35:40
+                                const split = timeDateStr.split(' ');
+                                if (split.length !== 2) return false;
+
+                                const [monthDay, time] = split;
+                                const md = monthDay.split('/');
+                                if (md.length !== 2) return false;
+
+                                const year = startTime.getFullYear();
+                                const month = md[0].padStart(2, '0');
+                                const day = md[1].padStart(2, '0');
+                                recordDateTime = new Date(`${year}-${month}-${day}T${time}`);
                             }
 
                             if (!recordDateTime || isNaN(recordDateTime.getTime())) return false;
 
                             const recordTime = recordDateTime.getTime();
-                            return recordTime >= filterStartTimeMs && recordTime <= filterEndTimeMs;
+                            const isMatch = recordTime >= filterStartTimeMs && recordTime <= filterEndTimeMs;
+
+                            if (isMatch) {
+                                console.log(`MATCH: ${item.timeDate} -> Torque ${item.torque}`);
+                            }
+
+                            return isMatch;
                         } catch (err) {
+                            console.error("Date Parse Error:", item.timeDate, err.message);
                             return false;
                         }
                     });
 
-                    console.log(
-                        `Station ${station_number}: Matched ${filteredYokotaData.length} torque records for engine ${engine_number} out of ${yokotaResponse.data.data.length} total station records`
-                    );
-                    
-                    // Map all filtered Yokota data and add engine number and tool_name
-                    return filteredYokotaData.map(item => ({
-                        engine_number: engine_number,
-                        station: station_number,
-                        folder: item.folder,
-                        program: item.program,
-                        unknownValue1: item.unknownValue1,
-                        torqueDuplicate: item.torqueDuplicate,
-                        unknownValue2: item.unknownValue2,
-                        unknownValue3: item.unknownValue3,
-                        unknownValue4: item.unknownValue4,
-                        unknownValue5: item.unknownValue5,
-                        torque: item.torque,
-                        judgement: item.judgement,
-                        timeDate: item.timeDate,
-                        tool_name: toolNameMapping[station_number] || null
-                    }));
-                    
-                } catch (yokotaErr) {
-                    console.warn(`Yokota API error for station ${station_number} at ${arrival_time_str}:`, yokotaErr.message);
-                    console.warn(`Full error:`, yokotaErr.response?.data || yokotaErr.message);
-                    
-                    // Check if this is a critical station and API failed
-                    if (criticalStations.includes(parseInt(station_number))) {
-                        console.log(`Station ${station_number}: Critical station with API error - returning null`);
+                    console.log(`Station ${station_number}: ${filteredYokotaData.length} records matched out of ${apiData.length}`);
+
+                    // If critical station and no record found
+                    if (filteredYokotaData.length === 0 && criticalStations.includes(parseInt(station_number))) {
                         return [{
-                            engine_number: engine_number,
+                            engine_number,
                             station: station_number,
                             folder: null,
                             program: null,
@@ -454,8 +412,46 @@ const getYokotaData = async (req, res) => {
                             tool_name: toolNameMapping[station_number] || null
                         }];
                     }
-                    
-                    // Return empty array if API fails for non-critical stations
+
+                    return filteredYokotaData.map(item => ({
+                        engine_number,
+                        station: station_number,
+                        folder: item.folder,
+                        program: item.program,
+                        unknownValue1: item.unknownValue1,
+                        torqueDuplicate: item.torqueDuplicate,
+                        unknownValue2: item.unknownValue2,
+                        unknownValue3: item.unknownValue3,
+                        unknownValue4: item.unknownValue4,
+                        unknownValue5: item.unknownValue5,
+                        torque: item.torque,
+                        judgement: item.judgement,
+                        timeDate: item.timeDate,
+                        tool_name: toolNameMapping[station_number] || null
+                    }));
+
+                } catch (yokotaErr) {
+                    console.error(`Station ${station_number}`, yokotaErr.message);
+
+                    if (criticalStations.includes(parseInt(station_number))) {
+                        return [{
+                            engine_number,
+                            station: station_number,
+                            folder: null,
+                            program: null,
+                            unknownValue1: null,
+                            torqueDuplicate: null,
+                            unknownValue2: null,
+                            unknownValue3: null,
+                            unknownValue4: null,
+                            unknownValue5: null,
+                            torque: null,
+                            judgement: null,
+                            timeDate: null,
+                            tool_name: toolNameMapping[station_number] || null
+                        }];
+                    }
+
                     return [];
                 }
             })
