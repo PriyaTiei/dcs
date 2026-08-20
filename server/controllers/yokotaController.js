@@ -307,14 +307,15 @@ const getYokotaData = async (req, res) => {
             result.rows.map(async (row) => {
                 const { station_number, arrival_time, arrival_time_str, engine_number } = row;
 
-                console.log(`Engine ${engine_number} Station ${station_number} Arrival ${arrival_time}`);
-
-                // Use arrival time as center point
+                // Support both UTC and local IST timezone offsets (+5:30)
                 const startTime = new Date(arrival_time);
+                const utcTimeMs = startTime.getTime();
+                const istOffsetMs = 5.5 * 60 * 60 * 1000; // 5 hours 30 mins
+                const istTimeMs = utcTimeMs + istOffsetMs;
 
-                // Window around engine arrival
-                const filterStartTimeMs = startTime.getTime() - (60 * 1000);   // 1 minute before
-                const filterEndTimeMs = startTime.getTime() + (120 * 1000);     // 2 minutes after
+                // 15-minute window for station stay matching
+                const windowMs = 15 * 60 * 1000;
+                const bufferMs = 5 * 60 * 1000;
 
                 // Check if arrival date is today
                 const arrivalDateObj = new Date(arrival_time);
@@ -378,7 +379,11 @@ const getYokotaData = async (req, res) => {
                             if (!recordDateTime || isNaN(recordDateTime.getTime())) return false;
 
                             const recordTime = recordDateTime.getTime();
-                            const isMatch = recordTime >= filterStartTimeMs && recordTime <= filterEndTimeMs;
+                            
+                            // Match against UTC window or IST local time window
+                            const matchesUtc = recordTime >= (utcTimeMs - bufferMs) && recordTime <= (utcTimeMs + windowMs);
+                            const matchesIst = recordTime >= (istTimeMs - bufferMs) && recordTime <= (istTimeMs + windowMs);
+                            const isMatch = matchesUtc || matchesIst;
 
                             if (isMatch) {
                                 console.log(`MATCH: ${item.timeDate} -> Torque ${item.torque}`);
