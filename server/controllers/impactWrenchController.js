@@ -169,7 +169,27 @@ const getImpactWrenchData = async (req, res) => {
                     }
                 }
 
-                console.log(`Station ${station_number}: Total ${rawTorqueData.length} raw torque records (date used: ${usedDate})`);
+                // Calculate engine stay window in IST (local plant time)
+                const istStartTimeMs = istDate.getTime();
+                let istEndTimeMs;
+
+                if (currentEngineIndex !== -1 && currentEngineIndex < sortedStationData.length - 1) {
+                    const nextArrivalUtc = new Date(sortedStationData[currentEngineIndex + 1].arrival_time);
+                    istEndTimeMs = nextArrivalUtc.getTime() + (5.5 * 60 * 60 * 1000);
+                } else {
+                    // Fallback to 10-minute window for station stay
+                    istEndTimeMs = istStartTimeMs + (10 * 60 * 1000);
+                }
+
+                // Buffer by 1 minute before arrival for minor clock variations
+                const filterStartMs = istStartTimeMs - (60 * 1000);
+                const filterEndMs = istEndTimeMs;
+
+                // Also maintain UTC window for fallback
+                const utcFilterStartMs = utcDate.getTime() - (60 * 1000);
+                const utcFilterEndMs = (currentEngineIndex !== -1 && currentEngineIndex < sortedStationData.length - 1)
+                    ? new Date(sortedStationData[currentEngineIndex + 1].arrival_time).getTime()
+                    : utcDate.getTime() + (10 * 60 * 1000);
 
                 // Find tools for this station
                 const stationTools = stationToolMap.filter(
@@ -178,12 +198,34 @@ const getImpactWrenchData = async (req, res) => {
 
                 // Create entries for tools with data
                 const toolDataEntries = stationTools.flatMap(tool => {
-                    // Find matching torque data for this tool's folder
-                    const toolData = rawTorqueData.filter(item =>
-                        item.folder === tool.folder ||
-                        item.folder === tool.folder.padStart(3, '0') ||
-                        item.folder === String(parseInt(tool.folder, 10))
-                    );
+                    // Find matching torque data for this tool's folder and within the engine's time window
+                    const toolData = rawTorqueData.filter(item => {
+                        const matchesFolder = (
+                            item.folder === tool.folder ||
+                            item.folder === tool.folder.padStart(3, '0') ||
+                            item.folder === String(parseInt(tool.folder, 10))
+                        );
+                        if (!matchesFolder) return false;
+
+                        const dateStr = item["Tightening date/time"] || item["Reception date/time"];
+                        if (!dateStr) return false;
+
+                        try {
+                            const cleanDateStr = dateStr.trim().replace(/\//g, '-');
+                            const recordDateTime = new Date(cleanDateStr.includes('T') ? cleanDateStr : cleanDateStr.replace(' ', 'T'));
+                            if (isNaN(recordDateTime.getTime())) return false;
+
+                            const recordTimeMs = recordDateTime.getTime();
+
+                            // Match against IST window or UTC window
+                            const matchesIst = recordTimeMs >= filterStartMs && recordTimeMs <= filterEndMs;
+                            const matchesUtc = recordTimeMs >= utcFilterStartMs && recordTimeMs <= utcFilterEndMs;
+
+                            return matchesIst || matchesUtc;
+                        } catch (err) {
+                            return false;
+                        }
+                    });
 
                     if (toolData.length > 0) {
                         return toolData.map(item => ({

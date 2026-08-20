@@ -307,23 +307,21 @@ const getYokotaData = async (req, res) => {
             result.rows.map(async (row) => {
                 const { station_number, arrival_time, arrival_time_str, engine_number } = row;
 
-                // Support both UTC and local IST timezone offsets (+5:30)
-                const startTime = new Date(arrival_time);
-                const utcTimeMs = startTime.getTime();
-                const istOffsetMs = 5.5 * 60 * 60 * 1000; // 5 hours 30 mins
-                const istTimeMs = utcTimeMs + istOffsetMs;
+                try {
+                    // Build UTC date string (what PostgreSQL stores)
+                const utcDate = new Date(arrival_time);
+                const utcDateStr = `${utcDate.getFullYear()}-${String(utcDate.getMonth()+1).padStart(2,'0')}-${String(utcDate.getDate()).padStart(2,'0')}`;
 
-                // 15-minute window for station stay matching
-                const windowMs = 15 * 60 * 1000;
-                const bufferMs = 5 * 60 * 1000;
+                // Build IST local date string (+5:30) - what the Yokota server files use
+                const istDate = new Date(utcDate.getTime() + (5.5 * 60 * 60 * 1000));
+                const istDateStr = `${istDate.getFullYear()}-${String(istDate.getMonth()+1).padStart(2,'0')}-${String(istDate.getDate()).padStart(2,'0')}`;
 
-                // Check if arrival date is today
-                const arrivalDateObj = new Date(arrival_time);
+                // Check if arrival date is today (in IST)
                 const todayObj = new Date();
                 const isToday =
-                    arrivalDateObj.getFullYear() === todayObj.getFullYear() &&
-                    arrivalDateObj.getMonth() === todayObj.getMonth() &&
-                    arrivalDateObj.getDate() === todayObj.getDate();
+                    istDate.getFullYear() === todayObj.getFullYear() &&
+                    istDate.getMonth() === todayObj.getMonth() &&
+                    istDate.getDate() === todayObj.getDate();
 
                 if (isToday) {
                     return [{
@@ -344,59 +342,106 @@ const getYokotaData = async (req, res) => {
                     }];
                 }
 
-                // Format date parameter as YYYY-MM-DD for Yokota API
-                const dateOnly = arrival_time_str ? arrival_time_str.split(' ')[0] : new Date(arrival_time).toISOString().split('T')[0];
-                const url = `http://10.82.126.73:8127/api/station/${station_number}/date/${dateOnly}`;
-                console.log(`Station ${station_number} Yokota URL:`, url);
+                // Find the next engine arrival time for this station
+                const currentStationData = allTrackingData.filter(
+                    item => item.station_number.toString() === station_number.toString()
+                );
 
-                try {
-                    const yokotaResponse = await axios.get(url, { timeout: 5000 });
-                    const apiData = yokotaResponse?.data?.data || [];
+                const sortedStationData = currentStationData.sort((a, b) =>
+                    new Date(a.arrival_time) - new Date(b.arrival_time)
+                );
 
-                    const filteredYokotaData = apiData.filter(item => {
-                        if (!item || !item.timeDate) return false;
+                const currentEngineIndex = sortedStationData.findIndex(
+                    item => item.engine_number === engine_number &&
+                        new Date(item.arrival_time).getTime() === new Date(arrival_time).getTime()
+                );
 
-                        try {
-                            const timeDateStr = item.timeDate.trim();
-                            let recordDateTime;
+                // Calculate engine stay window in IST (local plant time)
+                const istStartTimeMs = istDate.getTime();
+                let istEndTimeMs;
 
-                            // Format: 2025-05-30 05:35:40
-                            if (timeDateStr.includes('-')) {
-                                recordDateTime = new Date(timeDateStr.replace(' ', 'T'));
-                            } else {
-                                // Format: 05/30 05:35:40
-                                const split = timeDateStr.split(' ');
-                                if (split.length !== 2) return false;
+                if (currentEngineIndex !== -1 && currentEngineIndex < sortedStationData.length - 1) {
+                    const nextArrivalUtc = new Date(sortedStationData[currentEngineIndex + 1].arrival_time);
+                    istEndTimeMs = nextArrivalUtc.getTime() + (5.5 * 60 * 60 * 1000);
+                } else {
+                    // Fallback to 10-minute window for station stay
+                    istEndTimeMs = istStartTimeMs + (10 * 60 * 1000);
+                }
 
-                                const [monthDay, time] = split;
-                                const md = monthDay.split('/');
-                                if (md.length !== 2) return false;
+                // 1 minute buffer before arrival for minor clock variations
+                const filterStartMs = istStartTimeMs - (60 * 1000);
+                const filterEndMs = istEndTimeMs;
 
-                                const year = startTime.getFullYear();
-                                const month = md[0].padStart(2, '0');
-                                const day = md[1].padStart(2, '0');
-                                recordDateTime = new Date(`${year}-${month}-${day}T${time}`);
-                            }
+                // Also maintain UTC window for fallback
+                const utcFilterStartMs = utcDate.getTime() - (60 * 1000);
+                const utcFilterEndMs = (currentEngineIndex !== -1 && currentEngineIndex < sortedStationData.length - 1)
+                    ? new Date(sortedStationData[currentEngineIndex + 1].arrival_time).getTime()
+                    : utcDate.getTime() + (10 * 60 * 1000);
 
-                            if (!recordDateTime || isNaN(recordDateTime.getTime())) return false;
+                // Try IST date first (correct for plant tools), fallback to UTC date
+                let apiData = [];
+                const tryDates = [istDateStr, utcDateStr].filter((d, i, arr) => arr.indexOf(d) === i);
 
-                            const recordTime = recordDateTime.getTime();
-                            
-                            // Match against UTC window or IST local time window
-                            const matchesUtc = recordTime >= (utcTimeMs - bufferMs) && recordTime <= (utcTimeMs + windowMs);
-                            const matchesIst = recordTime >= (istTimeMs - bufferMs) && recordTime <= (istTimeMs + windowMs);
-                            const isMatch = matchesUtc || matchesIst;
-
-                            if (isMatch) {
-                                console.log(`MATCH: ${item.timeDate} -> Torque ${item.torque}`);
-                            }
-
-                            return isMatch;
-                        } catch (err) {
-                            console.error("Date Parse Error:", item.timeDate, err.message);
-                            return false;
+                for (const dateStr of tryDates) {
+                    const url = `http://10.82.126.73:8127/api/station/${station_number}/date/${dateStr}`;
+                    console.log(`Station ${station_number}: Trying Yokota URL → ${url}`);
+                    try {
+                        const yokotaResponse = await axios.get(url, { timeout: 5000 });
+                        const data = yokotaResponse?.data?.data || [];
+                        if (data.length > 0) {
+                            apiData = data;
+                            console.log(`Station ${station_number}: Found ${data.length} Yokota records on date ${dateStr}`);
+                            break;
                         }
-                    });
+                    } catch (e) {
+                        console.log(`Station ${station_number}: No Yokota data for date ${dateStr} (${e.message})`);
+                    }
+                }
+
+                const filteredYokotaData = apiData.filter(item => {
+                    if (!item || !item.timeDate) return false;
+
+                    try {
+                        const timeDateStr = item.timeDate.trim();
+                        let recordDateTime;
+
+                        // Format: 2025-05-30 05:35:40
+                        if (timeDateStr.includes('-')) {
+                            recordDateTime = new Date(timeDateStr.replace(' ', 'T'));
+                        } else {
+                            // Format: 05/30 05:35:40
+                            const split = timeDateStr.split(' ');
+                            if (split.length !== 2) return false;
+
+                            const [monthDay, time] = split;
+                            const md = monthDay.split('/');
+                            if (md.length !== 2) return false;
+
+                            const year = istDate.getFullYear();
+                            const month = md[0].padStart(2, '0');
+                            const day = md[1].padStart(2, '0');
+                            recordDateTime = new Date(`${year}-${month}-${day}T${time}`);
+                        }
+
+                        if (!recordDateTime || isNaN(recordDateTime.getTime())) return false;
+
+                        const recordTime = recordDateTime.getTime();
+
+                        // Match against IST window or UTC window
+                        const matchesIst = recordTime >= filterStartMs && recordTime <= filterEndMs;
+                        const matchesUtc = recordTime >= utcFilterStartMs && recordTime <= utcFilterEndMs;
+                        const isMatch = matchesIst || matchesUtc;
+
+                        if (isMatch) {
+                            console.log(`MATCH: ${item.timeDate} -> Torque ${item.torque}`);
+                        }
+
+                        return isMatch;
+                    } catch (err) {
+                        console.error("Date Parse Error:", item.timeDate, err.message);
+                        return false;
+                    }
+                });
 
                     console.log(`Station ${station_number}: ${filteredYokotaData.length} records matched out of ${apiData.length}`);
 
