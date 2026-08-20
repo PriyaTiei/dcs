@@ -359,54 +359,44 @@ const getYokotaData = async (req, res) => {
                     console.log(`Filtering for date: ${arrivalDate}, time window: ${startTime.toLocaleTimeString()} - ${endTime.toLocaleTimeString()}`);
                     
                     const filteredYokotaData = yokotaResponse.data.data.filter(item => {
-    return item.timeDate;
-});
+                        if (!item || !item.timeDate) return false;
 
-console.log(
-    'Engine:',
-    engine_number,
-    'Station:',
-    station_number,
-    'Records:',
-    filteredYokotaData.length
-);
+                        try {
+                            let recordDateTime;
+                            const timeDateStr = item.timeDate.trim();
 
-console.log('DB Arrival Time:', startTime);
-console.log('DB Arrival Time ISO:', startTime.toISOString());
-console.log('Window End:', endTime.toISOString());
+                            if (timeDateStr.includes('-')) {
+                                recordDateTime = new Date(timeDateStr);
+                            } else {
+                                const parts = timeDateStr.split(' ');
+                                if (parts.length === 2 && parts[0].includes('/')) {
+                                    const [monthDay, time] = parts;
+                                    const monthDayParts = monthDay.split('/');
+                                    if (monthDayParts.length === 2) {
+                                        const year = startTime.getFullYear();
+                                        const month = monthDayParts[0].padStart(2, '0');
+                                        const day = monthDayParts[1].padStart(2, '0');
+                                        recordDateTime = new Date(`${year}-${month}-${day} ${time}`);
+                                    } else if (monthDayParts.length === 3) {
+                                        recordDateTime = new Date(`${monthDay} ${time}`);
+                                    }
+                                } else {
+                                    recordDateTime = new Date(timeDateStr);
+                                }
+                            }
 
-filteredYokotaData.slice(0, 10).forEach(r => {
-    console.log({
-        timeDate: r.timeDate,
-        torque: r.torque,
-        judgement: r.judgement,
-        folder: r.folder,
-        program: r.program
-    });
-});
+                            if (!recordDateTime || isNaN(recordDateTime.getTime())) return false;
 
-console.log(
-    `Station ${station_number}: Found ${filteredYokotaData.length} Yokota records in time window out of ${yokotaResponse.data.data.length} total records`
-);
+                            const recordTime = recordDateTime.getTime();
+                            return recordTime >= startTimeMs && recordTime <= endTimeMs;
+                        } catch (err) {
+                            return false;
+                        }
+                    });
 
-console.log(
-    'Engine:',
-    engine_number,
-    'Station:',
-    station_number,
-    'Records:',
-    filteredYokotaData.length
-);
-
-filteredYokotaData.forEach(r => {
-    console.log({
-        timeDate: r.timeDate,
-        torque: r.torque,
-        judgement: r.judgement,
-        folder: r.folder,
-        program: r.program
-    });
-});
+                    console.log(
+                        `Station ${station_number}: Found ${filteredYokotaData.length} Yokota records in time window (${startTime.toLocaleTimeString()} - ${endTime.toLocaleTimeString()}) out of ${yokotaResponse.data.data.length} total records`
+                    );
                     
                     // Map all filtered Yokota data and add engine number and tool_name
                     return filteredYokotaData.map(item => ({
