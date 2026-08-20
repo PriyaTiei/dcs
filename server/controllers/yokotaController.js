@@ -344,8 +344,10 @@ const getYokotaData = async (req, res) => {
                     }];
                 }
 
-                const url = `http://10.82.126.73:8127/api/station/${station_number}/date/${arrival_time_str}`;
-                console.log("Yokota URL:", url);
+                // Format date parameter as YYYY-MM-DD for Yokota API
+                const dateOnly = arrival_time_str ? arrival_time_str.split(' ')[0] : new Date(arrival_time).toISOString().split('T')[0];
+                const url = `http://10.82.126.73:8127/api/station/${station_number}/date/${dateOnly}`;
+                console.log(`Station ${station_number} Yokota URL:`, url);
 
                 try {
                     const yokotaResponse = await axios.get(url, { timeout: 5000 });
