@@ -138,92 +138,74 @@ const getImpactWrenchData = async (req, res) => {
                     }));
                 }
 
-                const date = new Date(arrival_time);
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-                const formattedDate = `${year}${month}${day}`;
+                // Build UTC date string (what PostgreSQL stores)
+                const utcDate = new Date(arrival_time);
+                const utcDateStr = `${utcDate.getFullYear()}${String(utcDate.getMonth()+1).padStart(2,'0')}${String(utcDate.getDate()).padStart(2,'0')}`;
 
-                const url = `http://10.82.126.73:8121/api/torque-data?station=${station_number}&date=${formattedDate}`;
+                // Build IST local date string (+5:30) - what the mounted drive file folders use
+                const istDate = new Date(utcDate.getTime() + (5.5 * 60 * 60 * 1000));
+                const istDateStr = `${istDate.getFullYear()}${String(istDate.getMonth()+1).padStart(2,'0')}${String(istDate.getDate()).padStart(2,'0')}`;
 
-                try {
-                    const torqueResponse = await axios.get(url, { timeout: 3000 });
+                // Try IST date first (correct for mounted drive), fallback to UTC date
+                let rawTorqueData = [];
+                let usedDate = istDateStr;
 
-                    console.log('================================');
-                    console.log('Engine:', engineNo);
-                    console.log('Station:', station_number);
-                    console.log('API URL:', url);
-                    console.log('Torque data count:', torqueResponse.data?.length);
-                    console.log('First record:', torqueResponse.data?.[0]);
-                    console.log('================================');
+                const tryDates = [istDateStr, utcDateStr].filter((d, i, arr) => arr.indexOf(d) === i); // deduplicate
 
-                    const rawTorqueData = torqueResponse.data?.data || [];
-                    console.log(`Station ${station_number}: Received ${rawTorqueData.length} raw torque records from mounted CSV files`);
+                for (const dateStr of tryDates) {
+                    const url = `http://10.82.126.73:8121/api/torque-data?station=${station_number}&date=${dateStr}`;
+                    console.log(`Station ${station_number}: Trying mounted drive date ${dateStr} → ${url}`);
+                    try {
+                        const torqueResponse = await axios.get(url, { timeout: 5000 });
+                        const data = torqueResponse.data?.data || [];
+                        if (data.length > 0) {
+                            rawTorqueData = data;
+                            usedDate = dateStr;
+                            console.log(`Station ${station_number}: Found ${data.length} records on date ${dateStr}`);
+                            break;
+                        }
+                    } catch (e) {
+                        console.log(`Station ${station_number}: No data for date ${dateStr} (${e.message})`);
+                    }
+                }
 
-                    // Find tools for this station
-                    const stationTools = stationToolMap.filter(
-                        tool => tool.station.toString() === station_number.toString()
+                console.log(`Station ${station_number}: Total ${rawTorqueData.length} raw torque records (date used: ${usedDate})`);
+
+                // Find tools for this station
+                const stationTools = stationToolMap.filter(
+                    tool => tool.station.toString() === station_number.toString()
+                );
+
+                // Create entries for tools with data
+                const toolDataEntries = stationTools.flatMap(tool => {
+                    // Find matching torque data for this tool's folder
+                    const toolData = rawTorqueData.filter(item =>
+                        item.folder === tool.folder ||
+                        item.folder === tool.folder.padStart(3, '0') ||
+                        item.folder === String(parseInt(tool.folder, 10))
                     );
 
-                    // Create entries for tools with data
-                    const toolDataEntries = stationTools.flatMap(tool => {
-                        // Find matching torque data for this tool's folder
-                        const toolData = rawTorqueData.filter(item =>
-                            item.folder === tool.folder || 
-                            item.folder === tool.folder.padStart(3, '0') ||
-                            item.folder === String(parseInt(tool.folder, 10))
-                        );
-
-                        if (toolData.length > 0) {
-                            // Map torque data to our desired format
-                            return toolData.map(item => ({
-                                station: station_number,
-                                tool_name: tool.tool_name,
-                                tightening_datetime: item["Tightening date/time"] || item["Reception date/time"] || null,
-                                work_no: item["WorkNO."] !== undefined ? item["WorkNO."] : null,
-                                axis_number: item["Axis number"] !== undefined ? item["Axis number"] : null,
-                                count: item["Count"] !== undefined ? item["Count"] : null,
-                                torque: item["Torque"] !== undefined ? item["Torque"] : null,
-                                angle: item["Angle"] !== undefined ? item["Angle"] : null,
-                                number_of_pulses: parseInt(item["Number of pulses"] || "0"),
-                                tightening_time: parseInt(item["Tightening time"] || "0"),
-                                free_run_angle: item["Free run angle"] !== undefined ? item["Free run angle"] : null,
-                                snug_angle: item["Snug angle"] !== undefined ? item["Snug angle"] : null,
-                                torque_angle_change: item["Torque angle change"] !== undefined ? item["Torque angle change"] : null,
-                                judgement: item["Judgement"] !== undefined ? item["Judgement"] : null
-                            }));
-                        }
-
-                        // For tools without data, return null entry
-                        return [{
+                    if (toolData.length > 0) {
+                        return toolData.map(item => ({
                             station: station_number,
                             tool_name: tool.tool_name,
-                            tightening_datetime: null,
-                            work_no: null,
-                            axis_number: null,
-                            count: null,
-                            torque: null,
-                            angle: null,
-                            number_of_pulses: null,
-                            tightening_time: null,
-                            free_run_angle: null,
-                            snug_angle: null,
-                            torque_angle_change: null,
-                            judgement: null
-                        }];
-                    });
+                            tightening_datetime: item["Tightening date/time"] || item["Reception date/time"] || null,
+                            work_no: item["WorkNO."] !== undefined ? item["WorkNO."] : null,
+                            axis_number: item["Axis number"] !== undefined ? item["Axis number"] : null,
+                            count: item["Count"] !== undefined ? item["Count"] : null,
+                            torque: item["Torque"] !== undefined ? item["Torque"] : null,
+                            angle: item["Angle"] !== undefined ? item["Angle"] : null,
+                            number_of_pulses: parseInt(item["Number of pulses"] || "0"),
+                            tightening_time: parseInt(item["Tightening time"] || "0"),
+                            free_run_angle: item["Free run angle"] !== undefined ? item["Free run angle"] : null,
+                            snug_angle: item["Snug angle"] !== undefined ? item["Snug angle"] : null,
+                            torque_angle_change: item["Torque angle change"] !== undefined ? item["Torque angle change"] : null,
+                            judgement: item["Judgement"] !== undefined ? item["Judgement"] : null
+                        }));
+                    }
 
-                    return toolDataEntries;
-
-                } catch (torqueErr) {
-                    console.warn(`Torque API error for station ${station_number} on ${formattedDate}:`, torqueErr.message);
-
-                    // Even if API fails, return null entries for all tools for this station
-                    const stationTools = stationToolMap.filter(
-                        tool => tool.station.toString() === station_number.toString()
-                    );
-
-                    return stationTools.map(tool => ({
+                    // For tools without data, return null entry
+                    return [{
                         station: station_number,
                         tool_name: tool.tool_name,
                         tightening_datetime: null,
@@ -238,8 +220,10 @@ const getImpactWrenchData = async (req, res) => {
                         snug_angle: null,
                         torque_angle_change: null,
                         judgement: null
-                    }));
-                }
+                    }];
+                });
+
+                return toolDataEntries;
             })
         );
 
