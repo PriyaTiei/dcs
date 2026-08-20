@@ -157,25 +157,8 @@ const getImpactWrenchData = async (req, res) => {
                     console.log('First record:', torqueResponse.data?.[0]);
                     console.log('================================');
 
-                    // Filter torque data to only include rows within the calculated time window AND same date
-                    const startTimeMs = startTime.getTime();
-                    const endTimeMs = endTime.getTime();
-                    const arrivalDate = new Date(arrival_time).toDateString(); // Get just the date part for comparison
-
-                    const filteredTorqueData = torqueResponse.data.data.filter(item => {
-                        if (!item["Reception date/time"]) return false;
-
-                        const receptionDateTime = new Date(item["Reception date/time"]);
-                        const receptionTime = receptionDateTime.getTime();
-                        const receptionDate = receptionDateTime.toDateString();
-
-                        // Check both date match AND time window
-                        return receptionDate === arrivalDate &&
-                            receptionTime >= startTimeMs &&
-                            receptionTime <= endTimeMs;
-                    });
-
-                    console.log(`Station ${station_number}: Found ${filteredTorqueData.length} torque records in time window`);
+                    const rawTorqueData = torqueResponse.data?.data || [];
+                    console.log(`Station ${station_number}: Received ${rawTorqueData.length} raw torque records from mounted CSV files`);
 
                     // Find tools for this station
                     const stationTools = stationToolMap.filter(
@@ -185,8 +168,10 @@ const getImpactWrenchData = async (req, res) => {
                     // Create entries for tools with data
                     const toolDataEntries = stationTools.flatMap(tool => {
                         // Find matching torque data for this tool's folder
-                        const toolData = filteredTorqueData.filter(item =>
-                            item.folder === tool.folder
+                        const toolData = rawTorqueData.filter(item =>
+                            item.folder === tool.folder || 
+                            item.folder === tool.folder.padStart(3, '0') ||
+                            item.folder === String(parseInt(tool.folder, 10))
                         );
 
                         if (toolData.length > 0) {
@@ -194,18 +179,18 @@ const getImpactWrenchData = async (req, res) => {
                             return toolData.map(item => ({
                                 station: station_number,
                                 tool_name: tool.tool_name,
-                                tightening_datetime: item["Tightening date/time"],
-                                work_no: item["WorkNO."],
-                                axis_number: item["Axis number"],
-                                count: item["Count"],
-                                torque: item["Torque"],
-                                angle: item["Angle"],
+                                tightening_datetime: item["Tightening date/time"] || item["Reception date/time"] || null,
+                                work_no: item["WorkNO."] !== undefined ? item["WorkNO."] : null,
+                                axis_number: item["Axis number"] !== undefined ? item["Axis number"] : null,
+                                count: item["Count"] !== undefined ? item["Count"] : null,
+                                torque: item["Torque"] !== undefined ? item["Torque"] : null,
+                                angle: item["Angle"] !== undefined ? item["Angle"] : null,
                                 number_of_pulses: parseInt(item["Number of pulses"] || "0"),
                                 tightening_time: parseInt(item["Tightening time"] || "0"),
-                                free_run_angle: item["Free run angle"],
-                                snug_angle: item["Snug angle"],
-                                torque_angle_change: item["Torque angle change"],
-                                judgement: item["Judgement"]
+                                free_run_angle: item["Free run angle"] !== undefined ? item["Free run angle"] : null,
+                                snug_angle: item["Snug angle"] !== undefined ? item["Snug angle"] : null,
+                                torque_angle_change: item["Torque angle change"] !== undefined ? item["Torque angle change"] : null,
+                                judgement: item["Judgement"] !== undefined ? item["Judgement"] : null
                             }));
                         }
 
