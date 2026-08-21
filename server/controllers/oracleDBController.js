@@ -1,70 +1,29 @@
 const { catchAsyncError } = require("../middleware/catchAsyncError");
-
-const oracledb = require("oracledb");
 const ErrorHandler = require("../middleware/errorHandler");
+const { withOracleConnection, withOracleConnectionHistory } = require("../connections/oracleDBConnection");
 
-const oracleDBConnection = async () => {
-  var connection;
-  try {
-    connection = await oracledb.getConnection({
-      user: process.env.ORACLE_USER,
-      password: process.env.ORACLE_USER,
-      connectionString: process.env.ORACLEDB_URL,
-    });
-    console.log("Oracle connection successful");
-    connection.commit();
-    return connection;
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-const oracleDBConnectionHistory = async () => {
-  var connectionHistory;
-  try {
-    connectionHistory = await oracledb.getConnection({
-      user: process.env.ORACLE_USER_HISTORY,
-      password: process.env.ORACLE_USER_HISTORY,
-      connectionString: process.env.ORACLEDB_URL_HISTORY,
-    });
-    console.log("Oracle connection successful to History");
-    connectionHistory.commit();
-    return connectionHistory;
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-// Single engine data fetchining
+// Single engine data fetching
 exports.getEngineData = catchAsyncError(async (req, res, next) => {
   const engineNo = req.params.engineNo;
   console.log(engineNo);
 
-  const con = await oracleDBConnection();
-
-  let result = await con.execute(
-    // `select * from todoitem`,
-    "select * from KTTMSYS.T_HNSTJHO WHERE EGNO=:value",
-    [engineNo],
-    {
-      // maxRows: 2
-    }
-  );
-
-  if (result.rows.length == 0) {
-    //history check also
-    const conHistory = await oracleDBConnectionHistory();
-
-    const resultHistory = await conHistory.execute(
-      // `select * from todoitem`,
-      "select * from KTTMHIS.T_HNSTJHORRKI WHERE EGNO=:value",
-      [engineNo],
-      {
-        // maxRows: 2
-      }
+  let result = await withOracleConnection(async (con) => {
+    return await con.execute(
+      "select * from KTTMSYS.T_HNSTJHO WHERE EGNO=:value",
+      [engineNo]
     );
-    if (resultHistory.rows.length == 0) {
-      //common message
+  });
+
+  if (!result || result.rows.length === 0) {
+    // History check
+    let resultHistory = await withOracleConnectionHistory(async (conHistory) => {
+      return await conHistory.execute(
+        "select * from KTTMHIS.T_HNSTJHORRKI WHERE EGNO=:value",
+        [engineNo]
+      );
+    });
+
+    if (!resultHistory || resultHistory.rows.length === 0) {
       console.log("Engine not found");
       return next(new ErrorHandler("Engine no. do not exist", 401));
     }
@@ -75,125 +34,99 @@ exports.getEngineData = catchAsyncError(async (req, res, next) => {
   res.status(200).json({ coloumns: allColumnNames, data: result.rows });
 });
 
-// part data fetching using serialno
+// Part data fetching using serialno
 exports.getPartData = catchAsyncError(async (req, res, next) => {
   let partNo = req.params.partNo;
   partNo = partNo + "    ";
 
-  const con = await oracleDBConnection();
-
-  let result = await con.execute(
-    // `select * from todoitem`,s
-    "select * from KTTMSYS.T_MCHNSTJHO WHERE SRALNO=:value",
-    [partNo],
-    {
-      // maxRows: 2
-    }
-  );
-
-  if (result.rows.length == 0) {
-    //history check
-    const conHistory = await oracleDBConnectionHistory();
-    const resultHistory = await conHistory.execute(
-      // `select * from todoitem`,s
-      "select * from KTTMHIS.T_MCHNSTJHORRKI WHERE SRALNO=:value",
-      [partNo],
-      {
-        // maxRows: 2
-      }
+  let result = await withOracleConnection(async (con) => {
+    return await con.execute(
+      "select * from KTTMSYS.T_MCHNSTJHO WHERE SRALNO=:value",
+      [partNo]
     );
+  });
 
-    if (resultHistory.rows.length == 0) {
+  if (!result || result.rows.length === 0) {
+    // History check
+    let resultHistory = await withOracleConnectionHistory(async (conHistory) => {
+      return await conHistory.execute(
+        "select * from KTTMHIS.T_MCHNSTJHORRKI WHERE SRALNO=:value",
+        [partNo]
+      );
+    });
+
+    if (!resultHistory || resultHistory.rows.length === 0) {
       console.log("Machining Parts not found");
       return next(new ErrorHandler("Machining Parts do not exist", 401));
     }
     result = resultHistory;
   }
-  // console.table(Object.keys(result));
+
   const allColumnNames = result.metaData.map((item) => item.name);
   res.status(200).json({ coloumns: allColumnNames, data: result.rows });
 });
 
 exports.getPart3Data = catchAsyncError(async (req, res, next) => {
-  let partNo1 = req.params.partNo1;
-  let partNo2 = req.params.partNo2;
-  let partNo3 = req.params.partNo3;
-  partNo1 = partNo1 + "    ";
-  partNo2 = partNo2 + "    ";
-  partNo3 = partNo3 + "    ";
+  let partNo1 = req.params.partNo1 + "    ";
+  let partNo2 = req.params.partNo2 + "    ";
+  let partNo3 = req.params.partNo3 + "    ";
   let partNos = [partNo1, partNo2, partNo3];
 
-  const con = await oracleDBConnection();
-
-  let result = await con.execute(
-    // `select * from todoitem`,s
-    "select * from KTTMSYS.T_MCHNSTJHO WHERE SRALNO in (:value0,:value1, :value2 )",
-    partNos,
-    {
-      // maxRows: 2
-    }
-  );
-
-  if (result.rows.length == 0) {
-    //history check
-    const conHistory = await oracleDBConnectionHistory();
-    const resultHistory = await conHistory.execute(
-      // `select * from todoitem`,s
-      "select * from KTTMHIS.T_MCHNSTJHORRKI WHERE SRALNO in (:value0,:value1, :value2 )",
-      partNos,
-      {
-        // maxRows: 2
-      }
+  let result = await withOracleConnection(async (con) => {
+    return await con.execute(
+      "select * from KTTMSYS.T_MCHNSTJHO WHERE SRALNO in (:value0, :value1, :value2)",
+      partNos
     );
-    if (resultHistory.rows.length == 0) {
+  });
+
+  if (!result || result.rows.length === 0) {
+    // History check
+    let resultHistory = await withOracleConnectionHistory(async (conHistory) => {
+      return await conHistory.execute(
+        "select * from KTTMHIS.T_MCHNSTJHORRKI WHERE SRALNO in (:value0, :value1, :value2)",
+        partNos
+      );
+    });
+
+    if (!resultHistory || resultHistory.rows.length === 0) {
       console.log("Machining Parts not found");
       return next(new ErrorHandler("Machining Parts do not exist", 401));
     }
     result = resultHistory;
   }
-  // console.table(Object.keys(result));
-  // const allColumnNames = result.metaData.map((item) => item.name);
+
   res.status(200).json({ data: result.rows });
 });
 
-// get shippment history for Single engine
+// Get shipment history for single engine
 exports.getDateData = catchAsyncError(async (req, res, next) => {
   const engineNo = req.params.engineNo;
 
-  const con = await oracleDBConnection();
-
-  let result = await con.execute(
-    // `select * from todoitem`,
-    "select * from KTTMSYS.T_SISNJSSKI WHERE EGNO=:value",
-    [engineNo],
-    {
-      // maxRows: 2
-    }
-  );
-
-  if (result.rows.length == 0) {
-    //history check
-    const conHistory = await oracleDBConnectionHistory();
-    const resultHistory = await conHistory.execute(
-      // `select * from todoitem`,
-      "select * from KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO=:value",
-      [engineNo],
-      {
-        // maxRows: 2
-      }
+  let result = await withOracleConnection(async (con) => {
+    return await con.execute(
+      "select * from KTTMSYS.T_SISNJSSKI WHERE EGNO=:value",
+      [engineNo]
     );
-    if (resultHistory.rows.length == 0) {
+  });
+
+  if (!result || result.rows.length === 0) {
+    // History check
+    let resultHistory = await withOracleConnectionHistory(async (conHistory) => {
+      return await conHistory.execute(
+        "select * from KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO=:value",
+        [engineNo]
+      );
+    });
+
+    if (!resultHistory || resultHistory.rows.length === 0) {
       console.log("Engine not found");
       return next(new ErrorHandler("Engine no. do not exist", 401));
     }
     result = resultHistory;
   }
-  // console.table(Object.keys(result));
-  const allColumnNames = result.metaData.map((item) => item.name);
 
-  res
-    .status(200)
-    .json({ coloumns: allColumnNames, data: result.rows, message: "for date" });
+  const allColumnNames = result.metaData.map((item) => item.name);
+  res.status(200).json({ coloumns: allColumnNames, data: result.rows, message: "for date" });
 });
 
 // Get part data from specific date range
@@ -204,30 +137,23 @@ exports.getDateRangeData = catchAsyncError(async (req, res, next) => {
     processNo = "H1_Material input/engraving";
   }
 
-  const con = await oracleDBConnection();
-
-  let result = await con.execute(
-    // `select * from todoitem`,
-    "select * from KTTMSYS.T_MCHNSTJHO WHERE HNSTKNRIMEI =:value0 AND JSSKIDTTM BETWEEN :value1 AND :value2",
-    [processNo, new Date(fromDate), new Date(toDate)],
-    {
-      // maxRows: 2
-    }
-  );
-
-  if (result.rows.length == 0) {
-    //history check
-    const conHistory = await oracleDBConnectionHistory();
-    const resultHistory = await conHistory.execute(
-      // `select * from todoitem`,
-      "select * from KTTMHIS.T_MCHNSTJHORRKI WHERE HNSTKNRIMEI =:value0 AND JSSKIDTTM BETWEEN :value1 AND :value2",
-      [processNo, new Date(fromDate), new Date(toDate)],
-      {
-        // maxRows: 2
-      }
+  let result = await withOracleConnection(async (con) => {
+    return await con.execute(
+      "select * from KTTMSYS.T_MCHNSTJHO WHERE HNSTKNRIMEI =:value0 AND JSSKIDTTM BETWEEN :value1 AND :value2",
+      [processNo, new Date(fromDate), new Date(toDate)]
     );
+  });
 
-    if (resultHistory.rows.length == 0) {
+  if (!result || result.rows.length === 0) {
+    // History check
+    let resultHistory = await withOracleConnectionHistory(async (conHistory) => {
+      return await conHistory.execute(
+        "select * from KTTMHIS.T_MCHNSTJHORRKI WHERE HNSTKNRIMEI =:value0 AND JSSKIDTTM BETWEEN :value1 AND :value2",
+        [processNo, new Date(fromDate), new Date(toDate)]
+      );
+    });
+
+    if (!resultHistory || resultHistory.rows.length === 0) {
       console.log("Engine not found");
       return next(new ErrorHandler("Engine no. do not exist", 401));
     }
@@ -247,87 +173,123 @@ exports.getDateRangeData = catchAsyncError(async (req, res, next) => {
 exports.getEngineNoMatchingSerialNoList = catchAsyncError(
   async (req, res, next) => {
     const { serialNoListString } = req.body;
-    const serialNoList = serialNoListString.split(",");
+    const serialNoList = serialNoListString ? serialNoListString.split(",") : [];
 
-    const placeholders = serialNoList.map((_, i) => `:value${i}`).join(", ");
-    const con = await oracleDBConnection();
+    if (serialNoList.length === 0) {
+      return res.status(200).json({ coloumns: [], data: [] });
+    }
 
-    let result = await con.execute(
-      // `select * from todoitem`,
-      `select  ATAI,EGNO from KTTMSYS.T_HNSTJHO WHERE ATAI IN (${placeholders})`,
-      serialNoList,
-      {
-        // maxRows: 2
-      }
-    );
+    const chunkSize = 500;
+    const serialNoChunks = [];
+    for (let i = 0; i < serialNoList.length; i += chunkSize) {
+      serialNoChunks.push(serialNoList.slice(i, i + chunkSize));
+    }
 
-    if (result.rows.length == 0) {
-      //history check
-      const conHistory = await oracleDBConnectionHistory();
-      const resultHistory = await conHistory.execute(
-        // `select * from todoitem`,
-        `select  ATAI,EGNO from KTTMHIS.T_HNSTJHORRKI WHERE ATAI IN (${placeholders})`,
-        serialNoList,
-        {
-          // maxRows: 2
+    let allRows = [];
+    let metaData = null;
+
+    await withOracleConnection(async (con) => {
+      for (const chunk of serialNoChunks) {
+        const placeholders = chunk.map((_, i) => `:value${i}`).join(", ");
+        const result = await con.execute(
+          `select ATAI, EGNO from KTTMSYS.T_HNSTJHO WHERE ATAI IN (${placeholders})`,
+          chunk
+        );
+        if (result.rows.length > 0) {
+          allRows.push(...result.rows);
+          if (!metaData) metaData = result.metaData;
         }
-      );
+      }
+    });
 
-      if (resultHistory.rows.length == 0) {
+    if (allRows.length === 0) {
+      // History check
+      await withOracleConnectionHistory(async (conHistory) => {
+        for (const chunk of serialNoChunks) {
+          const placeholders = chunk.map((_, i) => `:value${i}`).join(", ");
+          const resultHistory = await conHistory.execute(
+            `select ATAI, EGNO from KTTMHIS.T_HNSTJHORRKI WHERE ATAI IN (${placeholders})`,
+            chunk
+          );
+          if (resultHistory.rows.length > 0) {
+            allRows.push(...resultHistory.rows);
+            if (!metaData) metaData = resultHistory.metaData;
+          }
+        }
+      });
+
+      if (allRows.length === 0) {
         console.log("Serial no. do not exist & Engine can not be found");
         return next(new ErrorHandler("Serial no. do not exist", 401));
       }
-      result = resultHistory;
     }
 
-    const allColumnNames = result.metaData.map((item) => item.name);
-    result.rows.sort((a, b) => a[1] - b[1]);
-    res.status(200).json({ coloumns: allColumnNames, data: result.rows });
+    const allColumnNames = metaData ? metaData.map((item) => item.name) : ["ATAI", "EGNO"];
+    allRows.sort((a, b) => (a[1] > b[1] ? 1 : -1));
+    res.status(200).json({ coloumns: allColumnNames, data: allRows });
   }
 );
 
-// Get Dispatch date of Engine nos matching list of enigine no.
+// Get Dispatch date of Engine nos matching list of engine no.
 exports.getDispatchDatesMatchingEnigneNoList = catchAsyncError(
   async (req, res, next) => {
     const { engineNoListString } = req.body;
-    const engineNoList = engineNoListString.split(",");
+    const engineNoList = engineNoListString ? engineNoListString.split(",") : [];
 
-    // console.log(engineNoList);
+    if (engineNoList.length === 0) {
+      return res.status(200).json({ coloumns: [], data: [] });
+    }
 
-    const placeholders = engineNoList.map((_, i) => `:value${i}`).join(", ");
-    engineNoList.push("200");
+    const chunkSize = 500;
+    const engineNoChunks = [];
+    for (let i = 0; i < engineNoList.length; i += chunkSize) {
+      engineNoChunks.push(engineNoList.slice(i, i + chunkSize));
+    }
 
-    const con = await oracleDBConnection();
+    let allRows = [];
+    let metaData = null;
 
-    let result = await con.execute(
-      `SELECT EGNO, JSSKIDTTM FROM KTTMSYS.T_SISNJSSKI WHERE EGNO IN (${placeholders}) AND KTEINO = :valueDispatched`,
-      engineNoList,
-      {
-        //     // maxRows: 2
-      }
-    );
-
-    if (result.rows.length == 0) {
-      //history check
-      const conHistory = await oracleDBConnectionHistory();
-
-      const resultHistory = await conHistory.execute(
-        `SELECT EGNO, JSSKIDTTM FROM KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO IN (${placeholders}) AND KTEINO = :valueDispatched`,
-        engineNoList,
-        {
-          //     // maxRows: 2
+    await withOracleConnection(async (con) => {
+      for (const chunk of engineNoChunks) {
+        const placeholders = chunk.map((_, i) => `:value${i}`).join(", ");
+        const binds = [...chunk, "200"];
+        const result = await con.execute(
+          `SELECT EGNO, JSSKIDTTM FROM KTTMSYS.T_SISNJSSKI WHERE EGNO IN (${placeholders}) AND KTEINO = :valueDispatched`,
+          binds
+        );
+        if (result.rows.length > 0) {
+          allRows.push(...result.rows);
+          if (!metaData) metaData = result.metaData;
         }
-      );
-      if (resultHistory.rows.length == 0) {
+      }
+    });
+
+    if (allRows.length === 0) {
+      // History check
+      await withOracleConnectionHistory(async (conHistory) => {
+        for (const chunk of engineNoChunks) {
+          const placeholders = chunk.map((_, i) => `:value${i}`).join(", ");
+          const binds = [...chunk, "200"];
+          const resultHistory = await conHistory.execute(
+            `SELECT EGNO, JSSKIDTTM FROM KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO IN (${placeholders}) AND KTEINO = :valueDispatched`,
+            binds
+          );
+          if (resultHistory.rows.length > 0) {
+            allRows.push(...resultHistory.rows);
+            if (!metaData) metaData = resultHistory.metaData;
+          }
+        }
+      });
+
+      if (allRows.length === 0) {
         console.log("Engine no. do not exist & Engine can not be found");
         return next(new ErrorHandler("Engine no. do not exist", 401));
       }
-      result = resultHistory;
     }
 
-    const allColumnNames = result.metaData.map((item) => item.name);
-    result.rows.sort((a, b) => a[1] - b[1]);
-    res.status(200).json({ coloumns: allColumnNames, data: result.rows });
+    const allColumnNames = metaData ? metaData.map((item) => item.name) : ["EGNO", "JSSKIDTTM"];
+    allRows.sort((a, b) => (a[1] > b[1] ? 1 : -1));
+    res.status(200).json({ coloumns: allColumnNames, data: allRows });
   }
 );
 
@@ -335,147 +297,137 @@ exports.getDispatchDatesMatchingEnigneNoList = catchAsyncError(
 exports.getCastNoDateRangeData = catchAsyncError(async (req, res, next) => {
   const { castingNo } = req.query;
 
-  // const castingNo = "11236142";
-  const con = await oracleDBConnection();
-
-  let result = await con.execute(
-    // `select * from todoitem`,
-    // REGEXP_LIKE(product_name, 'apple', 'i');
-    // "select * from KTTMSYS.T_MCHNSTJHO WHERE SUBSTR(ATAI, 21, LENGTH(ATAI) - 28) LIKE :value0 ",
-
-    "select ATAI, SRALNO, JSSKIDTTM  from KTTMSYS.T_MCHNSTJHO WHERE REGEXP_LIKE(ATAI, :value0 ) ",
-    [castingNo],
-    {
-      // maxRows: 2
-    }
-  );
-
-  if (result.rows.length == 0) {
-    //history check
-    const conHistory = await oracleDBConnectionHistory();
-    const resultHistory = await conHistory.execute(
-      "select ATAI, SRALNO, JSSKIDTTM  from KTTMHIS.T_MCHNSTJHORRKI WHERE REGEXP_LIKE(ATAI, :value0 ) ",
-      [castingNo],
-      {
-        // maxRows: 2
-      }
+  let result = await withOracleConnection(async (con) => {
+    return await con.execute(
+      "select ATAI, SRALNO, JSSKIDTTM from KTTMSYS.T_MCHNSTJHO WHERE REGEXP_LIKE(ATAI, :value0)",
+      [castingNo]
     );
+  });
 
-    if (resultHistory.rows.length == 0) {
+  if (!result || result.rows.length === 0) {
+    let resultHistory = await withOracleConnectionHistory(async (conHistory) => {
+      return await conHistory.execute(
+        "select ATAI, SRALNO, JSSKIDTTM from KTTMHIS.T_MCHNSTJHORRKI WHERE REGEXP_LIKE(ATAI, :value0)",
+        [castingNo]
+      );
+    });
+
+    if (!resultHistory || resultHistory.rows.length === 0) {
       console.log("Engine not found");
-      // res.status(401).json({ messgage: "engine not found" });
       return next(new ErrorHandler("Engine no. do not exist", 401));
     }
     result = resultHistory;
   }
 
   let serialNoList = result.rows.map((item) => item[1].trim());
+  const chunkSize = 500;
+  const serialNoChunks = [];
+  for (let i = 0; i < serialNoList.length; i += chunkSize) {
+    serialNoChunks.push(serialNoList.slice(i, i + chunkSize));
+  }
 
-  const placeholders = serialNoList.map((_, i) => `:value${i}`).join(", ");
-
-  let result2 = await con.execute(
-    // `select * from todoitem`,
-    `select  ATAI, EGNO from KTTMSYS.T_HNSTJHO WHERE ATAI IN (${placeholders})`,
-    serialNoList,
-    {
-      // maxRows: 2
+  let result2Rows = [];
+  await withOracleConnection(async (con) => {
+    for (const chunk of serialNoChunks) {
+      const placeholders = chunk.map((_, i) => `:value${i}`).join(", ");
+      const r2 = await con.execute(
+        `select ATAI, EGNO from KTTMSYS.T_HNSTJHO WHERE ATAI IN (${placeholders})`,
+        chunk
+      );
+      result2Rows.push(...r2.rows);
     }
-  );
+  });
 
-  if (result2.rows.length == 0) {
-    //history check
-    const conHistory = await oracleDBConnectionHistory();
-    let result2History = await conHistory.execute(
-      // `select * from todoitem`,
-      `select  ATAI, EGNO from KTTMHIS.T_HNSTJHORRKI WHERE ATAI IN (${placeholders})`,
-      serialNoList,
-      {
-        // maxRows: 2
+  if (result2Rows.length === 0) {
+    await withOracleConnectionHistory(async (conHistory) => {
+      for (const chunk of serialNoChunks) {
+        const placeholders = chunk.map((_, i) => `:value${i}`).join(", ");
+        const r2H = await conHistory.execute(
+          `select ATAI, EGNO from KTTMHIS.T_HNSTJHORRKI WHERE ATAI IN (${placeholders})`,
+          chunk
+        );
+        result2Rows.push(...r2H.rows);
       }
-    );
-    if (result2History.rows.length == 0) {
+    });
+
+    if (result2Rows.length === 0) {
       console.log("Serial no. do not exist & Engine can not be found");
       return next(new ErrorHandler("Serial no. do not exist", 401));
     }
-    result2 = result2History;
   }
 
-  let engineNoList = result2.rows.map((item) => item[1]);
-  const placeholders2 = engineNoList.map((_, i) => `:value${i}`).join(", ");
-  engineNoList.push("200");
+  let engineNoList = result2Rows.map((item) => item[1]);
+  const engineNoChunks = [];
+  for (let i = 0; i < engineNoList.length; i += chunkSize) {
+    engineNoChunks.push(engineNoList.slice(i, i + chunkSize));
+  }
 
-  let result3 = await con.execute(
-    `SELECT EGNO, JSSKIDTTM FROM KTTMSYS.T_SISNJSSKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
-    engineNoList,
-    {
-      //     // maxRows: 2
+  let result3Rows = [];
+  await withOracleConnection(async (con) => {
+    for (const chunk of engineNoChunks) {
+      const placeholders = chunk.map((_, i) => `:value${i}`).join(", ");
+      const binds = [...chunk, "200"];
+      const r3 = await con.execute(
+        `SELECT EGNO, JSSKIDTTM FROM KTTMSYS.T_SISNJSSKI WHERE EGNO IN (${placeholders}) AND KTEINO = :valueDispatched`,
+        binds
+      );
+      result3Rows.push(...r3.rows);
     }
-  );
+  });
 
-  if (result3.rows.length == 0) {
-    //history check
-    const conHistory = await oracleDBConnectionHistory();
-
-    const result3History = await conHistory.execute(
-      `SELECT EGNO, JSSKIDTTM FROM KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
-      engineNoList,
-      {
-        //     // maxRows: 2
+  if (result3Rows.length === 0) {
+    await withOracleConnectionHistory(async (conHistory) => {
+      for (const chunk of engineNoChunks) {
+        const placeholders = chunk.map((_, i) => `:value${i}`).join(", ");
+        const binds = [...chunk, "200"];
+        const r3H = await conHistory.execute(
+          `SELECT EGNO, JSSKIDTTM FROM KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO IN (${placeholders}) AND KTEINO = :valueDispatched`,
+          binds
+        );
+        result3Rows.push(...r3H.rows);
       }
-    );
-    if (result3History.rows.length == 0) {
+    });
+
+    if (result3Rows.length === 0) {
       console.log("Engine no. do not exist & Engine can not be found");
       return next(new ErrorHandler("Engine no. do not exist", 401));
     }
-    result3 = result3History;
   }
 
-  // ************combine 3 datas
-  const resultList2 = [];
-
-  result2.rows.forEach((a) => {
-    let flag2 = false;
-    result3.rows.forEach((b) => {
-      if (a[1].trim() === b[0]) {
-        resultList2.push([...a, b[1]]);
-        flag2 = true;
-      } else {
-      }
-    });
-
-    if (flag2 == false) {
-      resultList2.push([...a, "-"]);
-    }
+  // Fast map lookup instead of O(N*M)
+  const dispatchMap = new Map();
+  result3Rows.forEach((b) => {
+    if (b[0]) dispatchMap.set(b[0].trim(), b[1]);
   });
 
-  const resultList1 = [];
-
-  result.rows.forEach((a) => {
-    let flag1 = false;
-    resultList2.forEach((b) => {
-      if (a[1].trim() === b[0]) {
-        resultList1.push([...a, b[1], b[2]]);
-        flag1 = true;
-      } else {
-      }
-    });
-
-    if (flag1 == false) {
-      resultList1.push([...a, "-"]);
-    }
+  const resultList2 = result2Rows.map((a) => {
+    const egNo = a[1] ? a[1].trim() : "";
+    const dispatchDate = dispatchMap.get(egNo) || "-";
+    return [...a, dispatchDate];
   });
 
-  // const allColumnNames = result.metaData.map((item) => item.name);
-  resultList1.sort((a, b) => a[1] - b[1]);
+  const r2Map = new Map();
+  resultList2.forEach((b) => {
+    if (b[0]) r2Map.set(b[0].trim(), b);
+  });
 
+  const resultList1 = result.rows.map((a) => {
+    const sralNo = a[1] ? a[1].trim() : "";
+    const match = r2Map.get(sralNo);
+    if (match) {
+      return [...a, match[1], match[2]];
+    }
+    return [...a, "-"];
+  });
+
+  resultList1.sort((a, b) => (a[1] > b[1] ? 1 : -1));
   res.status(200).json({
-    // coloumns: allColumnNames,
     data: resultList1,
     message: "based on casting no.",
   });
 });
 
-// Get part data, enigne nos and shipment data from specific date range
+// Get part data, engine nos and shipment data from specific date range
 exports.getFullData = catchAsyncError(async (req, res, next) => {
   let { processNo, fromDate, toDate } = req.params;
 
@@ -483,29 +435,22 @@ exports.getFullData = catchAsyncError(async (req, res, next) => {
     processNo = "H1_Material input/engraving";
   }
 
-  const con = await oracleDBConnection();
-
-  let result = await con.execute(
-    // `select * from todoitem`,
-    "select ATAI, SRALNO, JSSKIDTTM from KTTMSYS.T_MCHNSTJHO WHERE HNSTKNRIMEI =:value0 AND JSSKIDTTM BETWEEN :value1 AND :value2",
-    [processNo, new Date(fromDate), new Date(toDate)],
-    {
-      // maxRows: 2
-    }
-  );
-
-  if (result.rows.length == 0) {
-    //history check
-    const conHistory = await oracleDBConnectionHistory();
-    const resultHistory = await conHistory.execute(
-      // `select * from todoitem`,
-      "select ATAI, SRALNO, JSSKIDTTM from KTTMHIS.T_MCHNSTJHORRKI WHERE HNSTKNRIMEI =:value0 AND JSSKIDTTM BETWEEN :value1 AND :value2",
-      [processNo, new Date(fromDate), new Date(toDate)],
-      {
-        // maxRows: 2
-      }
+  let result = await withOracleConnection(async (con) => {
+    return await con.execute(
+      "select ATAI, SRALNO, JSSKIDTTM from KTTMSYS.T_MCHNSTJHO WHERE HNSTKNRIMEI =:value0 AND JSSKIDTTM BETWEEN :value1 AND :value2",
+      [processNo, new Date(fromDate), new Date(toDate)]
     );
-    if (resultHistory.rows.length == 0) {
+  });
+
+  if (!result || result.rows.length === 0) {
+    let resultHistory = await withOracleConnectionHistory(async (conHistory) => {
+      return await conHistory.execute(
+        "select ATAI, SRALNO, JSSKIDTTM from KTTMHIS.T_MCHNSTJHORRKI WHERE HNSTKNRIMEI =:value0 AND JSSKIDTTM BETWEEN :value1 AND :value2",
+        [processNo, new Date(fromDate), new Date(toDate)]
+      );
+    });
+
+    if (!resultHistory || resultHistory.rows.length === 0) {
       console.log("Engine not found");
       return next(new ErrorHandler("Engine no. do not exist", 401));
     }
@@ -513,148 +458,114 @@ exports.getFullData = catchAsyncError(async (req, res, next) => {
   }
 
   let serialNoList = result.rows.map((item) => item[1].trim());
-
-  //**** breaking the list into smaller chunks */
-  const chunkSize = 1000;
+  const chunkSize = 500;
   const serialNoChunks = [];
   for (let i = 0; i < serialNoList.length; i += chunkSize) {
     serialNoChunks.push(serialNoList.slice(i, i + chunkSize));
   }
 
-  //**** applyig query for each chunk */
-  const tempList = [];
-  for (const chunk of serialNoChunks) {
-    const placeholders = chunk.map((_, i) => `:value${i}`).join(", ");
-    const query = `select ATAI, EGNO from KTTMSYS.T_HNSTJHO WHERE ATAI IN (${placeholders})`;
-
-    const queryResult = await con.execute(query, chunk, {
-      // maxRows: 2
-    });
-
-    tempList.push(...queryResult.rows);
-  }
-
-  if (tempList.length == 0) {
-    //history check
-    const serialNoChunks = [];
-    for (let i = 0; i < serialNoList.length; i += chunkSize) {
-      serialNoChunks.push(serialNoList.slice(i, i + chunkSize));
-    }
-    const conHistory = await oracleDBConnectionHistory();
+  let tempList = [];
+  await withOracleConnection(async (con) => {
     for (const chunk of serialNoChunks) {
       const placeholders = chunk.map((_, i) => `:value${i}`).join(", ");
-      const query = `select ATAI, EGNO from KTTMHIS.T_HNSTJHORRKI WHERE ATAI IN (${placeholders})`;
-
-      const queryResultHistory = await conHistory.execute(query, chunk, {
-        // maxRows: 2
-      });
-
-      tempList.push(...queryResultHistory.rows);
+      const queryResult = await con.execute(
+        `select ATAI, EGNO from KTTMSYS.T_HNSTJHO WHERE ATAI IN (${placeholders})`,
+        chunk
+      );
+      tempList.push(...queryResult.rows);
     }
-    if (tempList.length == 0) {
+  });
+
+  if (tempList.length === 0) {
+    await withOracleConnectionHistory(async (conHistory) => {
+      for (const chunk of serialNoChunks) {
+        const placeholders = chunk.map((_, i) => `:value${i}`).join(", ");
+        const queryResultHistory = await conHistory.execute(
+          `select ATAI, EGNO from KTTMHIS.T_HNSTJHORRKI WHERE ATAI IN (${placeholders})`,
+          chunk
+        );
+        tempList.push(...queryResultHistory.rows);
+      }
+    });
+
+    if (tempList.length === 0) {
       console.log("Serial no. do not exist & Engine can not be found");
       return next(new ErrorHandler("Serial no. do not exist", 401));
     }
   }
-  let result2 = { rows: null };
-  result2.rows = tempList;
-  let engineNoList = result2.rows.map((item) => item[1]);
-  // ********creates chunks of engineNoList & store in array
-  const engineNoChuncks = [];
+
+  let engineNoList = tempList.map((item) => item[1]);
+  const engineNoChunks = [];
   for (let i = 0; i < engineNoList.length; i += chunkSize) {
-    engineNoChuncks.push(engineNoList.slice(i, i + chunkSize));
+    engineNoChunks.push(engineNoList.slice(i, i + chunkSize));
   }
 
-  // ********query for each chunk & store the result in  tempList2
-  const tempList2 = [];
-  for (const chunck2 of engineNoChuncks) {
-    const placeholders2 = chunck2.map((_, i) => `:value${i}`).join(", ");
-    chunck2.push("200");
-
-    const queryResult2 = await con.execute(
-      `SELECT EGNO, JSSKIDTTM FROM KTTMSYS.T_SISNJSSKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
-      chunck2,
-      {
-        //     // maxRows: 2
-      }
-    );
-    tempList2.push(...queryResult2.rows);
-  }
-  console.log("tempList2");
-  console.log(tempList2);
-  if (tempList2.length == 0) {
-    //history check
-    // ********creates chunks of engineNoList & store in array
-  const engineNoChuncks = [];
-  for (let i = 0; i < engineNoList.length; i += chunkSize) {
-    engineNoChuncks.push(engineNoList.slice(i, i + chunkSize));
-  }
-    const conHistory = await oracleDBConnectionHistory();
-    for (const chunck2 of engineNoChuncks) {
-      const placeholders2 = chunck2.map((_, i) => `:value${i}`).join(", ");
-      chunck2.push("200");
-
-      const queryResult2History = await conHistory.execute(
-        `SELECT EGNO, JSSKIDTTM FROM KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
-        chunck2,
-        {
-          //     // maxRows: 2
-        }
+  let tempList2 = [];
+  await withOracleConnection(async (con) => {
+    for (const chunk of engineNoChunks) {
+      const placeholders2 = chunk.map((_, i) => `:value${i}`).join(", ");
+      const binds = [...chunk, "200"];
+      const queryResult2 = await con.execute(
+        `SELECT EGNO, JSSKIDTTM FROM KTTMSYS.T_SISNJSSKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
+        binds
       );
-      tempList2.push(...queryResult2History.rows);
+      tempList2.push(...queryResult2.rows);
     }
-    if (tempList2.length == 0) {
+  });
+
+  if (tempList2.length === 0) {
+    await withOracleConnectionHistory(async (conHistory) => {
+      for (const chunk of engineNoChunks) {
+        const placeholders2 = chunk.map((_, i) => `:value${i}`).join(", ");
+        const binds = [...chunk, "200"];
+        const queryResult2History = await conHistory.execute(
+          `SELECT EGNO, JSSKIDTTM FROM KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
+          binds
+        );
+        tempList2.push(...queryResult2History.rows);
+      }
+    });
+
+    if (tempList2.length === 0) {
       console.log("Engine no. do not exist & Engine can not be found");
       return next(new ErrorHandler("Engine no. do not exist", 401));
     }
   }
-  let result3 = { rows: null };
-  result3.rows = tempList2;
-  // ************combine 3 datas
-  const resultList2 = [];
 
-  result2.rows.forEach((a) => {
-    let flag2 = false;
-    result3.rows.forEach((b) => {
-      if (a[1].trim() === b[0]) {
-        resultList2.push([...a, b[1]]);
-        flag2 = true;
-      } else {
-      }
-    });
-
-    if (flag2 == false) {
-      resultList2.push([...a, "-"]);
-    }
+  // Fast map lookup instead of O(N*M)
+  const dispatchMap = new Map();
+  tempList2.forEach((b) => {
+    if (b[0]) dispatchMap.set(b[0].trim(), b[1]);
   });
 
-  const resultList1 = [];
-
-  result.rows.forEach((a) => {
-    let flag1 = false;
-    resultList2.forEach((b) => {
-      if (a[1].trim() === b[0]) {
-        resultList1.push([...a, b[1], b[2]]);
-        flag1 = true;
-      } else {
-      }
-    });
-
-    if (flag1 == false) {
-      resultList1.push([...a, "-"]);
-    }
+  const resultList2 = tempList.map((a) => {
+    const egNo = a[1] ? a[1].trim() : "";
+    const dispatchDate = dispatchMap.get(egNo) || "-";
+    return [...a, dispatchDate];
   });
 
-  // const allColumnNames = result.metaData.map((item) => item.name);
-  resultList1.sort((a, b) => a[1] - b[1]);
+  const r2Map = new Map();
+  resultList2.forEach((b) => {
+    if (b[0]) r2Map.set(b[0].trim(), b);
+  });
 
+  const resultList1 = result.rows.map((a) => {
+    const sralNo = a[1] ? a[1].trim() : "";
+    const match = r2Map.get(sralNo);
+    if (match) {
+      return [...a, match[1], match[2]];
+    }
+    return [...a, "-"];
+  });
+
+  resultList1.sort((a, b) => (a[1] > b[1] ? 1 : -1));
   res.status(200).json({
     data: resultList1,
     message: "3 catogory data",
   });
 });
 
-// Get Assembly  data, enigne nos and shipment data from specific date range
+// Get Assembly data, engine nos and shipment data from specific date range
 exports.getFullDataAssy = catchAsyncError(async (req, res, next) => {
   let { processNo, fromDate, toDate } = req.params;
 
@@ -674,30 +585,22 @@ exports.getFullDataAssy = catchAsyncError(async (req, res, next) => {
     processNo = "CamHousing S/N";
   }
 
-  const con = await oracleDBConnection();
-
-  let result = await con.execute(
-    // `select * from todoitem`,
-    "select ATAI,  EGNO ,JSSKIDTTM  from KTTMSYS.T_HNSTJHO WHERE HNSTKNRIMEI=:value AND JSSKIDTTM BETWEEN :value1 AND :value2",
-    [processNo, new Date(fromDate), new Date(toDate)],
-    {
-      // maxRows: 2
-    }
-  );
-
-  if (result.rows.length == 0) {
-    //history check
-    const conHistory = await oracleDBConnectionHistory();
-
-    let resultHistory = await conHistory.execute(
-      // `select * from todoitem`,
-      "select ATAI,  EGNO ,JSSKIDTTM  from KTTMHIS.T_HNSTJHORRKI WHERE HNSTKNRIMEI=:value AND JSSKIDTTM BETWEEN :value1 AND :value2",
-      [processNo, new Date(fromDate), new Date(toDate)],
-      {
-        // maxRows: 2
-      }
+  let result = await withOracleConnection(async (con) => {
+    return await con.execute(
+      "select ATAI, EGNO, JSSKIDTTM from KTTMSYS.T_HNSTJHO WHERE HNSTKNRIMEI=:value AND JSSKIDTTM BETWEEN :value1 AND :value2",
+      [processNo, new Date(fromDate), new Date(toDate)]
     );
-    if (resultHistory.rows.length == 0) {
+  });
+
+  if (!result || result.rows.length === 0) {
+    let resultHistory = await withOracleConnectionHistory(async (conHistory) => {
+      return await conHistory.execute(
+        "select ATAI, EGNO, JSSKIDTTM from KTTMHIS.T_HNSTJHORRKI WHERE HNSTKNRIMEI=:value AND JSSKIDTTM BETWEEN :value1 AND :value2",
+        [processNo, new Date(fromDate), new Date(toDate)]
+      );
+    });
+
+    if (!resultHistory || resultHistory.rows.length === 0) {
       console.log("Engine not found");
       return next(new ErrorHandler("Engine no. do not exist", 401));
     }
@@ -705,90 +608,56 @@ exports.getFullDataAssy = catchAsyncError(async (req, res, next) => {
   }
 
   let engineNoList = result.rows.map((item) => item[1].trim());
-
-
-  // ******** creating chunk of engine list
-  const chunkSize = 1000;
-  const engineNoChuncks = [];
+  const chunkSize = 500;
+  const engineNoChunks = [];
   for (let i = 0; i < engineNoList.length; i += chunkSize) {
-    engineNoChuncks.push(engineNoList.slice(i, i + chunkSize));  
+    engineNoChunks.push(engineNoList.slice(i, i + chunkSize));
   }
- 
 
-  // ******** query for each chunk & pushing result in tempList
   const tempList = [];
-  for (const chunck of engineNoChuncks) {   
-    const placeholders2 = chunck.map((_, i) => `:value${i}`).join(", ");   
-    chunck.push("200");
-    const queryResult = await con.execute(
-      `SELECT EGNO, JSSKIDTTM FROM KTTMSYS.T_SISNJSSKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
-      chunck,
-      {
-        //     // maxRows: 2
-      }
-    );
-    tempList.push(...queryResult.rows);
-  }
-
-
-  // ******* check if dispatch dates exits
-  if (tempList.length == 0) {
-    //history check
-    const engineNoChuncks = [];
-    for (let i = 0; i < engineNoList.length; i += chunkSize) {
-      engineNoChuncks.push(engineNoList.slice(i, i + chunkSize));
-    }
-    const conHistory = await oracleDBConnectionHistory();
-    for (const chunck of engineNoChuncks) {
-      
-      const placeholders2History = chunck
-        .map((_, i) => `:value${i}`)
-        .join(", ");
-
-      chunck.push("200");
-      const queryResultHistory = await conHistory.execute(
-        `SELECT EGNO, JSSKIDTTM FROM KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO IN (${placeholders2History}) AND KTEINO = :valueDispatched`,
-        chunck,
-        {
-          //     // maxRows: 2
-        }
+  await withOracleConnection(async (con) => {
+    for (const chunk of engineNoChunks) {
+      const placeholders2 = chunk.map((_, i) => `:value${i}`).join(", ");
+      const binds = [...chunk, "200"];
+      const queryResult = await con.execute(
+        `SELECT EGNO, JSSKIDTTM FROM KTTMSYS.T_SISNJSSKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
+        binds
       );
-      tempList.push(...queryResultHistory.rows);
+      tempList.push(...queryResult.rows);
     }
-    if (tempList.length == 0) {
+  });
+
+  if (tempList.length === 0) {
+    await withOracleConnectionHistory(async (conHistory) => {
+      for (const chunk of engineNoChunks) {
+        const placeholders2 = chunk.map((_, i) => `:value${i}`).join(", ");
+        const binds = [...chunk, "200"];
+        const queryResultHistory = await conHistory.execute(
+          `SELECT EGNO, JSSKIDTTM FROM KTTMHIS.T_SISNJSSKIRRKI WHERE EGNO IN (${placeholders2}) AND KTEINO = :valueDispatched`,
+          binds
+        );
+        tempList.push(...queryResultHistory.rows);
+      }
+    });
+
+    if (tempList.length === 0) {
       console.log("Engine no. do not exist & Engine can not be found");
       return next(new ErrorHandler("Engine no. do not exist", 401));
     }
   }
-  // console.log("tempList");
-  // console.log(tempList);
-  const result3 = { rows: null };
-  result3.rows = tempList;
-  // ************combine 3 datas
-  const resultList2 = [];
 
-  const resultList1 = [];
-
-  result.rows.forEach((a) => {
-    let flag1 = false;
-    result3.rows.forEach((b) => {
-      if (a[1].trim() === b[0]) {
-        // let tempList = [...b.splice(1)];
-        // let tempList = ["Number available"];
-        resultList1.push([...a, b[1]]);
-        flag1 = true;
-      } else {
-      }
-    });
-
-    if (flag1 == false) {
-      resultList1.push([...a, "-"]);
-    }
+  const dispatchMap = new Map();
+  tempList.forEach((b) => {
+    if (b[0]) dispatchMap.set(b[0].trim(), b[1]);
   });
 
-  // const allColumnNames = result.metaData.map((item) => item.name);
-  resultList1.sort((a, b) => a[1] - b[1]);
+  const resultList1 = result.rows.map((a) => {
+    const egNo = a[1] ? a[1].trim() : "";
+    const dispatchDate = dispatchMap.get(egNo) || "-";
+    return [...a, dispatchDate];
+  });
 
+  resultList1.sort((a, b) => (a[1] > b[1] ? 1 : -1));
   res.status(200).json({
     data: resultList1,
     message: "3 catogory data",

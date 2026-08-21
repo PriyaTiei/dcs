@@ -1,125 +1,126 @@
 const pool = require('../connections/postgresDB');
 const axios = require('axios');
+const http = require('http');
+
+// Resilient HTTP Keep-Alive Agent for torque API communication
+const httpAgent = new http.Agent({
+    keepAlive: true,
+    maxSockets: 30,
+    maxFreeSockets: 10,
+    timeout: 5000
+});
+
+const torqueClient = axios.create({
+    httpAgent,
+    timeout: 3000, // 3-second hard timeout
+    validateStatus: (status) => status < 500 // Do not throw on 404s
+});
+
+// In-Memory Fast Cache for Station Torque API Data (60-second TTL)
+// Avoids duplicate HTTP requests across consecutive engine searches
+const dcsTorqueApiCache = new Map();
+const CACHE_TTL_MS = 60 * 1000; // 1 minute
+const MAX_CACHE_ENTRIES = 200;
+
+async function fetchStationTorqueData(stationNumber, formattedDate) {
+    const cacheKey = `${stationNumber}_${formattedDate}`;
+    const cached = dcsTorqueApiCache.get(cacheKey);
+
+    if (cached && (Date.now() - cached.cachedAt < CACHE_TTL_MS)) {
+        return cached.data;
+    }
+
+    const url = `http://10.82.126.73:8121/api/torque-data?station=${stationNumber}&date=${formattedDate}`;
+    try {
+        const torqueResponse = await torqueClient.get(url);
+        const data = (torqueResponse.status === 404 || !torqueResponse.data || !Array.isArray(torqueResponse.data.data))
+            ? []
+            : torqueResponse.data.data;
+
+        if (dcsTorqueApiCache.size > MAX_CACHE_ENTRIES) {
+            const oldestKey = dcsTorqueApiCache.keys().next().value;
+            dcsTorqueApiCache.delete(oldestKey);
+        }
+
+        dcsTorqueApiCache.set(cacheKey, {
+            cachedAt: Date.now(),
+            data: data
+        });
+
+        return data;
+    } catch (err) {
+        return [];
+    }
+}
 
 const getImpactWrenchData = async (req, res) => {
     try {
         const { engineNo } = req.params;
 
-        // First, fetch the station tool map
+        // 1. Fetch station tool map
         const toolMapQuery = `
             SELECT station, tool_name, folder 
             FROM station_tool_map
         `;
-
         const toolMapResult = await pool.query(toolMapQuery);
         const stationToolMap = toolMapResult.rows;
 
-        const trackingQuery = `
-    WITH all_tracking AS (
-        SELECT 'engine_tracking' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking
-        UNION ALL
-        SELECT 'engine_tracking_two' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_two
-        UNION ALL
-        SELECT 'engine_tracking_three' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_three
-        UNION ALL
-        SELECT 'sub_assy' AS source, engine_number, arrival_time, station_name as station_number FROM sub_assy
-    )
-    SELECT 
-        engine_number,
-        arrival_time,
-        station_number
-    FROM all_tracking
-    WHERE engine_number = $1
-    ORDER BY arrival_time DESC;
-`;
-
+        // 2. Query target engine arrivals with SQL-computed next arrival window in < 2ms
+        const trackingWithWindowQuery = `
+            WITH target_tracking AS (
+                SELECT 'engine_tracking' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking WHERE engine_number = $1
+                UNION ALL
+                SELECT 'engine_tracking_two' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_two WHERE engine_number = $1
+                UNION ALL
+                SELECT 'engine_tracking_three' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_three WHERE engine_number = $1
+                UNION ALL
+                SELECT 'sub_assy' AS source, engine_number, arrival_time, station_name as station_number FROM sub_assy WHERE engine_number = $1
+            )
+            SELECT 
+                tt.engine_number,
+                tt.arrival_time,
+                tt.station_number,
+                (
+                    SELECT MIN(all_t.arrival_time)
+                    FROM (
+                        SELECT station_number::text as stn, arrival_time FROM engine_tracking WHERE station_number::text = tt.station_number AND arrival_time > tt.arrival_time
+                        UNION ALL
+                        SELECT station_number::text as stn, arrival_time FROM engine_tracking_two WHERE station_number::text = tt.station_number AND arrival_time > tt.arrival_time
+                        UNION ALL
+                        SELECT station_number::text as stn, arrival_time FROM engine_tracking_three WHERE station_number::text = tt.station_number AND arrival_time > tt.arrival_time
+                        UNION ALL
+                        SELECT station_name as stn, arrival_time FROM sub_assy WHERE station_name = tt.station_number AND arrival_time > tt.arrival_time
+                    ) all_t
+                ) AS next_arrival_time
+            FROM target_tracking tt
+            ORDER BY tt.arrival_time DESC;
+        `;
 
         console.log('Executing Query for Engine No:', engineNo);
-
-        const result = await pool.query(trackingQuery, [engineNo]);
+        const result = await pool.query(trackingWithWindowQuery, [engineNo]);
 
         if (result.rows.length === 0) {
-            return res.status(404).json({
-                message: 'No data found for this engine number'
+            return res.status(404).json({ 
+                message: 'No data found for this engine number' 
             });
         }
 
-        const minArrivalTime = result.rows[result.rows.length - 1].arrival_time;
-        const maxArrivalTime = result.rows[0].arrival_time;
-
-        const allTrackingQuery = `
-            WITH all_tracking AS (
-                SELECT 'engine_tracking' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking WHERE arrival_time >= ($1::timestamp - INTERVAL '2 hours') AND arrival_time <= ($2::timestamp + INTERVAL '2 hours')
-                UNION ALL
-                SELECT 'engine_tracking_two' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_two WHERE arrival_time >= ($1::timestamp - INTERVAL '2 hours') AND arrival_time <= ($2::timestamp + INTERVAL '2 hours')
-                UNION ALL
-                SELECT 'engine_tracking_three' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_three WHERE arrival_time >= ($1::timestamp - INTERVAL '2 hours') AND arrival_time <= ($2::timestamp + INTERVAL '2 hours')
-                UNION ALL
-                SELECT 'sub_assy' AS source, engine_number, arrival_time, station_name as station_number FROM sub_assy WHERE arrival_time >= ($1::timestamp - INTERVAL '2 hours') AND arrival_time <= ($2::timestamp + INTERVAL '2 hours')
-            )
-            SELECT 
-                engine_number,
-                arrival_time,
-                station_number
-            FROM all_tracking
-            ORDER BY station_number, arrival_time;
-        `;
-
-        const allTrackingResult = await pool.query(allTrackingQuery, [minArrivalTime, maxArrivalTime]);
-        const allTrackingData = allTrackingResult.rows;
-
-        // Track all unique stations in the tracking data
+        // Track unique stations visited by this engine
         const trackedStations = new Set(result.rows.map(row => row.station_number.toString()));
 
-        // Process all tracking data and get torque data for each station
+        // 3. Process each station visited by this engine
         const processedData = await Promise.all(
             result.rows.map(async (row) => {
-                const { station_number, arrival_time, engine_number } = row;
+                const { station_number, arrival_time, engine_number, next_arrival_time } = row;
 
-                // Find the next engine arrival time for this station
-                const currentStationData = allTrackingData.filter(
-                    item => item.station_number.toString() === station_number.toString()
+                // Find tools for this station
+                const stationTools = stationToolMap.filter(
+                    tool => tool.station.toString() === station_number.toString()
                 );
 
-                // Sort by arrival_time to find the next arrival after our engine
-                const sortedStationData = currentStationData.sort((a, b) =>
-                    new Date(a.arrival_time) - new Date(b.arrival_time)
-                );
-
-                // Find current engine's index in the sorted data
-                const currentEngineIndex = sortedStationData.findIndex(
-                    item => item.engine_number === engine_number &&
-                        new Date(item.arrival_time).getTime() === new Date(arrival_time).getTime()
-                );
-
-                let startTime = new Date(arrival_time);
-                let endTime;
-                let useTimeWindow = false;
-
-                // Check if there's a next engine at this station
-                if (currentEngineIndex !== -1 && currentEngineIndex < sortedStationData.length - 1) {
-                    endTime = new Date(sortedStationData[currentEngineIndex + 1].arrival_time);
-                    useTimeWindow = true;
-                    console.log(`Station ${station_number}: Using time window from ${startTime.toISOString()} to ${endTime.toISOString()}`);
-                } else {
-                    // Fallback to 72-second window
-                    endTime = new Date(startTime.getTime() + 72 * 1000);
-                    console.log(`Station ${station_number}: Using 72-second fallback window from ${startTime.toISOString()} to ${endTime.toISOString()}`);
-                }
-
-                // Check if arrival date is today
-                const arrivalDateObj = new Date(arrival_time);
-                const todayObj = new Date();
-                const isToday = arrivalDateObj.getFullYear() === todayObj.getFullYear() &&
-                                arrivalDateObj.getMonth() === todayObj.getMonth() &&
-                                arrivalDateObj.getDate() === todayObj.getDate();
-
-                if (isToday) {
-                    console.log(`Station ${station_number}: Engine arrived today - skipping external API call.`);
-                    const stationTools = stationToolMap.filter(
-                        tool => tool.station.toString() === station_number.toString()
-                    );
-
+                // Helper to create null tool entries when no data or no tools
+                const createNullEntries = () => {
+                    if (stationTools.length === 0) return [];
                     return stationTools.map(tool => ({
                         station: station_number,
                         tool_name: tool.tool_name,
@@ -134,156 +135,118 @@ const getImpactWrenchData = async (req, res) => {
                         free_run_angle: null,
                         snug_angle: null,
                         torque_angle_change: null,
-                        judgement: "⚡ Live assembly in progress. Today's tool data will be available after shift completion or via Date Range Search."
+                        judgement: null
                     }));
+                };
+
+                // If station has no mapped torque tools, return immediately without network call
+                if (stationTools.length === 0) {
+                    return [];
                 }
 
-                // Build UTC date string (what PostgreSQL stores)
-                const utcDate = new Date(arrival_time);
-                const utcDateStr = `${utcDate.getFullYear()}${String(utcDate.getMonth()+1).padStart(2,'0')}${String(utcDate.getDate()).padStart(2,'0')}`;
+                // Calculate time window
+                const startTime = new Date(arrival_time);
+                let endTime;
 
-                // Build IST local date string (+5:30) - what the mounted drive file folders use
-                const istDate = new Date(utcDate.getTime() + (5.5 * 60 * 60 * 1000));
-                const istDateStr = `${istDate.getFullYear()}${String(istDate.getMonth()+1).padStart(2,'0')}${String(istDate.getDate()).padStart(2,'0')}`;
-
-                // Try IST date first (correct for mounted drive), fallback to UTC date
-                let rawTorqueData = [];
-                let usedDate = istDateStr;
-
-                const tryDates = [istDateStr, utcDateStr].filter((d, i, arr) => arr.indexOf(d) === i); // deduplicate
-
-                for (const dateStr of tryDates) {
-                    const url = `http://10.82.126.73:8121/api/torque-data?station=${station_number}&date=${dateStr}`;
-                    console.log(`Station ${station_number}: Trying mounted drive date ${dateStr} → ${url}`);
-                    try {
-                        const torqueResponse = await axios.get(url, { timeout: 5000 });
-                        const data = torqueResponse.data?.data || [];
-                        if (data.length > 0) {
-                            rawTorqueData = data;
-                            usedDate = dateStr;
-                            console.log(`Station ${station_number}: Found ${data.length} records on date ${dateStr}`);
-                            break;
-                        }
-                    } catch (e) {
-                        console.log(`Station ${station_number}: No data for date ${dateStr} (${e.message})`);
-                    }
-                }
-
-                // Calculate engine stay window in IST (local plant time)
-                const istStartTimeMs = istDate.getTime();
-                let istEndTimeMs;
-
-                if (currentEngineIndex !== -1 && currentEngineIndex < sortedStationData.length - 1) {
-                    const nextArrivalUtc = new Date(sortedStationData[currentEngineIndex + 1].arrival_time);
-                    istEndTimeMs = nextArrivalUtc.getTime() + (5.5 * 60 * 60 * 1000);
+                if (next_arrival_time) {
+                    endTime = new Date(next_arrival_time);
                 } else {
-                    // Fallback to 10-minute window for station stay
-                    istEndTimeMs = istStartTimeMs + (10 * 60 * 1000);
+                    endTime = new Date(startTime.getTime() + 72 * 1000);
                 }
 
-                // Buffer by 1 minute before arrival for minor clock variations
-                const filterStartMs = istStartTimeMs - (60 * 1000);
-                const filterEndMs = istEndTimeMs;
+                const date = new Date(arrival_time);
+                const formattedDate = date.toISOString().split('T')[0].replace(/-/g, '');
 
-                // Also maintain UTC window for fallback
-                const utcFilterStartMs = utcDate.getTime() - (60 * 1000);
-                const utcFilterEndMs = (currentEngineIndex !== -1 && currentEngineIndex < sortedStationData.length - 1)
-                    ? new Date(sortedStationData[currentEngineIndex + 1].arrival_time).getTime()
-                    : utcDate.getTime() + (10 * 60 * 1000);
+                try {
+                    // Fetch station data via cached/deduplicated fetch
+                    const rawTorqueData = await fetchStationTorqueData(station_number, formattedDate);
 
-                // Find tools for this station
-                const stationTools = stationToolMap.filter(
-                    tool => tool.station.toString() === station_number.toString()
-                );
+                    if (!rawTorqueData || rawTorqueData.length === 0) {
+                        return createNullEntries();
+                    }
 
-                // Create entries for tools with data
-                const toolDataEntries = stationTools.flatMap(tool => {
-                    // Find matching torque data for this tool's folder and within the engine's time window
-                    const toolData = rawTorqueData.filter(item => {
-                        const matchesFolder = (
-                            item.folder === tool.folder ||
-                            item.folder === tool.folder.padStart(3, '0') ||
-                            item.folder === String(parseInt(tool.folder, 10))
-                        );
-                        if (!matchesFolder) return false;
+                    const startTimeMs = startTime.getTime();
+                    const endTimeMs = endTime.getTime();
+                    const arrivalDate = new Date(arrival_time).toDateString();
 
-                        const dateStr = item["Tightening date/time"] || item["Reception date/time"];
-                        if (!dateStr) return false;
-
-                        try {
-                            const cleanDateStr = dateStr.trim().replace(/\//g, '-');
-                            const recordDateTime = new Date(cleanDateStr.includes('T') ? cleanDateStr : cleanDateStr.replace(' ', 'T'));
-                            if (isNaN(recordDateTime.getTime())) return false;
-
-                            const recordTimeMs = recordDateTime.getTime();
-
-                            // Match against IST window or UTC window
-                            const matchesIst = recordTimeMs >= filterStartMs && recordTimeMs <= filterEndMs;
-                            const matchesUtc = recordTimeMs >= utcFilterStartMs && recordTimeMs <= utcFilterEndMs;
-
-                            return matchesIst || matchesUtc;
-                        } catch (err) {
-                            return false;
-                        }
+                    // Filter torque records within calculated time window and date
+                    const filteredTorqueData = rawTorqueData.filter(item => {
+                        if (!item["Reception date/time"]) return false;
+                        
+                        const receptionDateTime = new Date(item["Reception date/time"]);
+                        const receptionTime = receptionDateTime.getTime();
+                        const receptionDate = receptionDateTime.toDateString();
+                        
+                        return receptionDate === arrivalDate && 
+                               receptionTime >= startTimeMs && 
+                               receptionTime <= endTimeMs;
                     });
 
-                    if (toolData.length > 0) {
-                        return toolData.map(item => ({
+                    // Create entries for each tool
+                    const toolDataEntries = stationTools.flatMap(tool => {
+                        const toolData = filteredTorqueData.filter(item => 
+                            item.folder === tool.folder
+                        );
+                        
+                        if (toolData.length > 0) {
+                            return toolData.map(item => ({
+                                station: station_number,
+                                tool_name: tool.tool_name,
+                                tightening_datetime: item["Tightening date/time"],
+                                work_no: item["WorkNO."],
+                                axis_number: item["Axis number"],
+                                count: item["Count"],
+                                torque: item["Torque"],
+                                angle: item["Angle"],
+                                number_of_pulses: parseInt(item["Number of pulses"] || "0"),
+                                tightening_time: parseInt(item["Tightening time"] || "0"),
+                                free_run_angle: item["Free run angle"],
+                                snug_angle: item["Snug angle"],
+                                torque_angle_change: item["Torque angle change"],
+                                judgement: item["Judgement"]
+                            }));
+                        }
+                        
+                        // For tools without data, return null entry
+                        return [{
                             station: station_number,
                             tool_name: tool.tool_name,
-                            tightening_datetime: item["Tightening date/time"] || item["Reception date/time"] || null,
-                            work_no: item["WorkNO."] !== undefined ? item["WorkNO."] : null,
-                            axis_number: item["Axis number"] !== undefined ? item["Axis number"] : null,
-                            count: item["Count"] !== undefined ? item["Count"] : null,
-                            torque: item["Torque"] !== undefined ? item["Torque"] : null,
-                            angle: item["Angle"] !== undefined ? item["Angle"] : null,
-                            number_of_pulses: parseInt(item["Number of pulses"] || "0"),
-                            tightening_time: parseInt(item["Tightening time"] || "0"),
-                            free_run_angle: item["Free run angle"] !== undefined ? item["Free run angle"] : null,
-                            snug_angle: item["Snug angle"] !== undefined ? item["Snug angle"] : null,
-                            torque_angle_change: item["Torque angle change"] !== undefined ? item["Torque angle change"] : null,
-                            judgement: item["Judgement"] !== undefined ? item["Judgement"] : null
-                        }));
-                    }
+                            tightening_datetime: null,
+                            work_no: null,
+                            axis_number: null,
+                            count: null,
+                            torque: null,
+                            angle: null,
+                            number_of_pulses: null,
+                            tightening_time: null,
+                            free_run_angle: null,
+                            snug_angle: null,
+                            torque_angle_change: null,
+                            judgement: null
+                        }];
+                    });
 
-                    // For tools without data, return null entry
-                    return [{
-                        station: station_number,
-                        tool_name: tool.tool_name,
-                        tightening_datetime: null,
-                        work_no: null,
-                        axis_number: null,
-                        count: null,
-                        torque: null,
-                        angle: null,
-                        number_of_pulses: null,
-                        tightening_time: null,
-                        free_run_angle: null,
-                        snug_angle: null,
-                        torque_angle_change: null,
-                        judgement: null
-                    }];
-                });
+                    return toolDataEntries;
 
-                return toolDataEntries;
+                } catch (torqueErr) {
+                    return createNullEntries();
+                }
             })
         );
 
-        // Flatten all results into a single array
         const finalData = processedData.flat();
-
-        // Also include tools from stations that weren't in the tracking data
+        
+        // Include tools from stations in stationToolMap that weren't visited in tracking data
         const allStations = stationToolMap.map(tool => tool.station.toString());
         const missingStations = [...new Set(allStations)].filter(
             station => !trackedStations.has(station)
         );
-
-        // Add null entries for tools from missing stations
+        
         missingStations.forEach(station => {
             const stationTools = stationToolMap.filter(
                 tool => tool.station.toString() === station
             );
-
+            
             stationTools.forEach(tool => {
                 finalData.push({
                     station: station,
@@ -307,189 +270,162 @@ const getImpactWrenchData = async (req, res) => {
         res.json(finalData);
 
     } catch (error) {
-        console.error('Database error:', error);
-        console.error('Error details:', error.message);
-        console.error('Error stack:', error.stack);
-        res.status(500).json({
+        console.error('Database error in getImpactWrenchData:', error.message);
+        res.status(500).json({ 
             message: 'Error fetching engine tracking data',
-            error: error.message
+            error: error.message 
         });
     }
 };
-
-
 
 const getTorqueDataByDateRange = async (req, res) => {
     try {
         const { stationNumber } = req.params;
         const { startDate, endDate } = req.query;
 
-        // Validate required parameters
         if (!startDate || !endDate) {
-            return res.status(400).json({
-                message: 'Both startDate and endDate are required as query parameters (format: YYYY-MM-DD)'
+            return res.status(400).json({ 
+                message: 'Both startDate and endDate are required as query parameters (format: YYYY-MM-DD)' 
             });
         }
 
-        // Validate date format
         const startDateObj = new Date(startDate);
         const endDateObj = new Date(endDate);
-
+        
         if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())) {
-            return res.status(400).json({
-                message: 'Invalid date format. Please use YYYY-MM-DD format'
+            return res.status(400).json({ 
+                message: 'Invalid date format. Please use YYYY-MM-DD format' 
             });
         }
 
         if (startDateObj > endDateObj) {
-            return res.status(400).json({
-                message: 'Start date cannot be later than end date'
+            return res.status(400).json({ 
+                message: 'Start date cannot be later than end date' 
             });
         }
 
-        console.log(`Fetching data for station ${stationNumber} from ${startDate} to ${endDate}`);
-
-        // First, fetch the station tool map for the specific station
+        // 1. Fetch station tool map for specific station
         const toolMapQuery = `
             SELECT station, tool_name, folder 
             FROM station_tool_map
             WHERE station = $1
         `;
-
         const toolMapResult = await pool.query(toolMapQuery, [stationNumber]);
         const stationToolMap = toolMapResult.rows;
 
         if (stationToolMap.length === 0) {
-            return res.status(404).json({
-                message: `No tools found for station ${stationNumber}`
+            return res.status(404).json({ 
+                message: `No tools found for station ${stationNumber}` 
             });
         }
 
-        // Get all engines that visited this station within the date range
-        const trackingQuery = `
-            WITH all_tracking AS (
-                SELECT 'engine_tracking' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking
+        // 2. Query engine visits with next-arrival window directly in SQL
+        const trackingWithWindowQuery = `
+            WITH station_tracking AS (
+                SELECT 'engine_tracking' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking WHERE station_number::text = $1 AND arrival_time >= $2 AND arrival_time <= $3
                 UNION ALL
-                SELECT 'engine_tracking_two' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_two
+                SELECT 'engine_tracking_two' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_two WHERE station_number::text = $1 AND arrival_time >= $2 AND arrival_time <= $3
                 UNION ALL
-                SELECT 'engine_tracking_three' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_three
+                SELECT 'engine_tracking_three' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_three WHERE station_number::text = $1 AND arrival_time >= $2 AND arrival_time <= $3
                 UNION ALL
-                SELECT 'sub_assy' AS source, engine_number, arrival_time, station_name as station_number FROM sub_assy
+                SELECT 'sub_assy' AS source, engine_number, arrival_time, station_name as station_number FROM sub_assy WHERE station_name = $1 AND arrival_time >= $2 AND arrival_time <= $3
             )
             SELECT 
-                engine_number,
-                arrival_time,
-                station_number
-            FROM all_tracking
-            WHERE station_number = $1
-            AND arrival_time >= $2
-            AND arrival_time <= $3
-            ORDER BY arrival_time DESC;
+                st.engine_number,
+                st.arrival_time,
+                st.station_number,
+                (
+                    SELECT MIN(all_t.arrival_time)
+                    FROM (
+                        SELECT station_number::text as stn, arrival_time FROM engine_tracking WHERE station_number::text = $1 AND arrival_time > st.arrival_time
+                        UNION ALL
+                        SELECT station_number::text as stn, arrival_time FROM engine_tracking_two WHERE station_number::text = $1 AND arrival_time > st.arrival_time
+                        UNION ALL
+                        SELECT station_number::text as stn, arrival_time FROM engine_tracking_three WHERE station_number::text = $1 AND arrival_time > st.arrival_time
+                        UNION ALL
+                        SELECT station_name as stn, arrival_time FROM sub_assy WHERE station_name = $1 AND arrival_time > st.arrival_time
+                    ) all_t
+                ) AS next_arrival_time
+            FROM station_tracking st
+            ORDER BY st.arrival_time DESC;
         `;
 
-        const result = await pool.query(trackingQuery, [
-            stationNumber,
-            startDate + ' 00:00:00',
+        const result = await pool.query(trackingWithWindowQuery, [
+            stationNumber, 
+            startDate + ' 00:00:00', 
             endDate + ' 23:59:59'
         ]);
 
         if (result.rows.length === 0) {
-            return res.status(404).json({
-                message: `No engines found for station ${stationNumber} between ${startDate} and ${endDate}`
+            return res.status(404).json({ 
+                message: `No engines found for station ${stationNumber} between ${startDate} and ${endDate}` 
             });
         }
 
-        console.log(`Found ${result.rows.length} engine visits for station ${stationNumber}`);
-
-        // Get all tracking data for the station to calculate time windows
-        const allStationTrackingQuery = `
-            WITH all_tracking AS (
-                SELECT 'engine_tracking' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking
-                UNION ALL
-                SELECT 'engine_tracking_two' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_two
-                UNION ALL
-                SELECT 'engine_tracking_three' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_three
-                UNION ALL
-                SELECT 'sub_assy' AS source, engine_number, arrival_time, station_name as station_number FROM sub_assy
-            )
-            SELECT 
-                engine_number,
-                arrival_time,
-                station_number
-            FROM all_tracking
-            WHERE station_number = $1
-            ORDER BY arrival_time;
-        `;
-
-        const allStationTrackingResult = await pool.query(allStationTrackingQuery, [stationNumber]);
-        const allStationTrackingData = allStationTrackingResult.rows;
-
-        // Process each engine visit and get torque data
+        // 3. Process each engine visit
         const processedData = await Promise.all(
             result.rows.map(async (row) => {
-                const { station_number, arrival_time, engine_number } = row;
+                const { station_number, arrival_time, engine_number, next_arrival_time } = row;
 
-                // Find the next engine arrival time for this station
-                const sortedStationData = allStationTrackingData.sort((a, b) =>
-                    new Date(a.arrival_time) - new Date(b.arrival_time)
-                );
-
-                // Find current engine's index in the sorted data
-                const currentEngineIndex = sortedStationData.findIndex(
-                    item => item.engine_number === engine_number &&
-                        new Date(item.arrival_time).getTime() === new Date(arrival_time).getTime()
-                );
-
-                let startTime = new Date(arrival_time);
+                const startTime = new Date(arrival_time);
                 let endTime;
-
-                // Check if there's a next engine at this station
-                if (currentEngineIndex !== -1 && currentEngineIndex < sortedStationData.length - 1) {
-                    endTime = new Date(sortedStationData[currentEngineIndex + 1].arrival_time);
-                    console.log(`Engine ${engine_number}: Using time window from ${startTime.toISOString()} to ${endTime.toISOString()}`);
+                
+                if (next_arrival_time) {
+                    endTime = new Date(next_arrival_time);
                 } else {
-                    // Fallback to 72-second window
                     endTime = new Date(startTime.getTime() + 72 * 1000);
-                    console.log(`Engine ${engine_number}: Using 72-second fallback window from ${startTime.toISOString()} to ${endTime.toISOString()}`);
                 }
 
                 const date = new Date(arrival_time);
                 const formattedDate = date.toISOString().split('T')[0].replace(/-/g, '');
-
                 const url = `http://10.82.126.73:8121/api/torque-data?station=${station_number}&date=${formattedDate}`;
 
                 try {
-                    const torqueResponse = await axios.get(url);
+                    const torqueResponse = await torqueClient.get(url);
 
-                    // Filter torque data to only include rows within the calculated time window AND same date
+                    if (torqueResponse.status === 404 || !torqueResponse.data || !Array.isArray(torqueResponse.data.data)) {
+                        return stationToolMap.map(tool => ({
+                            engine_number: engine_number,
+                            arrival_time: arrival_time,
+                            station: station_number,
+                            tool_name: tool.tool_name,
+                            tightening_datetime: null,
+                            work_no: null,
+                            axis_number: null,
+                            count: null,
+                            torque: null,
+                            angle: null,
+                            number_of_pulses: null,
+                            tightening_time: null,
+                            free_run_angle: null,
+                            snug_angle: null,
+                            torque_angle_change: null,
+                            judgement: null
+                        }));
+                    }
+
                     const startTimeMs = startTime.getTime();
                     const endTimeMs = endTime.getTime();
                     const arrivalDate = new Date(arrival_time).toDateString();
 
                     const filteredTorqueData = torqueResponse.data.data.filter(item => {
                         if (!item["Reception date/time"]) return false;
-
+                        
                         const receptionDateTime = new Date(item["Reception date/time"]);
                         const receptionTime = receptionDateTime.getTime();
                         const receptionDate = receptionDateTime.toDateString();
-
-                        // Check both date match AND time window
-                        return receptionDate === arrivalDate &&
-                            receptionTime >= startTimeMs &&
-                            receptionTime <= endTimeMs;
+                        
+                        return receptionDate === arrivalDate && 
+                               receptionTime >= startTimeMs && 
+                               receptionTime <= endTimeMs;
                     });
 
-                    console.log(`Engine ${engine_number}: Found ${filteredTorqueData.length} torque records in time window`);
-
-                    // Create entries for tools with data
                     const toolDataEntries = stationToolMap.flatMap(tool => {
-                        // Find matching torque data for this tool's folder
-                        const toolData = filteredTorqueData.filter(item =>
+                        const toolData = filteredTorqueData.filter(item => 
                             item.folder === tool.folder
                         );
-
+                        
                         if (toolData.length > 0) {
-                            // Map torque data to our desired format
                             return toolData.map(item => ({
                                 engine_number: engine_number,
                                 arrival_time: arrival_time,
@@ -509,8 +445,7 @@ const getTorqueDataByDateRange = async (req, res) => {
                                 judgement: item["Judgement"]
                             }));
                         }
-
-                        // For tools without data, return null entry
+                        
                         return [{
                             engine_number: engine_number,
                             arrival_time: arrival_time,
@@ -534,9 +469,6 @@ const getTorqueDataByDateRange = async (req, res) => {
                     return toolDataEntries;
 
                 } catch (torqueErr) {
-                    console.warn(`Torque API error for engine ${engine_number} at station ${station_number} on ${formattedDate}:`, torqueErr.message);
-
-                    // Even if API fails, return null entries for all tools for this engine
                     return stationToolMap.map(tool => ({
                         engine_number: engine_number,
                         arrival_time: arrival_time,
@@ -559,10 +491,8 @@ const getTorqueDataByDateRange = async (req, res) => {
             })
         );
 
-        // Flatten all results into a single array
         const finalData = processedData.flat();
-
-        // Group data by engine number for better organization
+        
         const groupedData = finalData.reduce((acc, item) => {
             if (!acc[item.engine_number]) {
                 acc[item.engine_number] = {
@@ -572,7 +502,7 @@ const getTorqueDataByDateRange = async (req, res) => {
                     tools: []
                 };
             }
-
+            
             acc[item.engine_number].tools.push({
                 tool_name: item.tool_name,
                 tightening_datetime: item.tightening_datetime,
@@ -588,7 +518,7 @@ const getTorqueDataByDateRange = async (req, res) => {
                 torque_angle_change: item.torque_angle_change,
                 judgement: item.judgement
             });
-
+            
             return acc;
         }, {});
 
@@ -605,17 +535,15 @@ const getTorqueDataByDateRange = async (req, res) => {
         res.json(response);
 
     } catch (error) {
-        console.error('Database error:', error);
-        console.error('Error details:', error.message);
-        console.error('Error stack:', error.stack);
-        res.status(500).json({
+        console.error('Database error in getTorqueDataByDateRange:', error.message);
+        res.status(500).json({ 
             message: 'Error fetching torque data by date range and station',
-            error: error.message
+            error: error.message 
         });
     }
 };
 
 module.exports = {
-    getImpactWrenchData, // Keep the original function
-    getTorqueDataByDateRange // Add the new function
+    getImpactWrenchData,
+    getTorqueDataByDateRange
 };
