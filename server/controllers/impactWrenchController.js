@@ -7,12 +7,12 @@ const httpAgent = new http.Agent({
     keepAlive: true,
     maxSockets: 30,
     maxFreeSockets: 10,
-    timeout: 5000
+    timeout: 10000
 });
 
 const torqueClient = axios.create({
     httpAgent,
-    timeout: 3000, // 3-second hard timeout
+    timeout: 10000, // 10-second safe timeout
     validateStatus: (status) => status < 500 // Do not throw on 404s
 });
 
@@ -89,14 +89,14 @@ function matchToolRecords(rawTorqueData, tool, arrivalTime, nextArrivalTime) {
         const receptDate = parseTorqueTimestamp(item["Reception date/time"]);
 
         // Check if either timestamp matches the arrival date & cycle window
-        const matchesTightening = tightDate && 
+        const matchesTightening = tightDate &&
             tightDate.toDateString() === arrivalDateStr &&
-            tightDate.getTime() >= cycleStartMs && 
+            tightDate.getTime() >= cycleStartMs &&
             tightDate.getTime() <= cycleEndMs;
 
-        const matchesReception = receptDate && 
+        const matchesReception = receptDate &&
             receptDate.toDateString() === arrivalDateStr &&
-            receptDate.getTime() >= cycleStartMs && 
+            receptDate.getTime() >= cycleStartMs &&
             receptDate.getTime() <= cycleEndMs;
 
         return matchesTightening || matchesReception;
@@ -231,8 +231,8 @@ const getImpactWrenchData = async (req, res) => {
         const result = await pool.query(trackingWithWindowQuery, [engineNo]);
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ 
-                message: 'No data found for this engine number' 
+            return res.status(404).json({
+                message: 'No data found for this engine number'
             });
         }
 
@@ -337,18 +337,18 @@ const getImpactWrenchData = async (req, res) => {
         );
 
         const finalData = processedData.flat();
-        
+
         // Include tools from stations in stationToolMap that weren't visited in tracking data
         const allStations = stationToolMap.map(tool => tool.station.toString());
         const missingStations = [...new Set(allStations)].filter(
             station => !trackedStations.has(station)
         );
-        
+
         missingStations.forEach(station => {
             const stationTools = stationToolMap.filter(
                 tool => tool.station.toString() === station
             );
-            
+
             stationTools.forEach(tool => {
                 finalData.push({
                     station: station,
@@ -373,9 +373,9 @@ const getImpactWrenchData = async (req, res) => {
 
     } catch (error) {
         console.error('Database error in getImpactWrenchData:', error.message);
-        res.status(500).json({ 
+        res.status(500).json({
             message: 'Error fetching engine tracking data',
-            error: error.message 
+            error: error.message
         });
     }
 };
@@ -386,23 +386,23 @@ const getTorqueDataByDateRange = async (req, res) => {
         const { startDate, endDate } = req.query;
 
         if (!startDate || !endDate) {
-            return res.status(400).json({ 
-                message: 'Both startDate and endDate are required as query parameters (format: YYYY-MM-DD)' 
+            return res.status(400).json({
+                message: 'Both startDate and endDate are required as query parameters (format: YYYY-MM-DD)'
             });
         }
 
         const startDateObj = new Date(startDate);
         const endDateObj = new Date(endDate);
-        
+
         if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())) {
-            return res.status(400).json({ 
-                message: 'Invalid date format. Please use YYYY-MM-DD format' 
+            return res.status(400).json({
+                message: 'Invalid date format. Please use YYYY-MM-DD format'
             });
         }
 
         if (startDateObj > endDateObj) {
-            return res.status(400).json({ 
-                message: 'Start date cannot be later than end date' 
+            return res.status(400).json({
+                message: 'Start date cannot be later than end date'
             });
         }
 
@@ -416,8 +416,8 @@ const getTorqueDataByDateRange = async (req, res) => {
         const stationToolMap = toolMapResult.rows;
 
         if (stationToolMap.length === 0) {
-            return res.status(404).json({ 
-                message: `No tools found for station ${stationNumber}` 
+            return res.status(404).json({
+                message: `No tools found for station ${stationNumber}`
             });
         }
 
@@ -453,14 +453,14 @@ const getTorqueDataByDateRange = async (req, res) => {
         `;
 
         const result = await pool.query(trackingWithWindowQuery, [
-            stationNumber, 
-            startDate + ' 00:00:00', 
+            stationNumber,
+            startDate + ' 00:00:00',
             endDate + ' 23:59:59'
         ]);
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ 
-                message: `No engines found for station ${stationNumber} between ${startDate} and ${endDate}` 
+            return res.status(404).json({
+                message: `No engines found for station ${stationNumber} between ${startDate} and ${endDate}`
             });
         }
 
@@ -569,7 +569,7 @@ const getTorqueDataByDateRange = async (req, res) => {
         );
 
         const finalData = processedData.flat();
-        
+
         const groupedData = finalData.reduce((acc, item) => {
             if (!acc[item.engine_number]) {
                 acc[item.engine_number] = {
@@ -579,7 +579,7 @@ const getTorqueDataByDateRange = async (req, res) => {
                     tools: []
                 };
             }
-            
+
             acc[item.engine_number].tools.push({
                 tool_name: item.tool_name,
                 tightening_datetime: item.tightening_datetime,
@@ -595,7 +595,7 @@ const getTorqueDataByDateRange = async (req, res) => {
                 torque_angle_change: item.torque_angle_change,
                 judgement: item.judgement
             });
-            
+
             return acc;
         }, {});
 
@@ -613,9 +613,9 @@ const getTorqueDataByDateRange = async (req, res) => {
 
     } catch (error) {
         console.error('Database error in getTorqueDataByDateRange:', error.message);
-        res.status(500).json({ 
+        res.status(500).json({
             message: 'Error fetching torque data by date range and station',
-            error: error.message 
+            error: error.message
         });
     }
 };
