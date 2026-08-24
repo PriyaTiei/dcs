@@ -52,22 +52,39 @@ async function fetchYokotaStationData(stationNumber, arrivalTimeStr) {
     }
 }
 
-// Critical stations supported by Yokota API
-const criticalStations = [61, 60, 58, 20, 21];
-
-const toolNameMapping = {
-    61: "EGR PIPE TIGHTENING",
-    60: "EGR VALVE TIGHTENING", 
-    58: "INTAKE MANIFOLD",
-    20: "VVT BOLT TIGHTENING",
-    21: "WATER INLET HOUSING"
-};
-
 const getYokotaData = async (req, res) => {
     try {
         const { engineNo } = req.params;
 
-        // Query target engine tracking arrivals with SQL-computed next arrival window in < 2ms
+        // 1. Fetch station tool map dynamically from PostgreSQL
+        let stationToolMap = [];
+        try {
+            const toolMapResult = await pool.query(`
+                SELECT station, tool_name, folder 
+                FROM station_tool_map
+            `);
+            stationToolMap = toolMapResult.rows || [];
+        } catch (mapErr) {
+            console.error('Error fetching station_tool_map from database:', mapErr.message);
+        }
+
+        // Build dynamic tool name lookup and critical stations purely from DB
+        const dynamicToolNameMap = {};
+        const dynamicCriticalStations = new Set();
+
+        stationToolMap.forEach(item => {
+            if (item.station) {
+                const stnNum = parseInt(item.station);
+                if (!isNaN(stnNum)) {
+                    dynamicToolNameMap[stnNum] = item.tool_name || null;
+                    dynamicCriticalStations.add(stnNum);
+                }
+                dynamicToolNameMap[item.station] = item.tool_name || null;
+                dynamicCriticalStations.add(item.station.toString());
+            }
+        });
+
+        // 2. Query target engine tracking arrivals with SQL-computed next arrival window in < 2ms
         const trackingWithWindowQuery = `
             WITH target_tracking AS (
                 SELECT 'engine_tracking' AS source, engine_number, arrival_time::text as arrival_time_str, arrival_time, station_number FROM engine_tracking WHERE engine_number = $1
@@ -109,7 +126,8 @@ const getYokotaData = async (req, res) => {
             result.rows.map(async (row) => {
                 const { station_number, arrival_time, arrival_time_str, engine_number, next_arrival_time } = row;
                 const stationNum = parseInt(station_number);
-                const isCritical = criticalStations.includes(stationNum);
+                const isCritical = dynamicCriticalStations.has(stationNum) || dynamicCriticalStations.has(station_number);
+                const resolvedToolName = dynamicToolNameMap[stationNum] || dynamicToolNameMap[station_number] || null;
 
                 // Helper to return null entry for critical stations
                 const createNullEntry = () => [{
@@ -126,7 +144,7 @@ const getYokotaData = async (req, res) => {
                     torque: null,
                     judgement: null,
                     timeDate: null,
-                    tool_name: toolNameMapping[station_number] || null
+                    tool_name: resolvedToolName
                 }];
 
                 // If station is not a Yokota station, return empty (will be filtered out)
@@ -143,6 +161,11 @@ const getYokotaData = async (req, res) => {
                     endTime = new Date(startTime.getTime() + 72 * 1000);
                 }
 
+                // Tolerance window buffer for clock drift (60 seconds)
+                const TIME_BUFFER_MS = 60 * 1000;
+                const windowStartMs = startTime.getTime() - TIME_BUFFER_MS;
+                const windowEndMs = endTime.getTime() + TIME_BUFFER_MS;
+
                 try {
                     const rawYokotaData = await fetchYokotaStationData(station_number, arrival_time_str);
 
@@ -150,8 +173,6 @@ const getYokotaData = async (req, res) => {
                         return createNullEntry();
                     }
 
-                    const startTimeMs = startTime.getTime();
-                    const endTimeMs = endTime.getTime();
                     const arrivalDate = startTime.toDateString();
 
                     const filteredYokotaData = rawYokotaData.filter(item => {
@@ -177,8 +198,8 @@ const getYokotaData = async (req, res) => {
                             const recordDate = recordDateTime.toDateString();
 
                             return recordDate === arrivalDate && 
-                                   recordTime >= startTimeMs && 
-                                   recordTime <= endTimeMs;
+                                   recordTime >= windowStartMs && 
+                                   recordTime <= windowEndMs;
                         } catch {
                             return false;
                         }
@@ -202,7 +223,7 @@ const getYokotaData = async (req, res) => {
                         torque: item.torque,
                         judgement: item.judgement,
                         timeDate: item.timeDate,
-                        tool_name: toolNameMapping[station_number] || null
+                        tool_name: resolvedToolName
                     }));
 
                 } catch (yokotaErr) {

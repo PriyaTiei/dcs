@@ -165,8 +165,10 @@ const getImpactWrenchData = async (req, res) => {
                         return createNullEntries();
                     }
 
-                    const startTimeMs = startTime.getTime();
-                    const endTimeMs = endTime.getTime();
+                    // Tolerance window buffer for clock drift (60 seconds)
+                    const TIME_BUFFER_MS = 60 * 1000;
+                    const windowStartMs = startTime.getTime() - TIME_BUFFER_MS;
+                    const windowEndMs = endTime.getTime() + TIME_BUFFER_MS;
                     const arrivalDate = new Date(arrival_time).toDateString();
 
                     // Filter torque records within calculated time window and date
@@ -178,8 +180,8 @@ const getImpactWrenchData = async (req, res) => {
                         const receptionDate = receptionDateTime.toDateString();
                         
                         return receptionDate === arrivalDate && 
-                               receptionTime >= startTimeMs && 
-                               receptionTime <= endTimeMs;
+                               receptionTime >= windowStartMs && 
+                               receptionTime <= windowEndMs;
                     });
 
                     // Create entries for each tool
@@ -404,8 +406,10 @@ const getTorqueDataByDateRange = async (req, res) => {
                         }));
                     }
 
-                    const startTimeMs = startTime.getTime();
-                    const endTimeMs = endTime.getTime();
+                    // Tolerance window buffer for clock drift (60 seconds)
+                    const TIME_BUFFER_MS = 60 * 1000;
+                    const windowStartMs = startTime.getTime() - TIME_BUFFER_MS;
+                    const windowEndMs = endTime.getTime() + TIME_BUFFER_MS;
                     const arrivalDate = new Date(arrival_time).toDateString();
 
                     const filteredTorqueData = torqueResponse.data.data.filter(item => {
@@ -416,8 +420,8 @@ const getTorqueDataByDateRange = async (req, res) => {
                         const receptionDate = receptionDateTime.toDateString();
                         
                         return receptionDate === arrivalDate && 
-                               receptionTime >= startTimeMs && 
-                               receptionTime <= endTimeMs;
+                               receptionTime >= windowStartMs && 
+                               receptionTime <= windowEndMs;
                     });
 
                     const toolDataEntries = stationToolMap.flatMap(tool => {
