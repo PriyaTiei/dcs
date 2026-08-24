@@ -22,6 +22,137 @@ const dcsTorqueApiCache = new Map();
 const CACHE_TTL_MS = 60 * 1000; // 1 minute
 const MAX_CACHE_ENTRIES = 200;
 
+// Helper to compare folder codes robustly (handles leading zeros, case, whitespace, prefix)
+function isFolderMatch(apiFolder, dbFolder) {
+    if (apiFolder == null || dbFolder == null) return false;
+    const a = String(apiFolder).trim().toUpperCase();
+    const b = String(dbFolder).trim().toUpperCase();
+    if (a === b) return true;
+
+    // Numeric comparison ignoring leading zeros (e.g., "043" vs "43")
+    const numA = a.replace(/^0+/, '');
+    const numB = b.replace(/^0+/, '');
+    if (numA !== '' && numA === numB) return true;
+
+    // Prefix normalization (e.g., "F043" vs "043")
+    const cleanA = a.replace(/^[A-Z]/, '').replace(/^0+/, '');
+    const cleanB = b.replace(/^[A-Z]/, '').replace(/^0+/, '');
+    if (cleanA !== '' && cleanA === cleanB) return true;
+
+    return false;
+}
+
+// Helper to safely parse date string from torque record
+function parseTorqueTimestamp(dateStr) {
+    if (!dateStr || typeof dateStr !== 'string') return null;
+    const cleanStr = dateStr.trim();
+    const parsed = new Date(cleanStr);
+    if (!isNaN(parsed.getTime())) return parsed;
+
+    // Handle "YYYY/MM/DD HH:mm:ss" format
+    const isoStr = cleanStr.replace(/\//g, '-');
+    const parsedIso = new Date(isoStr);
+    if (!isNaN(parsedIso.getTime())) return parsedIso;
+
+    return null;
+}
+
+// Select matching torque records for a specific tool and arrival window
+function matchToolRecords(rawTorqueData, tool, arrivalTime, nextArrivalTime) {
+    const startTime = new Date(arrivalTime);
+    if (isNaN(startTime.getTime())) return [];
+
+    const arrivalDateStr = startTime.toDateString();
+
+    // Base cycle window: engine arrives at startTime.
+    // If next_arrival_time is known, engine leaves around next_arrival_time.
+    // Otherwise, default cycle duration is 90 seconds.
+    let cycleEndMs;
+    if (nextArrivalTime) {
+        const nextTime = new Date(nextArrivalTime).getTime();
+        // Cap single-station window to at most 180s to prevent grabbing far-future engines
+        cycleEndMs = Math.min(nextTime + 10000, startTime.getTime() + 180000);
+    } else {
+        cycleEndMs = startTime.getTime() + 90000;
+    }
+
+    const cycleStartMs = startTime.getTime() - 20000; // 20s pre-arrival buffer for RFID scan jitter
+
+    // 1. Filter by folder match first
+    const folderMatches = rawTorqueData.filter(item => isFolderMatch(item.folder, tool.folder));
+    if (folderMatches.length === 0) return [];
+
+    // 2. Filter by date and time window
+    // Prioritize "Tightening date/time", with fallback to "Reception date/time"
+    const windowMatches = folderMatches.filter(item => {
+        const tightDate = parseTorqueTimestamp(item["Tightening date/time"]);
+        const receptDate = parseTorqueTimestamp(item["Reception date/time"]);
+
+        // Check if either timestamp matches the arrival date & cycle window
+        const matchesTightening = tightDate && 
+            tightDate.toDateString() === arrivalDateStr &&
+            tightDate.getTime() >= cycleStartMs && 
+            tightDate.getTime() <= cycleEndMs;
+
+        const matchesReception = receptDate && 
+            receptDate.toDateString() === arrivalDateStr &&
+            receptDate.getTime() >= cycleStartMs && 
+            receptDate.getTime() <= cycleEndMs;
+
+        return matchesTightening || matchesReception;
+    });
+
+    if (windowMatches.length === 0) return [];
+
+    // 3. Deduplicate / isolate target engine's tightening sequence
+    // Sort chronologically
+    windowMatches.sort((a, b) => {
+        const timeA = (parseTorqueTimestamp(a["Tightening date/time"]) || parseTorqueTimestamp(a["Reception date/time"]) || new Date(0)).getTime();
+        const timeB = (parseTorqueTimestamp(b["Tightening date/time"]) || parseTorqueTimestamp(b["Reception date/time"]) || new Date(0)).getTime();
+        return timeA - timeB;
+    });
+
+    // Group into clusters where items in a cluster are within 35s of each other (multi-bolt tightening)
+    const clusters = [];
+    let currentCluster = [];
+
+    for (let i = 0; i < windowMatches.length; i++) {
+        const item = windowMatches[i];
+        const itemTime = (parseTorqueTimestamp(item["Tightening date/time"]) || parseTorqueTimestamp(item["Reception date/time"]) || new Date(0)).getTime();
+
+        if (currentCluster.length === 0) {
+            currentCluster.push({ item, itemTime });
+        } else {
+            const lastTime = currentCluster[currentCluster.length - 1].itemTime;
+            if (itemTime - lastTime <= 35000) {
+                // Same cycle / multi-bolt count
+                currentCluster.push({ item, itemTime });
+            } else {
+                // New cycle (subsequent engine)
+                clusters.push(currentCluster);
+                currentCluster = [{ item, itemTime }];
+            }
+        }
+    }
+    if (currentCluster.length > 0) {
+        clusters.push(currentCluster);
+    }
+
+    // Find the cluster closest to startTime
+    let bestCluster = clusters[0];
+    let minDiff = Math.abs(bestCluster[0].itemTime - startTime.getTime());
+
+    for (let i = 1; i < clusters.length; i++) {
+        const diff = Math.abs(clusters[i][0].itemTime - startTime.getTime());
+        if (diff < minDiff) {
+            minDiff = diff;
+            bestCluster = clusters[i];
+        }
+    }
+
+    return bestCluster.map(c => c.item);
+}
+
 async function fetchStationTorqueData(stationNumber, formattedDate) {
     const cacheKey = `${stationNumber}_${formattedDate}`;
     const cached = dcsTorqueApiCache.get(cacheKey);
@@ -144,16 +275,6 @@ const getImpactWrenchData = async (req, res) => {
                     return [];
                 }
 
-                // Calculate time window
-                const startTime = new Date(arrival_time);
-                let endTime;
-
-                if (next_arrival_time) {
-                    endTime = new Date(next_arrival_time);
-                } else {
-                    endTime = new Date(startTime.getTime() + 72 * 1000);
-                }
-
                 const date = new Date(arrival_time);
                 const formattedDate = date.toISOString().split('T')[0].replace(/-/g, '');
 
@@ -165,36 +286,15 @@ const getImpactWrenchData = async (req, res) => {
                         return createNullEntries();
                     }
 
-                    // Tolerance window buffer for clock drift (60 seconds)
-                    const TIME_BUFFER_MS = 60 * 1000;
-                    const windowStartMs = startTime.getTime() - TIME_BUFFER_MS;
-                    const windowEndMs = endTime.getTime() + TIME_BUFFER_MS;
-                    const arrivalDate = new Date(arrival_time).toDateString();
-
-                    // Filter torque records within calculated time window and date
-                    const filteredTorqueData = rawTorqueData.filter(item => {
-                        if (!item["Reception date/time"]) return false;
-                        
-                        const receptionDateTime = new Date(item["Reception date/time"]);
-                        const receptionTime = receptionDateTime.getTime();
-                        const receptionDate = receptionDateTime.toDateString();
-                        
-                        return receptionDate === arrivalDate && 
-                               receptionTime >= windowStartMs && 
-                               receptionTime <= windowEndMs;
-                    });
-
-                    // Create entries for each tool
+                    // Match entries for each tool using robust matching & cycle deduplication
                     const toolDataEntries = stationTools.flatMap(tool => {
-                        const toolData = filteredTorqueData.filter(item => 
-                            item.folder === tool.folder
-                        );
-                        
-                        if (toolData.length > 0) {
-                            return toolData.map(item => ({
+                        const matchedRecords = matchToolRecords(rawTorqueData, tool, arrival_time, next_arrival_time);
+
+                        if (matchedRecords.length > 0) {
+                            return matchedRecords.map(item => ({
                                 station: station_number,
                                 tool_name: tool.tool_name,
-                                tightening_datetime: item["Tightening date/time"],
+                                tightening_datetime: item["Tightening date/time"] || item["Reception date/time"],
                                 work_no: item["WorkNO."],
                                 axis_number: item["Axis number"],
                                 count: item["Count"],
@@ -208,7 +308,7 @@ const getImpactWrenchData = async (req, res) => {
                                 judgement: item["Judgement"]
                             }));
                         }
-                        
+
                         // For tools without data, return null entry
                         return [{
                             station: station_number,
@@ -369,15 +469,6 @@ const getTorqueDataByDateRange = async (req, res) => {
             result.rows.map(async (row) => {
                 const { station_number, arrival_time, engine_number, next_arrival_time } = row;
 
-                const startTime = new Date(arrival_time);
-                let endTime;
-                
-                if (next_arrival_time) {
-                    endTime = new Date(next_arrival_time);
-                } else {
-                    endTime = new Date(startTime.getTime() + 72 * 1000);
-                }
-
                 const date = new Date(arrival_time);
                 const formattedDate = date.toISOString().split('T')[0].replace(/-/g, '');
                 const url = `http://10.82.126.73:8121/api/torque-data?station=${station_number}&date=${formattedDate}`;
@@ -406,36 +497,18 @@ const getTorqueDataByDateRange = async (req, res) => {
                         }));
                     }
 
-                    // Tolerance window buffer for clock drift (60 seconds)
-                    const TIME_BUFFER_MS = 60 * 1000;
-                    const windowStartMs = startTime.getTime() - TIME_BUFFER_MS;
-                    const windowEndMs = endTime.getTime() + TIME_BUFFER_MS;
-                    const arrivalDate = new Date(arrival_time).toDateString();
-
-                    const filteredTorqueData = torqueResponse.data.data.filter(item => {
-                        if (!item["Reception date/time"]) return false;
-                        
-                        const receptionDateTime = new Date(item["Reception date/time"]);
-                        const receptionTime = receptionDateTime.getTime();
-                        const receptionDate = receptionDateTime.toDateString();
-                        
-                        return receptionDate === arrivalDate && 
-                               receptionTime >= windowStartMs && 
-                               receptionTime <= windowEndMs;
-                    });
+                    const rawTorqueData = torqueResponse.data.data;
 
                     const toolDataEntries = stationToolMap.flatMap(tool => {
-                        const toolData = filteredTorqueData.filter(item => 
-                            item.folder === tool.folder
-                        );
-                        
-                        if (toolData.length > 0) {
-                            return toolData.map(item => ({
+                        const matchedRecords = matchToolRecords(rawTorqueData, tool, arrival_time, next_arrival_time);
+
+                        if (matchedRecords.length > 0) {
+                            return matchedRecords.map(item => ({
                                 engine_number: engine_number,
                                 arrival_time: arrival_time,
                                 station: station_number,
                                 tool_name: tool.tool_name,
-                                tightening_datetime: item["Tightening date/time"],
+                                tightening_datetime: item["Tightening date/time"] || item["Reception date/time"],
                                 work_no: item["WorkNO."],
                                 axis_number: item["Axis number"],
                                 count: item["Count"],
@@ -449,7 +522,7 @@ const getTorqueDataByDateRange = async (req, res) => {
                                 judgement: item["Judgement"]
                             }));
                         }
-                        
+
                         return [{
                             engine_number: engine_number,
                             arrival_time: arrival_time,
