@@ -374,16 +374,17 @@ const ImpactWrenchTable = ({ engineNo, triggerSearch }) => {
         console.log("Impact Wrench Response Data:", response.data);
         console.log("Is array?", Array.isArray(response.data), "Count:", response.data?.length);
 
-        // Check if all records have null values for tightening_datetime
-        const allDataEmpty = Array.isArray(response.data) && response.data.every(item => item.tightening_datetime === null);
-        console.log("Are all tightening_datetime null?", allDataEmpty);
+        const rawData = Array.isArray(response.data) ? response.data : [];
+        // Only keep actual data records (exclude null tightening records)
+        const validRecords = rawData.filter(item => item && item.tightening_datetime !== null && item.torque !== null);
+        console.log("Valid torque records count:", validRecords.length);
 
-        if (allDataEmpty || !Array.isArray(response.data) || response.data.length === 0) {
-          console.warn("[ImpactWrench] Setting wrenchData to empty array because all records are null or empty");
+        if (validRecords.length === 0) {
+          console.warn("[ImpactWrench] Setting wrenchData to empty array because no actual data was found");
           setWrenchData([]);
         } else {
           // Station sort logic
-          const sortedData = [...response.data].sort((a, b) => {
+          const sortedData = [...validRecords].sort((a, b) => {
             const stationA = String(a?.station ?? '');
             const stationB = String(b?.station ?? '');
 

@@ -283,7 +283,7 @@ const getImpactWrenchData = async (req, res) => {
                     const rawTorqueData = await fetchStationTorqueData(station_number, formattedDate);
 
                     if (!rawTorqueData || rawTorqueData.length === 0) {
-                        return createNullEntries();
+                        return [];
                     }
 
                     // Match entries for each tool using robust matching & cycle deduplication
@@ -309,66 +309,19 @@ const getImpactWrenchData = async (req, res) => {
                             }));
                         }
 
-                        // For tools without data, return null entry
-                        return [{
-                            station: station_number,
-                            tool_name: tool.tool_name,
-                            tightening_datetime: null,
-                            work_no: null,
-                            axis_number: null,
-                            count: null,
-                            torque: null,
-                            angle: null,
-                            number_of_pulses: null,
-                            tightening_time: null,
-                            free_run_angle: null,
-                            snug_angle: null,
-                            torque_angle_change: null,
-                            judgement: null
-                        }];
+                        // Skip tools without data
+                        return [];
                     });
 
                     return toolDataEntries;
 
                 } catch (torqueErr) {
-                    return createNullEntries();
+                    return [];
                 }
             })
         );
 
         const finalData = processedData.flat();
-
-        // Include tools from stations in stationToolMap that weren't visited in tracking data
-        const allStations = stationToolMap.map(tool => tool.station.toString());
-        const missingStations = [...new Set(allStations)].filter(
-            station => !trackedStations.has(station)
-        );
-
-        missingStations.forEach(station => {
-            const stationTools = stationToolMap.filter(
-                tool => tool.station.toString() === station
-            );
-
-            stationTools.forEach(tool => {
-                finalData.push({
-                    station: station,
-                    tool_name: tool.tool_name,
-                    tightening_datetime: null,
-                    work_no: null,
-                    axis_number: null,
-                    count: null,
-                    torque: null,
-                    angle: null,
-                    number_of_pulses: null,
-                    tightening_time: null,
-                    free_run_angle: null,
-                    snug_angle: null,
-                    torque_angle_change: null,
-                    judgement: null
-                });
-            });
-        });
-
         res.json(finalData);
 
     } catch (error) {
@@ -523,47 +476,13 @@ const getTorqueDataByDateRange = async (req, res) => {
                             }));
                         }
 
-                        return [{
-                            engine_number: engine_number,
-                            arrival_time: arrival_time,
-                            station: station_number,
-                            tool_name: tool.tool_name,
-                            tightening_datetime: null,
-                            work_no: null,
-                            axis_number: null,
-                            count: null,
-                            torque: null,
-                            angle: null,
-                            number_of_pulses: null,
-                            tightening_time: null,
-                            free_run_angle: null,
-                            snug_angle: null,
-                            torque_angle_change: null,
-                            judgement: null
-                        }];
+                        return [];
                     });
 
                     return toolDataEntries;
 
                 } catch (torqueErr) {
-                    return stationToolMap.map(tool => ({
-                        engine_number: engine_number,
-                        arrival_time: arrival_time,
-                        station: station_number,
-                        tool_name: tool.tool_name,
-                        tightening_datetime: null,
-                        work_no: null,
-                        axis_number: null,
-                        count: null,
-                        torque: null,
-                        angle: null,
-                        number_of_pulses: null,
-                        tightening_time: null,
-                        free_run_angle: null,
-                        snug_angle: null,
-                        torque_angle_change: null,
-                        judgement: null
-                    }));
+                    return [];
                 }
             })
         );
