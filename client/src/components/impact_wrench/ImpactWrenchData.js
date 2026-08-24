@@ -367,14 +367,19 @@ const ImpactWrenchTable = ({ engineNo, triggerSearch }) => {
       try {
         setLoading(true);
         const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://10.82.126.73:5081';
+        console.log(`[ImpactWrench] Fetching from: ${backendUrl}/api/impactWrench/${engineNo}`);
         const response = await axios.get(
           `${backendUrl}/api/impactWrench/${engineNo}`
         );
+        console.log("Impact Wrench Response Data:", response.data);
+        console.log("Is array?", Array.isArray(response.data), "Count:", response.data?.length);
 
         // Check if all records have null values for tightening_datetime
-        const allDataEmpty = response.data.every(item => item.tightening_datetime === null);
+        const allDataEmpty = Array.isArray(response.data) && response.data.every(item => item.tightening_datetime === null);
+        console.log("Are all tightening_datetime null?", allDataEmpty);
 
-        if (allDataEmpty) {
+        if (allDataEmpty || !Array.isArray(response.data) || response.data.length === 0) {
+          console.warn("[ImpactWrench] Setting wrenchData to empty array because all records are null or empty");
           setWrenchData([]);
         } else {
           // Station sort logic
@@ -405,13 +410,14 @@ const ImpactWrenchTable = ({ engineNo, triggerSearch }) => {
             const dateB = new Date(b?.tightening_datetime || '1970-01-01');
             return dateA - dateB;
           });
+          console.log("[ImpactWrench] Processed sortedData items:", sortedData.length);
           setWrenchData(sortedData);
         }
 
         setError(null);
       } catch (err) {
         setError('Error fetching wrench data');
-        console.error('Error:', err);
+        console.error('[ImpactWrench] Error fetching wrench data:', err);
       } finally {
         setLoading(false);
       }
