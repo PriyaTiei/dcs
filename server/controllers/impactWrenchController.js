@@ -17,10 +17,113 @@ const torqueClient = axios.create({
 });
 
 // In-Memory Fast Cache for Station Torque API Data (60-second TTL)
-// Avoids duplicate HTTP requests across consecutive engine searches
 const dcsTorqueApiCache = new Map();
 const CACHE_TTL_MS = 60 * 1000; // 1 minute
 const MAX_CACHE_ENTRIES = 200;
+
+// Complete Verified Master Map from UEC-4800 Controller & Status Sheet
+const MASTER_URYU_TOOL_MAP = [
+    { contr_no: "1", station: "28", folder: "016", tool_name: "Ex manifold stud", line: "MK1" },
+    { contr_no: "2", station: "Cam housing sub assy", folder: "005", tool_name: "Cam cap bolt", line: "CHS" },
+    { contr_no: "3", station: "Cam housing sub assy", folder: "006", tool_name: "D4 lifter guide", line: "CHS" },
+    { contr_no: "4", station: "Block sub assy", folder: "007", tool_name: "Oil jet bolt (Nozzle No.1)", line: "BS" },
+    { contr_no: "5", station: "51", folder: "017", tool_name: "Knock sensor bolt", line: "MK3" },
+    { contr_no: "6", station: "Block sub assy", folder: "015", tool_name: "Oil pump bolt", line: "BS" },
+    { contr_no: "7", station: "Block sub assy", folder: "040", tool_name: "Oil strainer bolt", line: "BS" },
+    { contr_no: "8", station: "Block sub assy", folder: "001", tool_name: "Crank case bolt", line: "BS" },
+    { contr_no: "10", station: "1", folder: "059", tool_name: "Oil Pan drain bolt", line: "MK1" },
+    { contr_no: "11", station: "46", folder: "020", tool_name: "Vacuum pump bolt", line: "MK2" },
+    { contr_no: "12", station: "Cam housing sub assy", folder: "008", tool_name: "EX-VVT", line: "CHS" },
+    { contr_no: "15", station: "31", folder: "021", tool_name: "Ex/In VVT solenoid bolt", line: "MK1" },
+    { contr_no: "16", station: "23", folder: "022", tool_name: "Chain Tensioner nut", line: "MK1" },
+    { contr_no: "17", station: "23", folder: "023", tool_name: "Chain Tensioner bolt", line: "MK1" },
+    { contr_no: "18", station: "21", folder: "024", tool_name: "Chain support (slipper)bolt", line: "MK1" },
+    { contr_no: "19", station: "21", folder: "025", tool_name: "Chain damper bolt", line: "MK1" },
+    { contr_no: "20", station: "23", folder: "026", tool_name: "Oil Pump Sprocket bolt", line: "MK1" },
+    { contr_no: "21", station: "1", folder: "027", tool_name: "Oil filter union", line: "MK1" },
+    { contr_no: "23", station: "Block sub assy", folder: "018", tool_name: "Hydraulic oil sensor bolt", line: "BS" },
+    { contr_no: "24", station: "46", folder: "029", tool_name: "Oil level gauge guide", line: "MK2" },
+    { contr_no: "25", station: "46", folder: "019", tool_name: "PCV case bolt", line: "MK2" },
+    { contr_no: "26", station: "Head sub assy", folder: "012", tool_name: "D4 delivery pipe bolt", line: "HS" },
+    { contr_no: "27", station: "57", folder: "030", tool_name: "Fuel pressurs sensor holder bolt", line: "MK3" },
+    { contr_no: "28", station: "52", folder: "031", tool_name: "D4 pump bolt", line: "MK3" },
+    { contr_no: "29", station: "55", folder: "032", tool_name: "Fuel pipe stay bolt", line: "MK3" },
+    { contr_no: "30", station: "Head sub assy", folder: "011", tool_name: "Low pressure fuel delivery pipe", line: "HS" },
+    { contr_no: "31", station: "Head sub assy", folder: "010", tool_name: "Fuel press. sensor holder (Port)", line: "HS" },
+    { contr_no: "32", station: "52", folder: "033", tool_name: "Wire harness bkt nut", line: "MK3" },
+    { contr_no: "33", station: "52", folder: "034", tool_name: "Wire harness bkt bolt Base", line: "MK3" },
+    { contr_no: "34", station: "22", folder: "035", tool_name: "Wire harness bkt bolt thermostat", line: "MK1" },
+    { contr_no: "35", station: "53", folder: "036", tool_name: "Ingnition coil bolt", line: "MK3" },
+    { contr_no: "36", station: "43", folder: "014", tool_name: "Water inlet pipe bolt", line: "SPS" },
+    { contr_no: "37", station: "43", folder: "037", tool_name: "Water inlet housing", line: "MK3" },
+    { contr_no: "38", station: "28", folder: "038", tool_name: "Water outlet bolt", line: "MK1" },
+    { contr_no: "39", station: "17", folder: "039", tool_name: "Water bypass outlet", line: "MK1" },
+    { contr_no: "41", station: "56", folder: "041", tool_name: "Water bypass hose no.1 bolt", line: "MK3" },
+    { contr_no: "42", station: "59", folder: "042", tool_name: "Water bypass pipe no.2 bolt", line: "MK3" },
+    { contr_no: "43", station: "62", folder: "043", tool_name: "Water bypass plug", line: "MK3" },
+    { contr_no: "44", station: "62", folder: "044", tool_name: "Heat insulation bolt", line: "MK3" },
+    { contr_no: "45", station: "58", folder: "045", tool_name: "Intake manifold bolt & nut", line: "MK3" },
+    { contr_no: "46", station: "58", folder: "046", tool_name: "Delivery guard bolt", line: "MK3" },
+    { contr_no: "47", station: "61", folder: "047", tool_name: "Intake manifold stay bolt M8", line: "MK3" },
+    { contr_no: "48", station: "61", folder: "048", tool_name: "Intake manifold stay bolt M6", line: "MK3" },
+    { contr_no: "49", station: "45", folder: "049", tool_name: "Throttle body bolt", line: "MK2" },
+    { contr_no: "50", station: "61", folder: "050", tool_name: "EGR pipe bolt", line: "MK3" },
+    { contr_no: "51", station: "60", folder: "051", tool_name: "EGR valve bolt", line: "MK3" },
+    { contr_no: "52", station: "59", folder: "052", tool_name: "EGR adaptor bolt", line: "MK3" },
+    { contr_no: "53", station: "59", folder: "053", tool_name: "EGR Cooler bolt", line: "MK3" },
+    { contr_no: "54", station: "59", folder: "013", tool_name: "EGR cooler (SPS)", line: "SPS" },
+    { contr_no: "56", station: "26", folder: "054", tool_name: "V-Rib Belt Tensioner", line: "MK1" },
+    { contr_no: "57", station: "58", folder: "055", tool_name: "Engine hanger No.1 bolt", line: "MK3" },
+    { contr_no: "58", station: "61", folder: "056", tool_name: "Engine hanger No.2 bolt", line: "MK3" },
+    { contr_no: "59", station: "7", folder: "057", tool_name: "HV damper bolt", line: "MK1" },
+    { contr_no: "60", station: "51", folder: "058", tool_name: "NE sensor", line: "MK3" },
+    { contr_no: "62", station: "62", folder: "063", tool_name: "Wire hrns bkt (EGR cooler)", line: "MK3" },
+    { contr_no: "64", station: "22", folder: "062", tool_name: "Wire hrns bkt (Crank Case)", line: "MK1" },
+    { contr_no: "65", station: "Cam housing sub assy", folder: "009", tool_name: "Wireharness Bkt (CHS)", line: "CHS" },
+    { contr_no: "69", station: "26", folder: "060", tool_name: "Front oil seal press fit height", line: "MK1" },
+    { contr_no: "70", station: "61", folder: "061", tool_name: "Intake manifold bracket bolt", line: "MK3" },
+    { contr_no: "71", station: "51", folder: "064", tool_name: "Knock Control Sensor (1.5L)", line: "MK3" },
+    { contr_no: "72", station: "7", folder: "072", tool_name: "Wire Hrns BKT HV", line: "MK1" }
+];
+
+// Helper to resolve all tools for a station, combining DB overrides with Master Dictionary
+function getToolsForStation(stationNumber, dbToolMap) {
+    const stnStr = String(stationNumber).trim();
+    
+    // 1. Find master tools configured for this station
+    const masterTools = MASTER_URYU_TOOL_MAP.filter(tool => {
+        const toolStn = String(tool.station).trim();
+        if (toolStn.toUpperCase() === stnStr.toUpperCase()) return true;
+        // Check numeric equivalence
+        if (/^\d+$/.test(toolStn) && /^\d+$/.test(stnStr)) {
+            return parseInt(toolStn, 10) === parseInt(stnStr, 10);
+        }
+        return false;
+    });
+
+    // 2. Build final list, correcting known DB folder swaps if present
+    const resolvedTools = [...masterTools];
+    const seenFolders = new Set(resolvedTools.map(t => String(t.folder).replace(/^0+/, '')));
+
+    // Add any extra custom tools from DB that aren't already in master
+    if (Array.isArray(dbToolMap)) {
+        dbToolMap.forEach(dbTool => {
+            const dbStn = String(dbTool.station).trim();
+            const matchesStn = (dbStn.toUpperCase() === stnStr.toUpperCase()) ||
+                (/^\d+$/.test(dbStn) && /^\d+$/.test(stnStr) && parseInt(dbStn, 10) === parseInt(stnStr, 10));
+
+            if (matchesStn) {
+                const normFolder = String(dbTool.folder).replace(/^0+/, '');
+                if (!seenFolders.has(normFolder)) {
+                    resolvedTools.push(dbTool);
+                    seenFolders.add(normFolder);
+                }
+            }
+        });
+    }
+
+    return resolvedTools;
+}
 
 // Helper to compare folder codes robustly (handles leading zeros, case, whitespace, prefix)
 function isFolderMatch(apiFolder, dbFolder) {
@@ -65,18 +168,17 @@ function matchToolRecords(rawTorqueData, tool, arrivalTime, nextArrivalTime) {
     const arrivalDateStr = startTime.toDateString();
 
     // Base cycle window: engine arrives at startTime.
-    // If next_arrival_time is known, engine leaves around next_arrival_time.
-    // Otherwise, default cycle duration is 90 seconds.
+    // 60-second pre-arrival buffer for RFID scan jitter & controller clock drift
+    const cycleStartMs = startTime.getTime() - 60000;
+
     let cycleEndMs;
     if (nextArrivalTime) {
         const nextTime = new Date(nextArrivalTime).getTime();
-        // Cap single-station window to at most 180s to prevent grabbing far-future engines
-        cycleEndMs = Math.min(nextTime + 10000, startTime.getTime() + 180000);
+        // Cap single-station window to at most 240s to prevent grabbing far-future engines
+        cycleEndMs = Math.min(nextTime + 30000, startTime.getTime() + 240000);
     } else {
-        cycleEndMs = startTime.getTime() + 90000;
+        cycleEndMs = startTime.getTime() + 150000; // 2.5 minutes default single-station cycle
     }
-
-    const cycleStartMs = startTime.getTime() - 20000; // 20s pre-arrival buffer for RFID scan jitter
 
     // 1. Filter by folder match first
     const folderMatches = rawTorqueData.filter(item => isFolderMatch(item.folder, tool.folder));
@@ -112,7 +214,7 @@ function matchToolRecords(rawTorqueData, tool, arrivalTime, nextArrivalTime) {
         return timeA - timeB;
     });
 
-    // Group into clusters where items in a cluster are within 35s of each other (multi-bolt tightening)
+    // Group into clusters where items in a cluster are within 45s of each other (multi-bolt tightening)
     const clusters = [];
     let currentCluster = [];
 
@@ -124,7 +226,7 @@ function matchToolRecords(rawTorqueData, tool, arrivalTime, nextArrivalTime) {
             currentCluster.push({ item, itemTime });
         } else {
             const lastTime = currentCluster[currentCluster.length - 1].itemTime;
-            if (itemTime - lastTime <= 35000) {
+            if (itemTime - lastTime <= 45000) {
                 // Same cycle / multi-bolt count
                 currentCluster.push({ item, itemTime });
             } else {
@@ -153,15 +255,23 @@ function matchToolRecords(rawTorqueData, tool, arrivalTime, nextArrivalTime) {
     return bestCluster.map(c => c.item);
 }
 
-async function fetchStationTorqueData(stationNumber, formattedDate) {
-    const cacheKey = `${stationNumber}_${formattedDate}`;
+async function fetchStationTorqueData(stationNumber, formattedDate, arrivalTime, nextArrivalTime) {
+    const timeKey = arrivalTime ? new Date(arrivalTime).toISOString() : 'full';
+    const cacheKey = `${stationNumber}_${formattedDate}_${timeKey}`;
     const cached = dcsTorqueApiCache.get(cacheKey);
 
     if (cached && (Date.now() - cached.cachedAt < CACHE_TTL_MS)) {
         return cached.data;
     }
 
-    const url = `http://10.82.126.73:8121/api/torque-data?station=${stationNumber}&date=${formattedDate}`;
+    let url = `http://10.82.126.73:8121/api/torque-data?station=${stationNumber}&date=${formattedDate}`;
+    if (arrivalTime) {
+        url += `&startTime=${encodeURIComponent(new Date(arrivalTime).toISOString())}`;
+        if (nextArrivalTime) {
+            url += `&nextTime=${encodeURIComponent(new Date(nextArrivalTime).toISOString())}`;
+        }
+    }
+
     try {
         const torqueResponse = await torqueClient.get(url);
         const data = (torqueResponse.status === 404 || !torqueResponse.data || !Array.isArray(torqueResponse.data.data))
@@ -188,13 +298,15 @@ const getImpactWrenchData = async (req, res) => {
     try {
         const { engineNo } = req.params;
 
-        // 1. Fetch station tool map
-        const toolMapQuery = `
-            SELECT station, tool_name, folder 
-            FROM station_tool_map
-        `;
-        const toolMapResult = await pool.query(toolMapQuery);
-        const stationToolMap = toolMapResult.rows;
+        // 1. Fetch station tool map from DB (with safe fallback)
+        let dbStationToolMap = [];
+        try {
+            const toolMapQuery = `SELECT station, tool_name, folder FROM station_tool_map`;
+            const toolMapResult = await pool.query(toolMapQuery);
+            dbStationToolMap = toolMapResult.rows || [];
+        } catch (dbErr) {
+            console.warn('Warning fetching station_tool_map, using Master Dictionary:', dbErr.message);
+        }
 
         // 2. Query target engine arrivals with SQL-computed next arrival window in < 2ms
         const trackingWithWindowQuery = `
@@ -236,39 +348,13 @@ const getImpactWrenchData = async (req, res) => {
             });
         }
 
-        // Track unique stations visited by this engine
-        const trackedStations = new Set(result.rows.map(row => row.station_number.toString()));
-
         // 3. Process each station visited by this engine
         const processedData = await Promise.all(
             result.rows.map(async (row) => {
                 const { station_number, arrival_time, engine_number, next_arrival_time } = row;
 
-                // Find tools for this station
-                const stationTools = stationToolMap.filter(
-                    tool => tool.station.toString() === station_number.toString()
-                );
-
-                // Helper to create null tool entries when no data or no tools
-                const createNullEntries = () => {
-                    if (stationTools.length === 0) return [];
-                    return stationTools.map(tool => ({
-                        station: station_number,
-                        tool_name: tool.tool_name,
-                        tightening_datetime: null,
-                        work_no: null,
-                        axis_number: null,
-                        count: null,
-                        torque: null,
-                        angle: null,
-                        number_of_pulses: null,
-                        tightening_time: null,
-                        free_run_angle: null,
-                        snug_angle: null,
-                        torque_angle_change: null,
-                        judgement: null
-                    }));
-                };
+                // Find tools for this station using Master Dictionary + DB overrides
+                const stationTools = getToolsForStation(station_number, dbStationToolMap);
 
                 // If station has no mapped torque tools, return immediately without network call
                 if (stationTools.length === 0) {
@@ -279,8 +365,8 @@ const getImpactWrenchData = async (req, res) => {
                 const formattedDate = date.toISOString().split('T')[0].replace(/-/g, '');
 
                 try {
-                    // Fetch station data via cached/deduplicated fetch
-                    const rawTorqueData = await fetchStationTorqueData(station_number, formattedDate);
+                    // Fetch station data via high-speed windowed fetch
+                    const rawTorqueData = await fetchStationTorqueData(station_number, formattedDate, arrival_time, next_arrival_time);
 
                     if (!rawTorqueData || rawTorqueData.length === 0) {
                         return [];
@@ -359,22 +445,29 @@ const getTorqueDataByDateRange = async (req, res) => {
             });
         }
 
-        // 1. Fetch station tool map for specific station
-        const toolMapQuery = `
-            SELECT station, tool_name, folder 
-            FROM station_tool_map
-            WHERE station = $1
-        `;
-        const toolMapResult = await pool.query(toolMapQuery, [stationNumber]);
-        const stationToolMap = toolMapResult.rows;
+        // 1. Fetch station tool map for specific station (with Master Map fallback)
+        let dbToolMap = [];
+        try {
+            const toolMapQuery = `
+                SELECT station, tool_name, folder 
+                FROM station_tool_map
+                WHERE station = $1
+            `;
+            const toolMapResult = await pool.query(toolMapQuery, [stationNumber]);
+            dbToolMap = toolMapResult.rows || [];
+        } catch (dbErr) {
+            console.warn('Warning fetching station_tool_map, using Master Dictionary:', dbErr.message);
+        }
 
-        if (stationToolMap.length === 0) {
+        const stationTools = getToolsForStation(stationNumber, dbToolMap);
+
+        if (stationTools.length === 0) {
             return res.status(404).json({
-                message: `No tools found for station ${stationNumber}`
+                message: `No tools mapped for station ${stationNumber}`
             });
         }
 
-        // 2. Query engine visits with next-arrival window directly in SQL
+        // 2. Query station tracking arrivals with SQL-computed next arrival window in < 2ms
         const trackingWithWindowQuery = `
             WITH station_tracking AS (
                 SELECT 'engine_tracking' AS source, engine_number, arrival_time, station_number::text as station_number FROM engine_tracking WHERE station_number::text = $1 AND arrival_time >= $2 AND arrival_time <= $3
@@ -424,35 +517,15 @@ const getTorqueDataByDateRange = async (req, res) => {
 
                 const date = new Date(arrival_time);
                 const formattedDate = date.toISOString().split('T')[0].replace(/-/g, '');
-                const url = `http://10.82.126.73:8121/api/torque-data?station=${station_number}&date=${formattedDate}`;
 
                 try {
-                    const torqueResponse = await torqueClient.get(url);
+                    const rawTorqueData = await fetchStationTorqueData(station_number, formattedDate, arrival_time, next_arrival_time);
 
-                    if (torqueResponse.status === 404 || !torqueResponse.data || !Array.isArray(torqueResponse.data.data)) {
-                        return stationToolMap.map(tool => ({
-                            engine_number: engine_number,
-                            arrival_time: arrival_time,
-                            station: station_number,
-                            tool_name: tool.tool_name,
-                            tightening_datetime: null,
-                            work_no: null,
-                            axis_number: null,
-                            count: null,
-                            torque: null,
-                            angle: null,
-                            number_of_pulses: null,
-                            tightening_time: null,
-                            free_run_angle: null,
-                            snug_angle: null,
-                            torque_angle_change: null,
-                            judgement: null
-                        }));
+                    if (!rawTorqueData || rawTorqueData.length === 0) {
+                        return [];
                     }
 
-                    const rawTorqueData = torqueResponse.data.data;
-
-                    const toolDataEntries = stationToolMap.flatMap(tool => {
+                    const toolDataEntries = stationTools.flatMap(tool => {
                         const matchedRecords = matchToolRecords(rawTorqueData, tool, arrival_time, next_arrival_time);
 
                         if (matchedRecords.length > 0) {
@@ -488,52 +561,12 @@ const getTorqueDataByDateRange = async (req, res) => {
         );
 
         const finalData = processedData.flat();
-
-        const groupedData = finalData.reduce((acc, item) => {
-            if (!acc[item.engine_number]) {
-                acc[item.engine_number] = {
-                    engine_number: item.engine_number,
-                    arrival_time: item.arrival_time,
-                    station: item.station,
-                    tools: []
-                };
-            }
-
-            acc[item.engine_number].tools.push({
-                tool_name: item.tool_name,
-                tightening_datetime: item.tightening_datetime,
-                work_no: item.work_no,
-                axis_number: item.axis_number,
-                count: item.count,
-                torque: item.torque,
-                angle: item.angle,
-                number_of_pulses: item.number_of_pulses,
-                tightening_time: item.tightening_time,
-                free_run_angle: item.free_run_angle,
-                snug_angle: item.snug_angle,
-                torque_angle_change: item.torque_angle_change,
-                judgement: item.judgement
-            });
-
-            return acc;
-        }, {});
-
-        const response = {
-            station_number: stationNumber,
-            date_range: {
-                start_date: startDate,
-                end_date: endDate
-            },
-            total_engines: Object.keys(groupedData).length,
-            engines: Object.values(groupedData)
-        };
-
-        res.json(response);
+        res.json(finalData);
 
     } catch (error) {
         console.error('Database error in getTorqueDataByDateRange:', error.message);
         res.status(500).json({
-            message: 'Error fetching torque data by date range and station',
+            message: 'Error fetching torque data by date range',
             error: error.message
         });
     }

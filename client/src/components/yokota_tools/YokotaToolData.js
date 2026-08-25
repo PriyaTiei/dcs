@@ -20,13 +20,15 @@ const YokotaToolTable = ({ engineNo, triggerSearch }) => {
           `${backendUrl}/api/yokota/${engineNo}`
         );
 
-        // Check if all records have null values for timeDate
+        const rawData = Array.isArray(response.data) ? response.data : [];
+        // Only keep actual data records (exclude null tightening records)
+        const validRecords = rawData.filter(item => item && item.torque !== null && item.timeDate !== null);
 
-        if (!response.data || response.data.length === 0) {
+        if (validRecords.length === 0) {
           setYokotaData([]);
         } else {
           // Station sort logic
-          const sortedData = [...response.data].sort((a, b) => {
+          const sortedData = [...validRecords].sort((a, b) => {
             const stationA = String(a?.station ?? '');
             const stationB = String(b?.station ?? '');
 
@@ -50,7 +52,7 @@ const YokotaToolTable = ({ engineNo, triggerSearch }) => {
 
             // Same station - sort by datetime
             const dateA = new Date(a?.timeDate || '1970-01-01');
-            const dateB = new Date(b.timeDate || '1970-01-01');
+            const dateB = new Date(b?.timeDate || '1970-01-01');
             return dateA - dateB;
           });
           setYokotaData(sortedData);
@@ -77,22 +79,15 @@ const YokotaToolTable = ({ engineNo, triggerSearch }) => {
 
   // Function to determine row class based on judgement
   const getRowClass = (judgement) => {
-    // If judgement is null or undefined, return empty string (default color)
     if (judgement === null || judgement === undefined) {
       return '';
     }
 
-    // If judgement is exactly 'OK' (case-sensitive), return green
-    if (judgement === 'OK') {
+    const cleanJudgement = String(judgement).trim().toUpperCase();
+    if (cleanJudgement === 'OK' || cleanJudgement === 'AOK') {
       return 'highlight-green';
     }
 
-    // If judgement is 'Aok', also return green
-    if (judgement === 'Aok') {
-      return 'highlight-green';
-    }
-
-    // If judgement is anything other than 'OK' or 'Aok', return red
     return 'highlight-red';
   };
 
@@ -100,14 +95,16 @@ const YokotaToolTable = ({ engineNo, triggerSearch }) => {
   const formatDateTime = (timeDate) => {
     if (!timeDate) return '-';
     
-    // If the format is "MM/DD HH:MM:SS", we need to add the year
-    if (timeDate.match(/^\d{2}\/\d{2} \d{2}:\d{2}:\d{2}$/)) {
+    // If the format is "MM/DD HH:MM:SS"
+    if (timeDate.match(/^\d{1,2}\/\d{1,2} \d{2}:\d{2}:\d{2}/)) {
       const currentYear = new Date().getFullYear();
       const formattedDate = `${currentYear}/${timeDate}`;
-      return new Date(formattedDate).toLocaleString();
+      const d = new Date(formattedDate);
+      return !isNaN(d.getTime()) ? d.toLocaleString() : timeDate;
     }
     
-    return new Date(timeDate).toLocaleString();
+    const d = new Date(timeDate);
+    return !isNaN(d.getTime()) ? d.toLocaleString() : timeDate;
   };
 
   return (
@@ -158,7 +155,7 @@ const YokotaToolTable = ({ engineNo, triggerSearch }) => {
                   className={getRowClass(record.judgement)}>
                   <td>{record.engine_number || '-'}</td>
                   <td>{record.station}</td>
-                  <td>{record.tool_name}</td>
+                  <td>{record.tool_name || '-'}</td>
                   <td>{formatDateTime(record.timeDate)}</td>
                   <td>{record.folder !== null ? record.folder : '-'}</td>
                   <td>{record.program !== null ? record.program : '-'}</td>
@@ -181,4 +178,3 @@ const YokotaToolTable = ({ engineNo, triggerSearch }) => {
 };
 
 export default YokotaToolTable;
-
