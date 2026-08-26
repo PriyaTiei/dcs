@@ -1,3 +1,8 @@
+ating 0bc5014..0d615af
+Fast-forward
+ server/controllers/yokotaController.js |  3 ++-
+ server/find_yokota_engines.js          | 97 ++++++++++++++++++++++++++++++++++++++++++++++-----------------------------
+ 2 files changed, 61 insertions(+), 39 deletions(-)
 tnga_iot@Ubuntu-TNGA-IOT:~/Yousuf/dcs/dcs$ pm2 restart all
 Use --update-env to update environment variables
 
@@ -35,14 +40,14 @@ Local PM2 version: 7.0.3
 [PM2] [MTB-FRONTEND](17) ✓
 [PM2] [MTB-BACKEND](18) ✓
 [PM2] [HPCS_BACKEND](19) ✓
-[PM2] [SSO__Backend](20) ✓
 [PM2] [SSO_Frontend](21) ✓
+[PM2] [SSO__Backend](20) ✓
 [PM2] [HPCS_Frontend_report](22) ✓
 [PM2] [GPS_ChangePoint_Frontend](23) ✓
-[PM2] [GPS_ChangePoint_Backend](24) ✓
 [PM2] [HPCS_GD_Assembly_Frontend](25) ✓
-[PM2] [Employee_Management_Backend](27) ✓
+[PM2] [GPS_ChangePoint_Backend](24) ✓
 [PM2] [HPCS_GD_Assembly_Backend](26) ✓
+[PM2] [Employee_Management_Backend](27) ✓
 [PM2] [Employee_Management_Frontend](28) ✓
 [PM2] [HPCS_TNGA_Assembly_Backend](29) ✓
 [PM2] [HPCS_TNGA_Assembly_Frontend](30) ✓
@@ -63,20 +68,20 @@ Local PM2 version: 7.0.3
 [PM2] [HPCS_Alliance_Frontend](46) ✓
 [PM2] [HPCS_Alliance_Backend](45) ✓
 [PM2] [TN_OPS_BACKEND](47) ✓
-[PM2] [TN_OPS_FRONTEND](48) ✓
 [PM2] [GD_Logistic_Module_Backend](49) ✓
+[PM2] [TN_OPS_FRONTEND](48) ✓
 [PM2] [GD_Logistic_Module_Frontend](50) ✓
 [PM2] [freeLocationStorage_Frontend](51) ✓
-[PM2] [IoT_api_backend](53) ✓
 [PM2] [freeLocationStorage_Backend](52) ✓
+[PM2] [IoT_api_backend](53) ✓
 [PM2] [TNGA_MODULECALL_FRONTEND](54) ✓
 [PM2] [TNGA_MODULECALL_BACKEND](55) ✓
 [PM2] [GD_TBM_V2_Frontend](56) ✓
 [PM2] [FRONTEND_NEW_MODCALL](58) ✓
 [PM2] [BACKEND_NEW_MODCALL](59) ✓
 [PM2] [GD_TBM_V2_Backend](57) ✓
-[PM2] [ekanban_qr](61) ✓
 [PM2] [e_kanban_frontend](60) ✓
+[PM2] [ekanban_qr](61) ✓
 [PM2] [tcs_api](62) ✓
 [PM2] [torquedata_backend](64) ✓
 [PM2] [torquedata-frontend](63) ✓
@@ -89,8 +94,8 @@ Local PM2 version: 7.0.3
 [PM2] [camshaft_post_api](71) ✓
 [PM2] [testTraceabilityAPI](72) ✓
 [PM2] [monitoring](73) ✓
-[PM2] [MNT_backend](74) ✓
 [PM2] [MNT_frontend](75) ✓
+[PM2] [MNT_backend](74) ✓
 [PM2] [db-monitor](76) ✓
 [PM2] [yokota_api](77) ✓
 [PM2] [torque-dashboard](78) ✓
@@ -105,369 +110,114 @@ Local PM2 version: 7.0.3
 [PM2] [firewall-backend](87) ✓
 [PM2] [E-Kanban-supply-worker](88) ✓
 [PM2] [E-Kanban-worker](90) ✓
-[PM2] [ekanban_new_server](91) ✓
 [PM2] [Bin-Monitor](89) ✓
+[PM2] [ekanban_new_server](91) ✓
 [PM2] [ekanban_new_frontend](92) ✓
 ⇆ PM2+ activated | Instance Name: Ubuntu-TNGA-IOT-2f1b | Dash: https://app.pm2.io/#/r/dumq0aiw1gg0rfu
 ┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
 │ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
 ├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
-│ 67 │ Alert_Monitoring_… │ fork     │ 19   │ online    │ 0%       │ 43.7mb   │
-│ 66 │ Alert_monitoring_… │ fork     │ 19   │ online    │ 0%       │ 68.7mb   │
-│ 13 │ Application_Reque… │ fork     │ 19   │ online    │ 0%       │ 59.9mb   │
-│ 14 │ Applicaton_Reques… │ fork     │ 19   │ online    │ 0%       │ 41.3mb   │
-│ 5  │ AutoMaint_Backend  │ fork     │ 19   │ online    │ 0%       │ 58.1mb   │
-│ 6  │ AutoMaint_Frontend │ fork     │ 19   │ online    │ 0%       │ 48.5mb   │
-│ 59 │ BACKEND_NEW_MODCA… │ fork     │ 19   │ online    │ 0%       │ 58.1mb   │
-│ 89 │ Bin-Monitor        │ fork     │ 19   │ online    │ 50%      │ 37.3mb   │
-│ 9  │ DCS_Backend        │ fork     │ 23   │ online    │ 0%       │ 80.7mb   │
-│ 10 │ DCS_Frontend       │ fork     │ 19   │ online    │ 0%       │ 44.2mb   │
-│ 65 │ DeviceStatus_fron… │ fork     │ 19   │ online    │ 0%       │ 43.3mb   │
-│ 85 │ E-Kanban-bd        │ fork     │ 19   │ online    │ 50%      │ 127.1mb  │
-│ 82 │ E-Kanban-fd        │ fork     │ 19   │ online    │ 0%       │ 68.6mb   │
-│ 88 │ E-Kanban-supply-w… │ fork     │ 19   │ online    │ 50%      │ 92.4mb   │
-│ 90 │ E-Kanban-worker    │ fork     │ 19   │ online    │ 50%      │ 76.2mb   │
-│ 27 │ Employee_Manageme… │ fork     │ 19   │ online    │ 0%       │ 62.0mb   │
-│ 38 │ Employee_Manageme… │ fork     │ 19   │ online    │ 0%       │ 62.4mb   │
-│ 28 │ Employee_Manageme… │ fork     │ 19   │ online    │ 0%       │ 43.6mb   │
-│ 37 │ Employee_Manageme… │ fork     │ 19   │ online    │ 0%       │ 43.6mb   │
-│ 58 │ FRONTEND_NEW_MODC… │ fork     │ 298  │ online    │ 50%      │ 39.3mb   │
-│ 68 │ FinalDB_api        │ fork     │ 19   │ online    │ 0%       │ 51.3mb   │
-│ 43 │ FourM_Backend      │ fork     │ 19   │ online    │ 0%       │ 62.2mb   │
-│ 42 │ FourM_Frontend     │ fork     │ 19   │ online    │ 0%       │ 43.3mb   │
-│ 3  │ GDQC_API           │ fork     │ 19   │ online    │ 0%       │ 58.3mb   │
-│ 4  │ GDQC_UI            │ fork     │ 19   │ online    │ 0%       │ 58.8mb   │
-│ 31 │ GD_Assembly_HPCS_… │ fork     │ 19   │ online    │ 0%       │ 41.8mb   │
-│ 49 │ GD_Logistic_Modul… │ fork     │ 19   │ online    │ 0%       │ 62.4mb   │
-│ 50 │ GD_Logistic_Modul… │ fork     │ 19   │ online    │ 0%       │ 42.9mb   │
-│ 57 │ GD_TBM_V2_Backend  │ fork     │ 19   │ online    │ 0%       │ 62.0mb   │
-│ 56 │ GD_TBM_V2_Frontend │ fork     │ 19   │ online    │ 0%       │ 43.7mb   │
-│ 24 │ GPS_ChangePoint_B… │ fork     │ 19   │ online    │ 0%       │ 54.9mb   │
-│ 23 │ GPS_ChangePoint_F… │ fork     │ 19   │ online    │ 0%       │ 40.8mb   │
-│ 45 │ HPCS_Alliance_Bac… │ fork     │ 19   │ online    │ 0%       │ 62.3mb   │
-│ 46 │ HPCS_Alliance_Fro… │ fork     │ 19   │ online    │ 0%       │ 43.3mb   │
-│ 19 │ HPCS_BACKEND       │ fork     │ 19   │ online    │ 0%       │ 64.1mb   │
-│ 22 │ HPCS_Frontend_rep… │ fork     │ 19   │ online    │ 0%       │ 41.3mb   │
-│ 26 │ HPCS_GD_Assembly_… │ fork     │ 19   │ online    │ 0%       │ 62.2mb   │
-│ 25 │ HPCS_GD_Assembly_… │ fork     │ 19   │ online    │ 0%       │ 41.1mb   │
-│ 29 │ HPCS_TNGA_Assembl… │ fork     │ 19   │ online    │ 0%       │ 62.6mb   │
-│ 30 │ HPCS_TNGA_Assembl… │ fork     │ 19   │ online    │ 0%       │ 42.1mb   │
-│ 39 │ HPCS_TNGA_MACHINI… │ fork     │ 19   │ online    │ 0%       │ 125.6mb  │
-│ 44 │ HPCS_TNGA_Machini… │ fork     │ 19   │ online    │ 0%       │ 43.7mb   │
-│ 11 │ Iboard_Backend     │ fork     │ 19   │ online    │ 0%       │ 64.2mb   │
-│ 12 │ Iboard_Frontend    │ fork     │ 19   │ online    │ 0%       │ 40.7mb   │
-│ 53 │ IoT_api_backend    │ fork     │ 19   │ online    │ 0%       │ 62.3mb   │
-│ 74 │ MNT_backend        │ fork     │ 19   │ online    │ 0%       │ 80.2mb   │
-│ 75 │ MNT_frontend       │ fork     │ 19   │ online    │ 0%       │ 65.9mb   │
-│ 18 │ MTB-BACKEND        │ fork     │ 19   │ online    │ 0%       │ 53.1mb   │
-│ 17 │ MTB-FRONTEND       │ fork     │ 19   │ online    │ 0%       │ 41.0mb   │
-│ 40 │ QC_TNGA_Backend    │ fork     │ 300  │ errored   │ 0%       │ 0b       │
-│ 41 │ QC_TNGA_Dashboard  │ fork     │ 19   │ online    │ 0%       │ 43.1mb   │
-│ 21 │ SSO_Frontend       │ fork     │ 19   │ online    │ 0%       │ 41.4mb   │
-│ 20 │ SSO__Backend       │ fork     │ 19   │ online    │ 0%       │ 54.5mb   │
-│ 34 │ STW_Audit_Managem… │ fork     │ 19   │ online    │ 0%       │ 61.8mb   │
-│ 35 │ STW_Audit_Managem… │ fork     │ 19   │ online    │ 0%       │ 43.4mb   │
-│ 2  │ TB_API             │ fork     │ 19   │ online    │ 0%       │ 58.6mb   │
-│ 1  │ TB_UI              │ fork     │ 19   │ online    │ 0%       │ 58.2mb   │
-│ 16 │ TNGA_AUTO_MAINT_B… │ fork     │ 19   │ online    │ 0%       │ 61.3mb   │
-│ 15 │ TNGA_AUTO_MAINT_F… │ fork     │ 19   │ online    │ 0%       │ 40.6mb   │
-│ 33 │ TNGA_Assembly_HPC… │ fork     │ 19   │ online    │ 0%       │ 42.1mb   │
-│ 55 │ TNGA_MODULECALL_B… │ fork     │ 19   │ online    │ 0%       │ 62.3mb   │
-│ 54 │ TNGA_MODULECALL_F… │ fork     │ 19   │ online    │ 0%       │ 43.4mb   │
-│ 47 │ TN_OPS_BACKEND     │ fork     │ 19   │ online    │ 0%       │ 53.7mb   │
-│ 48 │ TN_OPS_FRONTEND    │ fork     │ 19   │ online    │ 0%       │ 62.2mb   │
-│ 32 │ Tooling_Backend    │ fork     │ 171… │ online    │ 0%       │ 3.4mb    │
-│ 79 │ backend-scanner    │ fork     │ 19   │ online    │ 0%       │ 80.1mb   │
-│ 71 │ camshaft_post_api  │ fork     │ 19   │ online    │ 0%       │ 51.8mb   │
-│ 8  │ crank_qc           │ fork     │ 19   │ online    │ 0%       │ 56.0mb   │
-│ 76 │ db-monitor         │ fork     │ 19   │ online    │ 0%       │ 72.8mb   │
-│ 60 │ e_kanban_frontend  │ fork     │ 19   │ online    │ 0%       │ 62.3mb   │
-│ 92 │ ekanban_new_front… │ fork     │ 19   │ online    │ 0%       │ 21.2mb   │
-│ 91 │ ekanban_new_server │ fork     │ 19   │ online    │ 50%      │ 63.1mb   │
-│ 61 │ ekanban_qr         │ fork     │ 19   │ online    │ 0%       │ 17.9mb   │
-│ 86 │ firewall frontend  │ fork     │ 19   │ online    │ 0%       │ 58.7mb   │
-│ 87 │ firewall-backend   │ fork     │ 19   │ online    │ 0%       │ 75.0mb   │
-│ 52 │ freeLocationStora… │ fork     │ 19   │ online    │ 0%       │ 62.3mb   │
-│ 51 │ freeLocationStora… │ fork     │ 19   │ online    │ 0%       │ 43.4mb   │
-│ 80 │ frontend-scanner   │ fork     │ 19   │ online    │ 0%       │ 68.7mb   │
-│ 83 │ learning-dev-back… │ fork     │ 19   │ online    │ 0%       │ 66.4mb   │
-│ 84 │ learning-dev-fron… │ fork     │ 19   │ online    │ 0%       │ 67.3mb   │
-│ 73 │ monitoring         │ fork     │ 19   │ online    │ 0%       │ 22.8mb   │
-│ 7  │ node-red           │ fork     │ 19   │ online    │ 0%       │ 141.2mb  │
-│ 70 │ rfid_scans_api     │ fork     │ 19   │ online    │ 0%       │ 57.5mb   │
-│ 81 │ stock_update       │ fork     │ 19   │ online    │ 0%       │ 29.1mb   │
-│ 69 │ sub_assy_api       │ fork     │ 19   │ online    │ 0%       │ 52.9mb   │
-│ 62 │ tcs_api            │ fork     │ 19   │ online    │ 0%       │ 75.3mb   │
-│ 72 │ testTraceabilityA… │ fork     │ 19   │ online    │ 0%       │ 62.2mb   │
-│ 36 │ tooling_frontend   │ fork     │ 19   │ online    │ 0%       │ 3.4mb    │
-│ 78 │ torque-dashboard   │ fork     │ 19   │ online    │ 0%       │ 66.6mb   │
-│ 63 │ torquedata-fronte… │ fork     │ 19   │ online    │ 0%       │ 68.8mb   │
-│ 64 │ torquedata_backend │ fork     │ 19   │ online    │ 0%       │ 50.3mb   │
-│ 77 │ yokota_api         │ fork     │ 35   │ online    │ 0%       │ 65.7mb   │
+│ 67 │ Alert_Monitoring_… │ fork     │ 20   │ online    │ 0%       │ 43.6mb   │
+│ 66 │ Alert_monitoring_… │ fork     │ 20   │ online    │ 0%       │ 69.0mb   │
+│ 13 │ Application_Reque… │ fork     │ 20   │ online    │ 0%       │ 70.8mb   │
+│ 14 │ Applicaton_Reques… │ fork     │ 20   │ online    │ 0%       │ 41.2mb   │
+│ 5  │ AutoMaint_Backend  │ fork     │ 20   │ online    │ 0%       │ 58.9mb   │
+│ 6  │ AutoMaint_Frontend │ fork     │ 20   │ online    │ 0%       │ 47.9mb   │
+│ 59 │ BACKEND_NEW_MODCA… │ fork     │ 20   │ online    │ 0%       │ 65.0mb   │
+│ 89 │ Bin-Monitor        │ fork     │ 20   │ online    │ 0%       │ 36.1mb   │
+│ 9  │ DCS_Backend        │ fork     │ 24   │ online    │ 1.2%     │ 80.4mb   │
+│ 10 │ DCS_Frontend       │ fork     │ 20   │ online    │ 0%       │ 41.2mb   │
+│ 65 │ DeviceStatus_fron… │ fork     │ 20   │ online    │ 0%       │ 43.4mb   │
+│ 85 │ E-Kanban-bd        │ fork     │ 20   │ online    │ 34.9%    │ 105.6mb  │
+│ 82 │ E-Kanban-fd        │ fork     │ 20   │ online    │ 0%       │ 66.7mb   │
+│ 88 │ E-Kanban-supply-w… │ fork     │ 20   │ online    │ 0%       │ 118.7mb  │
+│ 90 │ E-Kanban-worker    │ fork     │ 20   │ online    │ 0%       │ 94.5mb   │
+│ 27 │ Employee_Manageme… │ fork     │ 20   │ online    │ 0%       │ 62.3mb   │
+│ 38 │ Employee_Manageme… │ fork     │ 20   │ online    │ 0%       │ 62.7mb   │
+│ 28 │ Employee_Manageme… │ fork     │ 20   │ online    │ 1.2%     │ 42.1mb   │
+│ 37 │ Employee_Manageme… │ fork     │ 20   │ online    │ 0%       │ 43.4mb   │
+│ 58 │ FRONTEND_NEW_MODC… │ fork     │ 314  │ stopped   │ 0%       │ 0b       │
+│ 68 │ FinalDB_api        │ fork     │ 20   │ online    │ 1.2%     │ 52.3mb   │
+│ 43 │ FourM_Backend      │ fork     │ 20   │ online    │ 0%       │ 62.4mb   │
+│ 42 │ FourM_Frontend     │ fork     │ 20   │ online    │ 0%       │ 43.3mb   │
+│ 3  │ GDQC_API           │ fork     │ 20   │ online    │ 0%       │ 58.5mb   │
+│ 4  │ GDQC_UI            │ fork     │ 20   │ online    │ 0%       │ 58.0mb   │
+│ 31 │ GD_Assembly_HPCS_… │ fork     │ 20   │ online    │ 1.2%     │ 41.9mb   │
+│ 49 │ GD_Logistic_Modul… │ fork     │ 20   │ online    │ 0%       │ 61.9mb   │
+│ 50 │ GD_Logistic_Modul… │ fork     │ 20   │ online    │ 0%       │ 43.4mb   │
+│ 57 │ GD_TBM_V2_Backend  │ fork     │ 20   │ online    │ 0%       │ 62.2mb   │
+│ 56 │ GD_TBM_V2_Frontend │ fork     │ 20   │ online    │ 0%       │ 43.2mb   │
+│ 24 │ GPS_ChangePoint_B… │ fork     │ 20   │ online    │ 4.8%     │ 54.9mb   │
+│ 23 │ GPS_ChangePoint_F… │ fork     │ 20   │ online    │ 1.2%     │ 41.5mb   │
+│ 45 │ HPCS_Alliance_Bac… │ fork     │ 20   │ online    │ 0%       │ 62.0mb   │
+│ 46 │ HPCS_Alliance_Fro… │ fork     │ 20   │ online    │ 0%       │ 42.8mb   │
+│ 19 │ HPCS_BACKEND       │ fork     │ 20   │ online    │ 2.4%     │ 64.8mb   │
+│ 22 │ HPCS_Frontend_rep… │ fork     │ 20   │ online    │ 1.2%     │ 41.0mb   │
+│ 26 │ HPCS_GD_Assembly_… │ fork     │ 20   │ online    │ 0%       │ 62.4mb   │
+│ 25 │ HPCS_GD_Assembly_… │ fork     │ 20   │ online    │ 1.2%     │ 41.0mb   │
+│ 29 │ HPCS_TNGA_Assembl… │ fork     │ 20   │ online    │ 0%       │ 62.0mb   │
+│ 30 │ HPCS_TNGA_Assembl… │ fork     │ 20   │ online    │ 1.2%     │ 41.8mb   │
+│ 39 │ HPCS_TNGA_MACHINI… │ fork     │ 20   │ online    │ 0%       │ 126.4mb  │
+│ 44 │ HPCS_TNGA_Machini… │ fork     │ 20   │ online    │ 0%       │ 43.2mb   │
+│ 11 │ Iboard_Backend     │ fork     │ 20   │ online    │ 0%       │ 63.9mb   │
+│ 12 │ Iboard_Frontend    │ fork     │ 20   │ online    │ 0%       │ 43.0mb   │
+│ 53 │ IoT_api_backend    │ fork     │ 20   │ online    │ 0%       │ 62.4mb   │
+│ 74 │ MNT_backend        │ fork     │ 20   │ online    │ 0%       │ 79.3mb   │
+│ 75 │ MNT_frontend       │ fork     │ 20   │ online    │ 0%       │ 65.9mb   │
+│ 18 │ MTB-BACKEND        │ fork     │ 20   │ online    │ 0%       │ 53.0mb   │
+│ 17 │ MTB-FRONTEND       │ fork     │ 20   │ online    │ 0%       │ 40.6mb   │
+│ 40 │ QC_TNGA_Backend    │ fork     │ 315  │ errored   │ 0%       │ 0b       │
+│ 41 │ QC_TNGA_Dashboard  │ fork     │ 20   │ online    │ 1.2%     │ 43.7mb   │
+│ 21 │ SSO_Frontend       │ fork     │ 20   │ online    │ 1.2%     │ 41.0mb   │
+│ 20 │ SSO__Backend       │ fork     │ 20   │ online    │ 2.4%     │ 55.5mb   │
+│ 34 │ STW_Audit_Managem… │ fork     │ 20   │ online    │ 0%       │ 62.1mb   │
+│ 35 │ STW_Audit_Managem… │ fork     │ 20   │ online    │ 0%       │ 43.5mb   │
+│ 2  │ TB_API             │ fork     │ 20   │ online    │ 0%       │ 58.6mb   │
+│ 1  │ TB_UI              │ fork     │ 20   │ online    │ 0%       │ 58.3mb   │
+│ 16 │ TNGA_AUTO_MAINT_B… │ fork     │ 20   │ online    │ 0%       │ 61.1mb   │
+│ 15 │ TNGA_AUTO_MAINT_F… │ fork     │ 20   │ online    │ 0%       │ 41.0mb   │
+│ 33 │ TNGA_Assembly_HPC… │ fork     │ 20   │ online    │ 1.2%     │ 42.0mb   │
+│ 55 │ TNGA_MODULECALL_B… │ fork     │ 20   │ online    │ 0%       │ 61.9mb   │
+│ 54 │ TNGA_MODULECALL_F… │ fork     │ 20   │ online    │ 0%       │ 43.5mb   │
+│ 47 │ TN_OPS_BACKEND     │ fork     │ 20   │ online    │ 0%       │ 53.1mb   │
+│ 48 │ TN_OPS_FRONTEND    │ fork     │ 20   │ online    │ 0%       │ 62.4mb   │
+│ 32 │ Tooling_Backend    │ fork     │ 172… │ online    │ 0%       │ 3.4mb    │
+│ 79 │ backend-scanner    │ fork     │ 20   │ online    │ 0%       │ 79.4mb   │
+│ 71 │ camshaft_post_api  │ fork     │ 20   │ online    │ 0%       │ 52.7mb   │
+│ 8  │ crank_qc           │ fork     │ 20   │ online    │ 0%       │ 62.5mb   │
+│ 76 │ db-monitor         │ fork     │ 20   │ online    │ 0%       │ 72.3mb   │
+│ 60 │ e_kanban_frontend  │ fork     │ 20   │ online    │ 0%       │ 62.5mb   │
+│ 92 │ ekanban_new_front… │ fork     │ 20   │ online    │ 0%       │ 21.2mb   │
+│ 91 │ ekanban_new_server │ fork     │ 20   │ online    │ 0%       │ 65.5mb   │
+│ 61 │ ekanban_qr         │ fork     │ 20   │ online    │ 0%       │ 18.0mb   │
+│ 86 │ firewall frontend  │ fork     │ 20   │ online    │ 0%       │ 59.4mb   │
+│ 87 │ firewall-backend   │ fork     │ 20   │ online    │ 28.9%    │ 73.9mb   │
+│ 52 │ freeLocationStora… │ fork     │ 20   │ online    │ 0%       │ 62.1mb   │
+│ 51 │ freeLocationStora… │ fork     │ 20   │ online    │ 0%       │ 43.3mb   │
+│ 80 │ frontend-scanner   │ fork     │ 20   │ online    │ 0%       │ 67.1mb   │
+│ 83 │ learning-dev-back… │ fork     │ 20   │ online    │ 0%       │ 67.2mb   │
+│ 84 │ learning-dev-fron… │ fork     │ 20   │ online    │ 0%       │ 67.3mb   │
+│ 73 │ monitoring         │ fork     │ 20   │ online    │ 0%       │ 19.4mb   │
+│ 7  │ node-red           │ fork     │ 20   │ online    │ 0%       │ 140.8mb  │
+│ 70 │ rfid_scans_api     │ fork     │ 20   │ online    │ 0%       │ 56.6mb   │
+│ 81 │ stock_update       │ fork     │ 20   │ online    │ 0%       │ 29.1mb   │
+│ 69 │ sub_assy_api       │ fork     │ 20   │ online    │ 0%       │ 52.9mb   │
+│ 62 │ tcs_api            │ fork     │ 20   │ online    │ 0%       │ 76.1mb   │
+│ 72 │ testTraceabilityA… │ fork     │ 20   │ online    │ 0%       │ 62.5mb   │
+│ 36 │ tooling_frontend   │ fork     │ 20   │ online    │ 0%       │ 3.4mb    │
+│ 78 │ torque-dashboard   │ fork     │ 20   │ online    │ 0%       │ 66.1mb   │
+│ 63 │ torquedata-fronte… │ fork     │ 20   │ online    │ 0%       │ 68.6mb   │
+│ 64 │ torquedata_backend │ fork     │ 20   │ online    │ 0%       │ 50.7mb   │
+│ 77 │ yokota_api         │ fork     │ 36   │ online    │ 0%       │ 65.3mb   │
 └────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
 Module
 ┌────┬────────────────────┬──────────┬──────────┬──────────┐
 │ id │ name               │ status   │ cpu      │ mem      │
 ├────┼────────────────────┼──────────┼──────────┼──────────┤
-│ 0  │ pm2-logrotate      │ online   │ 0%       │ 106.1mb  │
+│ 0  │ pm2-logrotate      │ online   │ 0%       │ 106.3mb  │
 └────┴────────────────────┴──────────┴──────────┴──────────┘
-tnga_iot@Ubuntu-TNGA-IOT:~/Yousuf/dcs/dcs$ curl -s http://localhost:5081/api/yokota/NG60753 | python3 -m json.tool
-[
-    {
-        "engine_number": "NG60753",
-        "station": "60",
-        "folder": "1a",
-        "configured_folder": "0240",
-        "controller_folder": "240",
-        "program": "709-",
-        "unknownValue1": "2A",
-        "torqueDuplicate": "8.4K",
-        "unknownValue2": "2336",
-        "unknownValue3": "50",
-        "unknownValue4": "45",
-        "unknownValue5": "60",
-        "torque": "8",
-        "judgement": "Aok",
-        "timeDate": "08/19 09:44:49",
-        "tool_name": "EGR VALVE BOLT (CHS) - (YOKOTA)"
-    },
-    {
-        "engine_number": "NG60753",
-        "station": "60",
-        "folder": "1a",
-        "configured_folder": "0240",
-        "controller_folder": "240",
-        "program": "709-",
-        "unknownValue1": "1A",
-        "torqueDuplicate": "8.4K",
-        "unknownValue2": "1887",
-        "unknownValue3": "35",
-        "unknownValue4": "35",
-        "unknownValue5": "17",
-        "torque": "3",
-        "judgement": "Aok",
-        "timeDate": "08/19 09:44:51",
-        "tool_name": "EGR VALVE BOLT (CHS) - (YOKOTA)"
-    },
-    {
-        "engine_number": "NG60753",
-        "station": "60",
-        "folder": "1b",
-        "configured_folder": "0240",
-        "controller_folder": "240",
-        "program": "709-",
-        "unknownValue1": "1A",
-        "torqueDuplicate": "10.0K",
-        "unknownValue2": "0",
-        "unknownValue3": "15",
-        "unknownValue4": "0",
-        "unknownValue5": "41",
-        "torque": "6",
-        "judgement": "Aok",
-        "timeDate": "08/19 09:44:52",
-        "tool_name": "EGR VALVE BOLT (CHS) - (YOKOTA)"
-    },
-    {
-        "engine_number": "NG60753",
-        "station": "60",
-        "folder": "1c",
-        "configured_folder": "0240",
-        "controller_folder": "240",
-        "program": "709-",
-        "unknownValue1": "1A",
-        "torqueDuplicate": "11.0K",
-        "unknownValue2": "3",
-        "unknownValue3": "19",
-        "unknownValue4": "9",
-        "unknownValue5": "41",
-        "torque": "7",
-        "judgement": "Aok",
-        "timeDate": "08/19 09:44:54",
-        "tool_name": "EGR VALVE BOLT (CHS) - (YOKOTA)"
-    },
-    {
-        "engine_number": "NG60753",
-        "station": "59",
-        "folder": "1a",
-        "configured_folder": "0053",
-        "controller_folder": "53",
-        "program": "720-",
-        "unknownValue1": "5A",
-        "torqueDuplicate": "27.7K",
-        "unknownValue2": "4134",
-        "unknownValue3": "17",
-        "unknownValue4": "96",
-        "unknownValue5": "33",
-        "torque": "8",
-        "judgement": "Aok",
-        "timeDate": "08/19 09:45:11",
-        "tool_name": "EGR COOLER BOLT & NUT- (YOKOTA)"
-    },
-    {
-        "engine_number": "NG60753",
-        "station": "59",
-        "folder": "1a",
-        "configured_folder": "0053",
-        "controller_folder": "53",
-        "program": "720-",
-        "unknownValue1": "4A",
-        "torqueDuplicate": "27.3K",
-        "unknownValue2": "1895",
-        "unknownValue3": "11",
-        "unknownValue4": "53",
-        "unknownValue5": "27",
-        "torque": "7",
-        "judgement": "Aok",
-        "timeDate": "08/19 09:45:13",
-        "tool_name": "EGR COOLER BOLT & NUT- (YOKOTA)"
-    },
-    {
-        "engine_number": "NG60753",
-        "station": "59",
-        "folder": "1a",
-        "configured_folder": "0053",
-        "controller_folder": "53",
-        "program": "720-",
-        "unknownValue1": "3A",
-        "torqueDuplicate": "27.7K",
-        "unknownValue2": "1027",
-        "unknownValue3": "15",
-        "unknownValue4": "34",
-        "unknownValue5": "33",
-        "torque": "7",
-        "judgement": "Aok",
-        "timeDate": "08/19 09:45:15",
-        "tool_name": "EGR COOLER BOLT & NUT- (YOKOTA)"
-    },
-    {
-        "engine_number": "NG60753",
-        "station": "59",
-        "folder": "1a",
-        "configured_folder": "0053",
-        "controller_folder": "53",
-        "program": "720-",
-        "unknownValue1": "2A",
-        "torqueDuplicate": "27.8K",
-        "unknownValue2": "1481",
-        "unknownValue3": "16",
-        "unknownValue4": "46",
-        "unknownValue5": "32",
-        "torque": "8",
-        "judgement": "Aok",
-        "timeDate": "08/19 09:45:17",
-        "tool_name": "EGR COOLER BOLT & NUT- (YOKOTA)"
-    },
-    {
-        "engine_number": "NG60753",
-        "station": "59",
-        "folder": "1a",
-        "configured_folder": "0053",
-        "controller_folder": "53",
-        "program": "720-",
-        "unknownValue1": "1A",
-        "torqueDuplicate": "27.4K",
-        "unknownValue2": "1517",
-        "unknownValue3": "16",
-        "unknownValue4": "42",
-        "unknownValue5": "32",
-        "torque": "8",
-        "judgement": "Aok",
-        "timeDate": "08/19 09:45:19",
-        "tool_name": "EGR COOLER BOLT & NUT- (YOKOTA)"
-    },
-    {
-        "engine_number": "NG60753",
-        "station": "59",
-        "folder": "1a",
-        "configured_folder": "053",
-        "controller_folder": "53",
-        "program": "720-",
-        "unknownValue1": "5A",
-        "torqueDuplicate": "27.7K",
-        "unknownValue2": "4134",
-        "unknownValue3": "17",
-        "unknownValue4": "96",
-        "unknownValue5": "33",
-        "torque": "8",
-        "judgement": "Aok",
-        "timeDate": "08/19 09:45:11",
-        "tool_name": "EGR Cooler bolt"
-    },
-    {
-        "engine_number": "NG60753",
-        "station": "59",
-        "folder": "1a",
-        "configured_folder": "053",
-        "controller_folder": "53",
-        "program": "720-",
-        "unknownValue1": "4A",
-        "torqueDuplicate": "27.3K",
-        "unknownValue2": "1895",
-        "unknownValue3": "11",
-        "unknownValue4": "53",
-        "unknownValue5": "27",
-        "torque": "7",
-        "judgement": "Aok",
-        "timeDate": "08/19 09:45:13",
-        "tool_name": "EGR Cooler bolt"
-    },
-    {
-        "engine_number": "NG60753",
-        "station": "59",
-        "folder": "1a",
-        "configured_folder": "053",
-        "controller_folder": "53",
-        "program": "720-",
-        "unknownValue1": "3A",
-        "torqueDuplicate": "27.7K",
-        "unknownValue2": "1027",
-        "unknownValue3": "15",
-        "unknownValue4": "34",
-        "unknownValue5": "33",
-        "torque": "7",
-        "judgement": "Aok",
-        "timeDate": "08/19 09:45:15",
-        "tool_name": "EGR Cooler bolt"
-    },
-    {
-        "engine_number": "NG60753",
-        "station": "59",
-        "folder": "1a",
-        "configured_folder": "053",
-        "controller_folder": "53",
-        "program": "720-",
-        "unknownValue1": "2A",
-        "torqueDuplicate": "27.8K",
-        "unknownValue2": "1481",
-        "unknownValue3": "16",
-        "unknownValue4": "46",
-        "unknownValue5": "32",
-        "torque": "8",
-        "judgement": "Aok",
-        "timeDate": "08/19 09:45:17",
-        "tool_name": "EGR Cooler bolt"
-    },
-    {
-        "engine_number": "NG60753",
-        "station": "59",
-        "folder": "1a",
-        "configured_folder": "053",
-        "controller_folder": "53",
-        "program": "720-",
-        "unknownValue1": "1A",
-        "torqueDuplicate": "27.4K",
-        "unknownValue2": "1517",
-        "unknownValue3": "16",
-        "unknownValue4": "42",
-        "unknownValue5": "32",
-        "torque": "8",
-        "judgement": "Aok",
-        "timeDate": "08/19 09:45:19",
-        "tool_name": "EGR Cooler bolt"
-    }
-]
 tnga_iot@Ubuntu-TNGA-IOT:~/Yousuf/dcs/dcs$ cd /home/tnga_iot/Yousuf/dcs/dcs/server
-node -r dotenv/config find_yokota_engines.js NG60753
+tnga_iot@Ubuntu-TNGA-IOT:~/Yousuf/dcs/dcs/server$ node -r dotenv/config find_yokota_engines.js NG60753
 
 ================================================================================
 DETAILED YOKOTA TOOLS DATA REPORT FOR ENGINE: NG60753
@@ -528,64 +278,4 @@ Successfully connected to PostgreSQL database
 
 --------------------------------------------------------------------------------
 2. CHECKING 10 YOKOTA TOOLS ON MOUNTED DRIVE (/mnt/yokota/AppData):
---------------------------------------------------------------------------------
-
-[Tool #1] Station 20 | EX-VVT - (YOKOTA)
-   Folder: 0257 | Subfolder: 120_0_100_78
-   Arrival Time: 8/19/2026, 8:05:48 AM (Date Code: 20260819)
-   Drive Path  : /mnt/yokota/AppData/0257/120_0_100_78/20260819 [EXISTS ON DISK]
-   Status      : ❌ API Query Error (timeout of 8000ms exceeded)
-
-[Tool #2] Station 17 | WATER BYPASS OUTLET BOLT (YOKOTA)
-   Folder: 0039 | Subfolder: 120_0_100_95
-   Arrival Time: 8/19/2026, 8:02:36 AM (Date Code: 20260819)
-   Drive Path  : /mnt/yokota/AppData/0039/120_0_100_95/20260819 [NOT FOUND]
-   Status      : ❌ API Query Error (timeout of 8000ms exceeded)
-
-[Tool #3] Station 21 | WATER INLET HOUSING - (YOKOTA)
-   Folder: 0230 | Subfolder: 120_0_100_97
-   Arrival Time: 8/19/2026, 8:06:52 AM (Date Code: 20260819)
-   Drive Path  : /mnt/yokota/AppData/0230/120_0_100_97/20260819 [NOT FOUND]
-   Status      : ❌ API Query Error (timeout of 8000ms exceeded)
-
-[Tool #4] Station 45 | THROTTOLE BODY BOLT - (YOKOTA)
-   Folder: 0104 | Subfolder: 120_0_100_91
-   Arrival Time: 8/19/2026, 8:28:13 AM (Date Code: 20260819)
-   Drive Path  : /mnt/yokota/AppData/0104/120_0_100_91/20260819 [NOT FOUND]
-   Status      : ❌ API Query Error (timeout of 8000ms exceeded)
-
-[Tool #5] Station 53 | IGNITION COIL BOLT - (YOKOTA)
-   Folder: 0103 | Subfolder: 120_0_100_92
-   Arrival Time: 8/19/2026, 8:38:28 AM (Date Code: 20260819)
-   Drive Path  : /mnt/yokota/AppData/0103/120_0_100_92/20260819 [NOT FOUND]
-   Status      : ❌ API Query Error (timeout of 8000ms exceeded)
-
-[Tool #6] Station 58 | I/M BOLT & NUT - (YOKOTA)
-   Folder: 0250 | Subfolder: 120_0_100_98
-   Arrival Time: 8/19/2026, 8:43:51 AM (Date Code: 20260819)
-   Drive Path  : /mnt/yokota/AppData/0250/120_0_100_98/20260819 [EXISTS ON DISK]
-   Status      : ❌ API Query Error (timeout of 8000ms exceeded)
-
-[Tool #7] Station 59 | EGR COOLER BOLT & NUT- (YOKOTA)
-   Folder: 0053 | Subfolder: 120_0_100_94
-   Arrival Time: 8/19/2026, 8:44:57 AM (Date Code: 20260819)
-   Drive Path  : /mnt/yokota/AppData/0053/120_0_100_94/20260819 [NOT FOUND]
-   Status      : ❌ API Query Error (timeout of 8000ms exceeded)
-
-[Tool #8] Station 60 | EGR VALVE BOLT (CHS) - (YOKOTA)
-   Folder: 0240 | Subfolder: 120_0_100_99
-   Arrival Time: 8/19/2026, 8:46:01 AM (Date Code: 20260819)
-   Drive Path  : /mnt/yokota/AppData/0240/120_0_100_99/20260819 [EXISTS ON DISK]
-   Status      : ❌ API Query Error (timeout of 8000ms exceeded)
-
-[Tool #9] Station 61 | EGR PIPE BOLT - (YOKOTA)
-   Folder: 0255 | Subfolder: 120_0_100_96
-   Arrival Time: 8/19/2026, 8:47:05 AM (Date Code: 20260819)
-   Drive Path  : /mnt/yokota/AppData/0255/120_0_100_96/20260819 [NOT FOUND]
-   Status      : ❌ API Query Error (timeout of 8000ms exceeded)
-
-[Tool #10] Station 61 | I/M BKT BOLT (IN MANI) (YOKOTA)
-   Folder: 0102 | Subfolder: 120_0_100_93
-   Arrival Time: 8/19/2026, 8:47:05 AM (Date Code: 20260819)
-   Drive Path  : /mnt/yokota/AppData/0102/120_0_100_93/20260819 [NOT FOUND]
-   Stat
+----------------------------------------------------------------------------
