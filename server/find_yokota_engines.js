@@ -161,66 +161,136 @@ async function main() {
 
         if (targetEngine) {
             await inspectEngineData(targetEngine.trim());
-        } else {
-            console.log('Searching PostgreSQL for top engines with the most Yokota station visits...\n');
+            return;
+        }
 
-            const query = `
-                WITH all_tracking AS (
-                    SELECT engine_number, arrival_time, station_number::text as station_number FROM engine_tracking
-                    UNION ALL
-                    SELECT engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_two
-                    UNION ALL
-                    SELECT engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_three
-                    UNION ALL
-                    SELECT engine_number, arrival_time, station_name as station_number FROM sub_assy
-                ),
-                yokota_visits AS (
-                    SELECT 
-                        engine_number,
-                        arrival_time,
-                        station_number
-                    FROM all_tracking
-                    WHERE engine_number IS NOT NULL 
-                      AND engine_number != ''
-                      AND station_number IN (
-                          '20', '17', '21', '43', '45', '53', '58', '59', '60', '61',
-                          'Cam housing sub assy', 'CHS', 'Cam housing', 'CAM_HOUSING'
-                      )
-                )
+        console.log('1. Discovering active dates on mounted drive (/mnt/yokota/AppData)...');
+        const activeDates = new Set();
+        try {
+            if (fs.existsSync(YOKOTA_BASE_PATH)) {
+                const controllers = fs.readdirSync(YOKOTA_BASE_PATH, { withFileTypes: true })
+                    .filter(e => e.isDirectory())
+                    .map(e => e.name);
+
+                for (const c of controllers) {
+                    const cDir = path.join(YOKOTA_BASE_PATH, c);
+                    try {
+                        const subdirs = fs.readdirSync(cDir, { withFileTypes: true })
+                            .filter(e => e.isDirectory())
+                            .map(e => e.name);
+
+                        for (const sub of subdirs) {
+                            const subDir = path.join(cDir, sub);
+                            const dates = fs.readdirSync(subDir, { withFileTypes: true })
+                                .filter(e => e.isDirectory() && /^\d{8}$/.test(e.name))
+                                .map(e => e.name);
+
+                            dates.forEach(d => activeDates.add(d));
+                        }
+                    } catch {}
+                }
+            }
+        } catch {}
+
+        console.log(`   Found ${activeDates.size} active date folder(s) on disk: [${Array.from(activeDates).sort().join(', ')}]\n`);
+
+        console.log('2. Querying PostgreSQL for engines produced during these active dates...');
+        const dateList = Array.from(activeDates);
+        
+        // Convert YYYYMMDD to YYYY-MM-DD
+        const formattedDateList = dateList.map(d => `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`);
+
+        const candidateQuery = `
+            WITH all_tracking AS (
+                SELECT engine_number, arrival_time, station_number::text as station_number FROM engine_tracking
+                UNION ALL
+                SELECT engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_two
+                UNION ALL
+                SELECT engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_three
+                UNION ALL
+                SELECT engine_number, arrival_time, station_name as station_number FROM sub_assy
+            ),
+            yokota_visits AS (
                 SELECT 
                     engine_number,
-                    COUNT(DISTINCT station_number) as yokota_station_count,
-                    ARRAY_AGG(DISTINCT station_number) as stations_visited,
-                    MIN(arrival_time) as first_arrival,
-                    MAX(arrival_time) as latest_arrival
-                FROM yokota_visits
-                GROUP BY engine_number
-                ORDER BY yokota_station_count DESC, latest_arrival DESC
-                LIMIT 10;
-            `;
+                    arrival_time,
+                    station_number
+                FROM all_tracking
+                WHERE engine_number IS NOT NULL 
+                  AND engine_number != ''
+                  AND station_number IN (
+                      '20', '17', '21', '43', '45', '53', '58', '59', '60', '61',
+                      'Cam housing sub assy', 'CHS', 'Cam housing', 'CAM_HOUSING'
+                  )
+                  AND arrival_time::date::text = ANY($1)
+            )
+            SELECT 
+                engine_number,
+                arrival_time::date::text as prod_date,
+                COUNT(DISTINCT station_number) as yokota_station_count,
+                MIN(arrival_time) as first_arrival,
+                MAX(arrival_time) as latest_arrival
+            FROM yokota_visits
+            GROUP BY engine_number, arrival_time::date::text
+            ORDER BY prod_date DESC, yokota_station_count DESC, latest_arrival DESC
+            LIMIT 40;
+        `;
 
-            const res = await pool.query(query);
+        const res = await pool.query(candidateQuery, [formattedDateList.length ? formattedDateList : ['2026-08-19', '2026-08-26']]);
 
-            if (res.rows.length === 0) {
-                console.log('No engines found with Yokota station tracking.');
-                return;
-            }
+        console.log(`   Found ${res.rows.length} candidate engines with Yokota station visits.`);
+        console.log('3. Scanning API for matched tightening records...\n');
 
-            console.log('TOP ENGINES WITH YOKOTA VISITS IN DATABASE:');
-            console.log('--------------------------------------------------------------------------------');
-            res.rows.forEach((row, i) => {
-                const date = new Date(row.latest_arrival).toISOString().split('T')[0];
-                console.log(`[${i + 1}] Engine: ${row.engine_number.padEnd(12)} | Stations: ${String(row.yokota_station_count).padStart(2)} | Date: ${date} | Stations: [${row.stations_visited.join(', ')}]`);
-            });
-            console.log('--------------------------------------------------------------------------------');
-            console.log('\nTIP: To inspect any engine in detail, run: node find_yokota_engines.js <ENGINE_NUMBER>');
-            
-            // Automatically inspect the first top engine
-            if (res.rows.length > 0) {
-                const topEngine = res.rows[0].engine_number;
-                await inspectEngineData(topEngine);
-            }
+        const engineResults = [];
+
+        for (const row of res.rows) {
+            const eng = row.engine_number;
+            try {
+                const apiResp = await axios.get(`http://localhost:5081/api/yokota/${eng}`, { timeout: 4000 });
+                const recs = Array.isArray(apiResp.data) ? apiResp.data : [];
+                if (recs.length > 0) {
+                    const uniqueTools = Array.from(new Set(recs.map(r => r.tool_name || r.station)));
+                    engineResults.push({
+                        engine_number: eng,
+                        date: row.prod_date,
+                        toolCount: uniqueTools.length,
+                        boltCount: recs.length,
+                        tools: uniqueTools
+                    });
+                }
+            } catch {}
         }
+
+        if (engineResults.length === 0) {
+            console.log('No engines currently matched in this sample. Running detailed check on NG60753...');
+            await inspectEngineData('NG60753');
+            return;
+        }
+
+        // Sort by most tools matched, then total bolts
+        engineResults.sort((a, b) => b.toolCount - a.toolCount || b.boltCount - a.boltCount);
+
+        console.log('================================================================================');
+        console.log(`VERIFIED ENGINES WITH YOKOTA TIGHTENING DATA (Found ${engineResults.length} engines):`);
+        console.log('================================================================================');
+        console.log('┌────┬────────────────┬────────────┬───────────────┬─────────────┬───────────────────────────────────────┐');
+        console.log('│ #  │ Engine Number  │ Date       │ Matched Tools │ Total Bolts │ Tools Included                        │');
+        console.log('├────┼────────────────┼────────────┼───────────────┼─────────────┼───────────────────────────────────────┤');
+
+        engineResults.forEach((item, idx) => {
+            const num = String(idx + 1).padEnd(2);
+            const eng = item.engine_number.padEnd(14);
+            const dt = item.date.padEnd(10);
+            const tools = `${item.toolCount} tool(s)`.padEnd(13);
+            const bolts = `${item.boltCount} bolt(s)`.padEnd(11);
+            const toolSummary = item.tools.join(', ').slice(0, 37).padEnd(37);
+            console.log(`│ ${num} │ ${eng} │ ${dt} │ ${tools} │ ${bolts} │ ${toolSummary} │`);
+        });
+        console.log('└────┴────────────────┴────────────┴───────────────┴─────────────┴───────────────────────────────────────┘\n');
+
+        console.log(`\nInspecting top engine: ${engineResults[0].engine_number}...`);
+        await inspectEngineData(engineResults[0].engine_number);
+
     } catch (err) {
         console.error('Error:', err.message);
     } finally {
