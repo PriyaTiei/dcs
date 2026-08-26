@@ -1,7 +1,9 @@
+Then test engine NG60753:
+
+bash
+curl -s http://localhost:5081/api/yokota/NG60753 | python3 -m json.tool
+And inspect all tools:
+
+bash
 cd /home/tnga_iot/Yousuf/dcs/dcs/server
-node -e "
-const { getYokotaData } = require('./controllers/yokotaController');
-const req = { params: { engineNo: 'NG60753' } };
-const res = { json: d => console.log('FINAL RESULT:', JSON.stringify(d, null, 2)), status: c => ({ json: e => console.log('ERROR', c, e) }) };
-getYokotaData(req, res);
-"
+node -r dotenv/config find_yokota_engines.js NG60753
