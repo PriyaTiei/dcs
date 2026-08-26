@@ -166,6 +166,7 @@ function parseYokotaRecordSeconds(timeDateStr) {
 
 // ---------------------------------------------------------------------------
 // Record matching within the engine arrival window
+// Handles standard time and the +1h controller hardware clock offset
 // ---------------------------------------------------------------------------
 
 function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime) {
@@ -177,93 +178,95 @@ function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime) {
         return [];
     }
 
-    // 3-minute pre-arrival buffer (180s)
-    const cycleStartSec = arrivalSec - 180;
+    const nextSec = nextArrivalTime ? getPlantSecondsFromMidnight(nextArrivalTime) : null;
 
-    let cycleEndSec;
-    if (nextArrivalTime) {
-        const nextSec = getPlantSecondsFromMidnight(nextArrivalTime);
+    // Test candidate target times:
+    // 1. +3600s (+1 hour): Yokota controller hardware clock running 1 hr ahead
+    // 2. 0s (exact time): Synchronized controller clock
+    // 3. -3600s (-1 hour): Controller clock running 1 hr behind
+    const candidateOffsets = [3600, 0, -3600];
+
+    for (const offset of candidateOffsets) {
+        const targetArrival = (arrivalSec + offset + 86400) % 86400;
+        const cycleStartSec = targetArrival - 180; // 3-minute pre-arrival buffer
+
+        let cycleEndSec;
         if (nextSec !== null && nextSec > arrivalSec) {
-            cycleEndSec = Math.min(nextSec + 60, arrivalSec + 600);
+            const targetNext = (nextSec + offset + 86400) % 86400;
+            cycleEndSec = Math.min(targetNext + 60, targetArrival + 600);
         } else {
-            cycleEndSec = arrivalSec + 300;
+            cycleEndSec = targetArrival + 300; // 5-minute cycle
         }
-    } else {
-        cycleEndSec = arrivalSec + 300; // 5-minute default window
-    }
 
-    const windowMatches = rawYokotaData.filter(item => {
-        if (!item.timeDate) return false;
-        const itemSec = parseYokotaRecordSeconds(item.timeDate);
-        if (itemSec === null) return false;
-        return itemSec >= cycleStartSec && itemSec <= cycleEndSec;
-    });
+        const windowMatches = rawYokotaData.filter(item => {
+            if (!item.timeDate) return false;
+            const itemSec = parseYokotaRecordSeconds(item.timeDate);
+            if (itemSec === null) return false;
+            return itemSec >= cycleStartSec && itemSec <= cycleEndSec;
+        });
 
-    console.log(
-        `[Yokota Matcher] Records=${rawYokotaData.length} | Window matches=${windowMatches.length} | ` +
-        `ArrivalSec=${arrivalSec} (${Math.floor(arrivalSec/3600)}:${Math.floor((arrivalSec%3600)/60)}:${arrivalSec%60}) | ` +
-        `WindowSec=[${cycleStartSec} - ${cycleEndSec}]`
-    );
+        if (windowMatches.length > 0) {
+            console.log(
+                `[Yokota Matcher] Matched with offset=${offset}s (${offset/3600}h) | ` +
+                `Window matches=${windowMatches.length} | ` +
+                `TargetArrival=${Math.floor(targetArrival/3600)}:${Math.floor((targetArrival%3600)/60)}:${targetArrival%60}`
+            );
 
-    if (windowMatches.length === 0) {
-        if (rawYokotaData.length > 0) {
-            const sample = rawYokotaData.slice(0, 3).map(r => `[Time:${r.timeDate}]`).join(', ');
-            console.log(`[Yokota Matcher] 0 window matches. Sample records: ${sample}`);
-        }
-        return [];
-    }
+            // Sort chronologically by seconds from midnight
+            windowMatches.sort((a, b) => {
+                const sa = parseYokotaRecordSeconds(a.timeDate) || 0;
+                const sb = parseYokotaRecordSeconds(b.timeDate) || 0;
+                return sa - sb;
+            });
 
-    // Sort chronologically by seconds from midnight
-    windowMatches.sort((a, b) => {
-        const sa = parseYokotaRecordSeconds(a.timeDate) || 0;
-        const sb = parseYokotaRecordSeconds(b.timeDate) || 0;
-        return sa - sb;
-    });
+            // Group into multi-bolt tightening clusters (items within 45s of each other)
+            const clusters = [];
+            let currentCluster = [];
 
-    // Group into clusters (consecutive items within 45s of each other)
-    const clusters = [];
-    let currentCluster = [];
+            for (const item of windowMatches) {
+                const itemSec = parseYokotaRecordSeconds(item.timeDate) || 0;
 
-    for (const item of windowMatches) {
-        const itemSec = parseYokotaRecordSeconds(item.timeDate) || 0;
+                if (currentCluster.length === 0) {
+                    currentCluster.push({ item, itemSec });
+                } else {
+                    const lastSec = currentCluster[currentCluster.length - 1].itemSec;
+                    if (itemSec - lastSec <= 45) {
+                        currentCluster.push({ item, itemSec });
+                    } else {
+                        clusters.push(currentCluster);
+                        currentCluster = [{ item, itemSec }];
+                    }
+                }
+            }
+            if (currentCluster.length > 0) clusters.push(currentCluster);
 
-        if (currentCluster.length === 0) {
-            currentCluster.push({ item, itemSec });
-        } else {
-            const lastSec = currentCluster[currentCluster.length - 1].itemSec;
-            if (itemSec - lastSec <= 45) {
-                currentCluster.push({ item, itemSec });
-            } else {
-                clusters.push(currentCluster);
-                currentCluster = [{ item, itemSec }];
+            if (clusters.length > 0) {
+                // Find cluster closest to targetArrival
+                let bestCluster = clusters[0];
+                let minDiff = Math.abs(bestCluster[0].itemSec - targetArrival);
+
+                for (let i = 1; i < clusters.length; i++) {
+                    const diff = Math.abs(clusters[i][0].itemSec - targetArrival);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        bestCluster = clusters[i];
+                    }
+                }
+
+                return bestCluster.map(c => c.item);
             }
         }
     }
-    if (currentCluster.length > 0) clusters.push(currentCluster);
 
-    if (clusters.length === 0) return [];
-
-    // Select the cluster closest to arrival time
-    let bestCluster = clusters[0];
-    let minDiff = Math.abs(bestCluster[0].itemSec - arrivalSec);
-
-    for (let i = 1; i < clusters.length; i++) {
-        const diff = Math.abs(clusters[i][0].itemSec - arrivalSec);
-        if (diff < minDiff) {
-            minDiff = diff;
-            bestCluster = clusters[i];
-        }
-    }
-
-    return bestCluster.map(c => c.item);
+    console.log(`[Yokota Matcher] 0 matches across all offsets for ArrivalSec=${arrivalSec}`);
+    return [];
 }
-
 
 // ---------------------------------------------------------------------------
 // Read a CONTROLLER-SPECIFIC Yokota file directly from the mounted share.
 //
 // On-disk layout under /mnt/yokota/AppData/ :
-//   <4-digit-folder> / 120_0_100_<numeric> / <YYYYMMDD> / *.csv
+//   <4-digit-folder> / <any_subfolder> / <YYYYMMDD> / *.csv
 //
 // Example for controller folder "0053":
 //   /mnt/yokota/AppData/0053/120_0_100_53/20260819/0053_120_0_100_53_20260819_*.csv
@@ -280,34 +283,29 @@ async function fetchYokotaControllerData(controllerFolder, formattedDate, statio
     const controller4   = numericStr.padStart(4, '0');   // "0053"
     const controller3   = numericStr;                     // "53"
     const mountRoot     = process.env.YOKOTA_MOUNT_ROOT || '/mnt/yokota';
-    const subfolderName = `120_0_100_${controller3}`;
-    const dateDir       = path.join(mountRoot, 'AppData', controller4, subfolderName, formattedDate);
 
-    // 1. Collect all matching date directories to read
+    // 1. Scan ALL subdirectories inside the controller folder for the date directory
     const dateDirsToScan = [];
-    if (fs.existsSync(dateDir)) {
-        dateDirsToScan.push(dateDir);
-    } else {
-        const controllerDir = path.join(mountRoot, 'AppData', controller4);
-        try {
-            if (fs.existsSync(controllerDir)) {
-                const subdirs = fs.readdirSync(controllerDir, { withFileTypes: true })
-                    .filter(e => e.isDirectory())
-                    .map(e => e.name);
+    const controllerDir = path.join(mountRoot, 'AppData', controller4);
 
-                for (const sub of subdirs) {
-                    const altDateDir = path.join(controllerDir, sub, formattedDate);
-                    if (fs.existsSync(altDateDir)) {
-                        dateDirsToScan.push(altDateDir);
-                    }
+    try {
+        if (fs.existsSync(controllerDir)) {
+            const subdirs = fs.readdirSync(controllerDir, { withFileTypes: true })
+                .filter(e => e.isDirectory())
+                .map(e => e.name);
+
+            for (const sub of subdirs) {
+                const altDateDir = path.join(controllerDir, sub, formattedDate);
+                if (fs.existsSync(altDateDir)) {
+                    dateDirsToScan.push(altDateDir);
                 }
             }
-        } catch (scanErr) {
-            console.warn(`[Yokota Mount] Could not scan ${controllerDir}: ${scanErr.message}`);
         }
+    } catch (scanErr) {
+        console.warn(`[Yokota Mount] Could not scan ${controllerDir}: ${scanErr.message}`);
     }
 
-    // 2. Find ALL .csv files inside the date directories
+    // 2. Find ALL .csv files inside the discovered date directories
     const csvFilesToRead = [];
     for (const dDir of dateDirsToScan) {
         try {
@@ -367,6 +365,7 @@ async function fetchYokotaControllerData(controllerFolder, formattedDate, statio
             }
         }
     }
+
 
     if (records.length > 0) {
         console.log(`[Yokota Mount] Loaded ${records.length} records directly from mount for controller ${controller4}`);
