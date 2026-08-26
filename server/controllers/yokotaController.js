@@ -240,29 +240,13 @@ function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime) {
 // Read a CONTROLLER-SPECIFIC Yokota file directly from the mounted share.
 //
 // On-disk layout under /mnt/yokota/AppData/ :
-//   <4-digit-folder> / 120_0_100_<numeric> / <YYYYMMDD> / <4-digit>_120_0_100_<numeric>_<date>.csv
+//   <4-digit-folder> / 120_0_100_<numeric> / <YYYYMMDD> / *.csv
 //
 // Example for controller folder "0053":
-//   /mnt/yokota/AppData/0053/120_0_100_53/20260819/0053_120_0_100_53_20260819.csv
-//
-// CSV line format (space-separated, 13 fields):
-//   field 0  : controllerId   e.g. "i0053"  — device-emitted controller identity
-//   field 1  : folder         e.g. "1a"     — internal spindle/head (NOT the controller folder)
-//   field 2  : program        e.g. "657-"
-//   field 3  : unknownValue1
-//   field 4  : torqueDuplicate
-//   field 5  : unknownValue2
-//   field 6  : unknownValue3
-//   field 7  : unknownValue4
-//   field 8  : unknownValue5
-//   field 9  : torque
-//   field 10 : judgement
-//   field 11 : date part      e.g. "08/19"
-//   field 12 : time part      e.g. "08:45:17"
+//   /mnt/yokota/AppData/0053/120_0_100_53/20260819/0053_120_0_100_53_20260819_*.csv
 // ---------------------------------------------------------------------------
 
-async function fetchYokotaControllerData(controllerFolder, formattedDate) {
-    // Strip leading zeros to get the numeric part ("0053" → "53")
+async function fetchYokotaControllerData(controllerFolder, formattedDate, stationNumber) {
     const numericStr = String(controllerFolder).trim().replace(/^0+/, '') || '0';
 
     if (!/^\d+$/.test(numericStr)) {
@@ -275,34 +259,52 @@ async function fetchYokotaControllerData(controllerFolder, formattedDate) {
     const mountRoot     = process.env.YOKOTA_MOUNT_ROOT || '/mnt/yokota';
     const subfolderName = `120_0_100_${controller3}`;
     const dateDir       = path.join(mountRoot, 'AppData', controller4, subfolderName, formattedDate);
-    const fileName      = `${controller4}_${subfolderName}_${formattedDate}.csv`;
-    const primaryPath   = path.join(dateDir, fileName);
 
-    console.log(`[Yokota Mount] Attempting: ${primaryPath}`);
+    // 1. Collect all matching date directories to read
+    const dateDirsToScan = [];
+    if (fs.existsSync(dateDir)) {
+        dateDirsToScan.push(dateDir);
+    } else {
+        const controllerDir = path.join(mountRoot, 'AppData', controller4);
+        try {
+            if (fs.existsSync(controllerDir)) {
+                const subdirs = fs.readdirSync(controllerDir, { withFileTypes: true })
+                    .filter(e => e.isDirectory())
+                    .map(e => e.name);
 
-    // Build candidate paths: primary first, then scan for other subdirectories
-    const pathsToTry = [primaryPath];
-
-    const controllerDir = path.join(mountRoot, 'AppData', controller4);
-    try {
-        if (fs.existsSync(controllerDir)) {
-            const subdirs = fs.readdirSync(controllerDir, { withFileTypes: true })
-                .filter(e => e.isDirectory() && e.name !== subfolderName)
-                .map(e => e.name);
-
-            for (const sub of subdirs) {
-                const altFile = path.join(controllerDir, sub, formattedDate, `${controller4}_${sub}_${formattedDate}.csv`);
-                pathsToTry.push(altFile);
+                for (const sub of subdirs) {
+                    const altDateDir = path.join(controllerDir, sub, formattedDate);
+                    if (fs.existsSync(altDateDir)) {
+                        dateDirsToScan.push(altDateDir);
+                    }
+                }
             }
+        } catch (scanErr) {
+            console.warn(`[Yokota Mount] Could not scan ${controllerDir}: ${scanErr.message}`);
         }
-    } catch (scanErr) {
-        console.warn(`[Yokota Mount] Could not scan ${controllerDir}: ${scanErr.message}`);
     }
 
-    for (const tryPath of pathsToTry) {
+    // 2. Find ALL .csv files inside the date directories
+    const csvFilesToRead = [];
+    for (const dDir of dateDirsToScan) {
+        try {
+            const files = fs.readdirSync(dDir);
+            const csvFiles = files.filter(f => f.toLowerCase().endsWith('.csv')).sort();
+            for (const f of csvFiles) {
+                csvFilesToRead.push(path.join(dDir, f));
+            }
+        } catch (dirErr) {
+            console.warn(`[Yokota Mount] Error reading directory ${dDir}: ${dirErr.message}`);
+        }
+    }
+
+    console.log(`[Yokota Mount] Controller=${controller4} | Date=${formattedDate} | Found ${csvFilesToRead.length} CSV files`);
+
+    const records = [];
+
+    for (const tryPath of csvFilesToRead) {
         try {
             const text = await fs.promises.readFile(tryPath, 'utf8');
-            const records = [];
 
             for (const rawLine of text.split(/\r?\n/)) {
                 const line = rawLine.trim();
@@ -321,9 +323,9 @@ async function fetchYokotaControllerData(controllerFolder, formattedDate) {
                 if (parts.length < 13) continue;
 
                 records.push({
-                    controller:       parts[0],        // "i0053" — device-emitted controller ID
-                    controllerFolder: controller4,     // "0053"  — from the file path
-                    folder:           parts[1],        // "1a"    — internal spindle/head number
+                    controller:       parts[0],        // "i0053"
+                    controllerFolder: controller4,     // "0053"
+                    folder:           parts[1],        // "1a" (spindle/head)
                     program:          parts[2],
                     unknownValue1:    parts[3],
                     torqueDuplicate:  parts[4],
@@ -336,13 +338,6 @@ async function fetchYokotaControllerData(controllerFolder, formattedDate) {
                     timeDate:         `${parts[11]} ${parts[12]}`
                 });
             }
-
-            console.log(
-                `[Yokota Mount] Controller=${controller4} | Date=${formattedDate} | ` +
-                `Records=${records.length} | File=${tryPath}`
-            );
-            return records;
-
         } catch (err) {
             if (err.code !== 'ENOENT') {
                 console.warn(`[Yokota Mount] Error reading ${tryPath}: ${err.message}`);
@@ -350,10 +345,42 @@ async function fetchYokotaControllerData(controllerFolder, formattedDate) {
         }
     }
 
-    console.warn(
-        `[Yokota Mount] No file found for Controller=${controller4} | Date=${formattedDate} | ` +
-        `Tried ${pathsToTry.length} path(s)`
-    );
+    if (records.length > 0) {
+        console.log(`[Yokota Mount] Loaded ${records.length} records directly from mount for controller ${controller4}`);
+        return records;
+    }
+
+    // 3. Fallback to upstream 8127 API if direct mount read found no records
+    try {
+        const queryStation = stationNumber || controller3;
+        const apiUrl = `http://127.0.0.1:8127/api/station/${queryStation}/date/${formattedDate}`;
+        console.log(`[Yokota Fallback] Querying API: ${apiUrl}`);
+        const resp = await fetch(apiUrl, { signal: AbortSignal.timeout(5000) });
+        if (resp.ok) {
+            const json = await resp.json();
+            const apiRecords = Array.isArray(json.data) ? json.data : [];
+            const filtered = apiRecords.map(r => ({
+                controller:       r.controllerId || parts[0] || '',
+                controllerFolder: controller4,
+                folder:           r.folder || '',
+                program:          r.program || '',
+                unknownValue1:    r.unknownValue1 || '',
+                torqueDuplicate:  r.torqueDuplicate || '',
+                unknownValue2:    r.unknownValue2 || '',
+                unknownValue3:    r.unknownValue3 || '',
+                unknownValue4:    r.unknownValue4 || '',
+                unknownValue5:    r.unknownValue5 || '',
+                torque:           r.torque || '',
+                judgement:        r.judgement || '',
+                timeDate:         r.timeDate || ''
+            }));
+            console.log(`[Yokota Fallback] Retrieved ${filtered.length} records from 8127 API`);
+            return filtered;
+        }
+    } catch (apiErr) {
+        console.warn(`[Yokota Fallback] API query failed: ${apiErr.message}`);
+    }
+
     return [];
 }
 
@@ -456,7 +483,7 @@ const getYokotaData = async (req, res) => {
                 // Controller 0042/0052 data → their respective tools only.
                 // ---------------------------------------------------------------
                 for (const tool of stationTools) {
-                    const controllerData = await fetchYokotaControllerData(tool.folder, formattedDate);
+                    const controllerData = await fetchYokotaControllerData(tool.folder, formattedDate, station_number);
 
                     if (!controllerData.length) {
                         console.warn(
