@@ -273,6 +273,8 @@ function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime, toolFol
     return bestCluster.map(c => c.item);
 }
 
+let preferredYokotaBaseUrl = process.env.YOKOTA_API_URL || null;
+
 async function fetchYokotaStationData(stationNumber, formattedDate, arrivalTime, nextArrivalTime) {
     const timeKey = arrivalTime ? formatLocalISOString(arrivalTime) : 'full';
     const cacheKey = `${stationNumber}_${formattedDate}_${timeKey}`;
@@ -284,6 +286,7 @@ async function fetchYokotaStationData(stationNumber, formattedDate, arrivalTime,
     }
 
     const baseUrls = [
+        preferredYokotaBaseUrl,
         process.env.YOKOTA_API_URL,
         'http://127.0.0.1:8127',
         'http://localhost:8127',
@@ -312,6 +315,7 @@ async function fetchYokotaStationData(stationNumber, formattedDate, arrivalTime,
                 records = Array.isArray(yokotaResponse.data.data) 
                     ? yokotaResponse.data.data.filter(item => item && item.folder && item.timeDate && !item.error) 
                     : [];
+                preferredYokotaBaseUrl = baseUrl;
                 console.log(`[Yokota Fetch] Successfully retrieved ${records.length} valid records from ${baseUrl}`);
                 break;
             } else if (yokotaResponse.status === 404) {
@@ -323,6 +327,7 @@ async function fetchYokotaStationData(stationNumber, formattedDate, arrivalTime,
                     const fallbackResp = await yokotaClient.get(fallbackUrl);
                     if (fallbackResp.status === 200 && fallbackResp.data && Array.isArray(fallbackResp.data.data)) {
                         records = fallbackResp.data.data.filter(item => item && item.folder && item.timeDate && !item.error);
+                        preferredYokotaBaseUrl = baseUrl;
                         console.log(`[Yokota Fetch] Retrieved ${records.length} valid records without time window from ${baseUrl}`);
                         break;
                     }
