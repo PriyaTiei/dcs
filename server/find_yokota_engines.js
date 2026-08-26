@@ -65,13 +65,23 @@ async function inspectEngineData(engineNumber) {
     console.log(`2. CHECKING 10 YOKOTA TOOLS ON MOUNTED DRIVE (${YOKOTA_BASE_PATH}):`);
     console.log(`--------------------------------------------------------------------------------\n`);
 
+    // Fetch API data once for this engine
+    let allRecords = [];
+    try {
+        const apiUrl = `http://localhost:5081/api/yokota/${engineNumber}`;
+        const apiResp = await axios.get(apiUrl, { timeout: 15000 });
+        allRecords = Array.isArray(apiResp.data) ? apiResp.data : [];
+    } catch (err) {
+        console.log(`[!] API Query Error: ${err.message}\n`);
+    }
+
     let matchedToolsCount = 0;
     let totalBoltsCount = 0;
 
     for (let i = 0; i < MASTER_YOKOTA_TOOLS.length; i++) {
         const tool = MASTER_YOKOTA_TOOLS[i];
         console.log(`[Tool #${i + 1}] Station ${tool.station} | ${tool.tool_name}`);
-        console.log(`   Folder: ${tool.folder} | Subfolder: ${tool.subfolder}`);
+        console.log(`   Folder: ${tool.folder}`);
 
         // Check if engine visited this station
         const visited = trackingRows.find(r => 
@@ -87,47 +97,58 @@ async function inspectEngineData(engineNumber) {
         const formattedDate = formatLocalDate(arrivalDate);
         console.log(`   Arrival Time: ${arrivalDate.toLocaleString()} (Date Code: ${formattedDate})`);
 
-        // Check mounted drive file location
-        const expectedDirPath = path.join(YOKOTA_BASE_PATH, tool.folder, tool.subfolder, formattedDate);
-        const dirExists = fs.existsSync(expectedDirPath);
-        console.log(`   Drive Path  : ${expectedDirPath} [${dirExists ? 'EXISTS ON DISK' : 'NOT FOUND'}]`);
-
-        // Query Yokota API / DCS for this tool's matched records
+        // Check mounted drive file location dynamically
+        const controllerDir = path.join(YOKOTA_BASE_PATH, tool.folder);
+        let dirExists = false;
+        let foundPath = '';
         try {
-            const apiUrl = `http://localhost:5081/api/yokota/${engineNumber}`;
-            const apiResp = await axios.get(apiUrl, { timeout: 8000 });
-            const allRecords = Array.isArray(apiResp.data) ? apiResp.data : [];
-            const toolRecords = allRecords.filter(r => 
-                r.station === tool.station || 
-                r.tool_name === tool.tool_name || 
-                tool.aliases.includes(r.station)
-            );
-
-            if (toolRecords.length > 0) {
-                matchedToolsCount++;
-                totalBoltsCount += toolRecords.length;
-                console.log(`   Status      : ✅ MATCHED (${toolRecords.length} bolt tightening records found):`);
-                console.log(`   ┌──────┬────────┬─────────┬─────────┬──────────┬──────────┬───────────┐`);
-                console.log(`   │ Bolt │ Folder │ Program │ Torque  │ Peak Trq │ Judgement│ Date & Time│`);
-                console.log(`   ├──────┼────────┼─────────┼─────────┼──────────┼──────────┼───────────┤`);
-                toolRecords.forEach((rec, bIdx) => {
-                    const bolt = (rec.unknownValue1 || String(bIdx + 1)).padEnd(4);
-                    const folder = (rec.folder || '-').padEnd(6);
-                    const prog = (rec.program || '-').padEnd(7);
-                    const trq = (rec.torque || '-').padEnd(7);
-                    const pTrq = (rec.torqueDuplicate || '-').padEnd(8);
-                    const judge = (rec.judgement || '-').padEnd(9);
-                    const time = (rec.timeDate || '-').padEnd(10);
-                    console.log(`   │ ${bolt} │ ${folder} │ ${prog} │ ${trq} │ ${pTrq} │ ${judge}│ ${time} │`);
-                });
-                console.log(`   └──────┴────────┴─────────┴─────────┴──────────┴──────────┴───────────┘\n`);
-            } else {
-                console.log(`   Status      : ⚠️  NO MATCHING CYCLE (CSV file exists or empty for this timestamp window)\n`);
+            if (fs.existsSync(controllerDir)) {
+                const subdirs = fs.readdirSync(controllerDir, { withFileTypes: true })
+                    .filter(e => e.isDirectory())
+                    .map(e => e.name);
+                for (const sub of subdirs) {
+                    const candidate = path.join(controllerDir, sub, formattedDate);
+                    if (fs.existsSync(candidate)) {
+                        dirExists = true;
+                        foundPath = candidate;
+                        break;
+                    }
+                }
             }
-        } catch (err) {
-            console.log(`   Status      : ❌ API Query Error (${err.message})\n`);
+        } catch {}
+
+        console.log(`   Drive Path  : ${foundPath || controllerDir} [${dirExists ? 'EXISTS ON DISK' : 'NOT FOUND'}]`);
+
+        const toolRecords = allRecords.filter(r => 
+            (r.station === tool.station || tool.aliases.includes(r.station)) &&
+            (String(r.configured_folder || r.folder || '').includes(tool.folder) ||
+             String(r.controller_folder || '').includes(String(parseInt(tool.folder, 10))) ||
+             r.tool_name === tool.tool_name)
+        );
+
+        if (toolRecords.length > 0) {
+            matchedToolsCount++;
+            totalBoltsCount += toolRecords.length;
+            console.log(`   Status      : ✅ MATCHED (${toolRecords.length} bolt tightening records found):`);
+            console.log(`   ┌──────┬────────┬─────────┬─────────┬──────────┬──────────┬──────────────────┐`);
+            console.log(`   │ Bolt │ Folder │ Program │ Torque  │ Peak Trq │ Judgement│ Date & Time      │`);
+            console.log(`   ├──────┼────────┼─────────┼─────────┼──────────┼──────────┼──────────────────┤`);
+            toolRecords.forEach((rec, bIdx) => {
+                const bolt = (rec.unknownValue1 || String(bIdx + 1)).padEnd(4);
+                const folder = (rec.folder || '-').padEnd(6);
+                const prog = (rec.program || '-').padEnd(7);
+                const trq = (rec.torque || '-').padEnd(7);
+                const pTrq = (rec.torqueDuplicate || '-').padEnd(8);
+                const judge = (rec.judgement || '-').padEnd(9);
+                const time = (rec.timeDate || '-').padEnd(16);
+                console.log(`   │ ${bolt} │ ${folder} │ ${prog} │ ${trq} │ ${pTrq} │ ${judge}│ ${time} │`);
+            });
+            console.log(`   └──────┴────────┴─────────┴─────────┴──────────┴──────────┴──────────────────┘\n`);
+        } else {
+            console.log(`   Status      : ⚠️  NO MATCHING CYCLE (No records returned by API for this window)\n`);
         }
     }
+
 
     console.log(`================================================================================`);
     console.log(`SUMMARY FOR ${engineNumber}: ${matchedToolsCount} / 10 Tools Matched | Total Bolts: ${totalBoltsCount}`);

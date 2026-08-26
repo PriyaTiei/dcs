@@ -74,9 +74,10 @@ function getYokotaToolsForStation(stationNumber, dbToolMap) {
         // Exclude URYU wrench tools — completely different protocol
         if (toolName.toUpperCase().includes('URYU')) return;
 
-        const key = [stationNorm, normalizeFolder(folder), toolName.toUpperCase()].join('|');
+        const key = [stationNorm, normalizeFolder(folder)].join('|');
         if (seen.has(key)) return;
         seen.add(key);
+
 
         resolvedTools.push({
             ...tool,
