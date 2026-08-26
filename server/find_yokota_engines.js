@@ -194,11 +194,8 @@ async function main() {
 
         console.log(`   Found ${activeDates.size} active date folder(s) on disk: [${Array.from(activeDates).sort().join(', ')}]\n`);
 
-        console.log('2. Querying PostgreSQL for engines produced during these active dates...');
-        const dateList = Array.from(activeDates);
-        
-        // Convert YYYYMMDD to YYYY-MM-DD
-        const formattedDateList = dateList.map(d => `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`);
+        console.log('2. Querying PostgreSQL for engines produced across recent active dates...');
+        const recentDates = ['2026-08-19', '2026-08-18', '2026-08-20', '2026-08-21', '2026-08-24', '2026-08-25', '2026-08-26', '2026-08-14', '2026-08-13', '2026-08-12'];
 
         const candidateQuery = `
             WITH all_tracking AS (
@@ -232,14 +229,14 @@ async function main() {
                 MAX(arrival_time) as latest_arrival
             FROM yokota_visits
             GROUP BY engine_number, arrival_time::date::text
-            ORDER BY prod_date DESC, yokota_station_count DESC, latest_arrival DESC
-            LIMIT 40;
+            ORDER BY yokota_station_count DESC, latest_arrival DESC
+            LIMIT 120;
         `;
 
-        const res = await pool.query(candidateQuery, [formattedDateList.length ? formattedDateList : ['2026-08-19', '2026-08-26']]);
+        const res = await pool.query(candidateQuery, [recentDates]);
 
         console.log(`   Found ${res.rows.length} candidate engines with Yokota station visits.`);
-        console.log('3. Scanning API for matched tightening records...\n');
+        console.log('3. Scanning API for matched tightening records (checking each engine)...\n');
 
         const engineResults = [];
 
