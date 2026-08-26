@@ -55,6 +55,7 @@ function normalizeFolder(value) {
 // Resolve Yokota tools for a station (master map + DB supplement)
 // ---------------------------------------------------------------------------
 
+
 function getYokotaToolsForStation(stationNumber, dbToolMap) {
     if (stationNumber === null || stationNumber === undefined) return [];
 
@@ -86,15 +87,25 @@ function getYokotaToolsForStation(stationNumber, dbToolMap) {
         });
     };
 
-    // 1. Master map
+    // 1. Master map (always prioritize master definitions)
     MASTER_YOKOTA_TOOL_MAP.forEach(tool => {
         if (normalizeStation(tool.station) === stationNorm) addTool(tool, 'MASTER');
     });
 
-    // 2. DB supplement
+    // 2. DB supplement (ONLY include if explicitly Yokota or matching master folder)
     if (Array.isArray(dbToolMap)) {
         dbToolMap.forEach(dbTool => {
-            if (normalizeStation(dbTool.station) === stationNorm) addTool(dbTool, 'DATABASE');
+            if (normalizeStation(dbTool.station) === stationNorm) {
+                const toolName = String(dbTool.tool_name || '').toUpperCase();
+                const isExplicitYokota = toolName.includes('YOKOTA') || toolName.includes('YKT');
+                const isMasterFolderMatch = MASTER_YOKOTA_TOOL_MAP.some(m =>
+                    normalizeFolder(m.folder) === normalizeFolder(dbTool.folder)
+                );
+
+                if (isExplicitYokota || isMasterFolderMatch) {
+                    addTool(dbTool, 'DATABASE');
+                }
+            }
         });
     }
 
@@ -106,85 +117,92 @@ function getYokotaToolsForStation(stationNumber, dbToolMap) {
     return resolvedTools;
 }
 
-// Helper to safely parse date string from Yokota records using arrival timestamp's year
-function parseYokotaTimestamp(timeDateStr, referenceYear) {
-    if (!timeDateStr || typeof timeDateStr !== 'string') return null;
-    const cleanStr = timeDateStr.trim();
+// ---------------------------------------------------------------------------
+// Timezone-Immune Plant Time Matcher
+//
+// Yokota controllers log timestamps in Indian plant local time (e.g. "08/19 08:45:17").
+// Converting both arrival_time and CSV records to plant seconds from midnight
+// completely avoids server UTC / IST timezone conversion discrepancies.
+// ---------------------------------------------------------------------------
 
-    // 1. Full ISO or standard datetime (YYYY-MM-DD HH:MM:SS or YYYY/MM/DD HH:MM:SS)
-    if (/^\d{4}[-/]\d{1,2}[-/]\d{1,2}/.test(cleanStr)) {
-        const iso = cleanStr.replace(/\//g, '-');
-        const d = new Date(iso);
-        if (!isNaN(d.getTime())) return d;
+function getPlantSecondsFromMidnight(dateInput) {
+    if (!dateInput) return null;
+    const d = (dateInput instanceof Date) ? dateInput : new Date(dateInput);
+    if (isNaN(d.getTime())) return null;
+
+    try {
+        const parts = new Intl.DateTimeFormat('en-GB', {
+            timeZone: 'Asia/Kolkata',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        }).formatToParts(d);
+
+        let h = 0, m = 0, s = 0;
+        for (const p of parts) {
+            if (p.type === 'hour') h = parseInt(p.value, 10);
+            if (p.type === 'minute') m = parseInt(p.value, 10);
+            if (p.type === 'second') s = parseInt(p.value, 10);
+        }
+        return h * 3600 + m * 60 + s;
+    } catch {
+        return d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
     }
+}
 
-    // 2. Yokota standard format "MM/DD HH:MM:SS" or "MM/DD HH:MM:SS.ssssss"
-    const parts = cleanStr.split(/\s+/);
+function parseYokotaRecordSeconds(timeDateStr) {
+    if (!timeDateStr || typeof timeDateStr !== 'string') return null;
+    const parts = timeDateStr.trim().split(/\s+/);
     if (parts.length >= 2) {
-        const monthDay = parts[0];
-        const timePart = parts[1];
-        const md = monthDay.split(/[-/]/);
-        if (md.length === 2) {
-            const month = md[0].padStart(2, '0');
-            const day = md[1].padStart(2, '0');
-            const year = referenceYear || new Date().getFullYear();
-            const dateObj = new Date(`${year}-${month}-${day} ${timePart}`);
-            if (!isNaN(dateObj.getTime())) return dateObj;
+        const timePart = parts[1]; // "08:45:17"
+        const tSplit = timePart.split(':').map(n => parseInt(n, 10));
+        if (tSplit.length >= 3 && !isNaN(tSplit[0]) && !isNaN(tSplit[1]) && !isNaN(tSplit[2])) {
+            return tSplit[0] * 3600 + tSplit[1] * 60 + tSplit[2];
         }
     }
-
-    const fallback = new Date(cleanStr);
-    if (!isNaN(fallback.getTime())) return fallback;
-
     return null;
 }
 
 // ---------------------------------------------------------------------------
 // Record matching within the engine arrival window
-//
-// IMPORTANT: No folder filtering is performed here.  Each call already receives
-// records from a CONTROLLER-SPECIFIC file.  File-level isolation is the source
-// of truth — not the internal spindle/head ID embedded in each row.
 // ---------------------------------------------------------------------------
 
 function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime) {
     if (!Array.isArray(rawYokotaData) || rawYokotaData.length === 0) return [];
 
-    const startTime = new Date(arrivalTime);
-    if (isNaN(startTime.getTime())) {
+    const arrivalSec = getPlantSecondsFromMidnight(arrivalTime);
+    if (arrivalSec === null) {
         console.warn(`[Yokota Matcher] Invalid arrivalTime: ${arrivalTime}`);
         return [];
     }
 
-    const arrivalYear = startTime.getFullYear();
+    // 3-minute pre-arrival buffer (180s)
+    const cycleStartSec = arrivalSec - 180;
 
-    // 3-minute pre-arrival buffer for RFID scan jitter & controller clock drift
-    const cycleStartMs = startTime.getTime() - 180000;
-
-    let cycleEndMs;
+    let cycleEndSec;
     if (nextArrivalTime) {
-        const nextTime = new Date(nextArrivalTime).getTime();
-        if (!isNaN(nextTime)) {
-            cycleEndMs = Math.min(nextTime + 60000, startTime.getTime() + 600000);
+        const nextSec = getPlantSecondsFromMidnight(nextArrivalTime);
+        if (nextSec !== null && nextSec > arrivalSec) {
+            cycleEndSec = Math.min(nextSec + 60, arrivalSec + 600);
         } else {
-            cycleEndMs = startTime.getTime() + 300000;
+            cycleEndSec = arrivalSec + 300;
         }
     } else {
-        cycleEndMs = startTime.getTime() + 300000;
+        cycleEndSec = arrivalSec + 300; // 5-minute default window
     }
 
     const windowMatches = rawYokotaData.filter(item => {
         if (!item.timeDate) return false;
-        const itemDate = parseYokotaTimestamp(item.timeDate, arrivalYear);
-        if (!itemDate) return false;
-        const t = itemDate.getTime();
-        return t >= cycleStartMs && t <= cycleEndMs;
+        const itemSec = parseYokotaRecordSeconds(item.timeDate);
+        if (itemSec === null) return false;
+        return itemSec >= cycleStartSec && itemSec <= cycleEndSec;
     });
 
     console.log(
         `[Yokota Matcher] Records=${rawYokotaData.length} | Window matches=${windowMatches.length} | ` +
-        `Arrival=${startTime.toLocaleString()} | ` +
-        `Window=[${new Date(cycleStartMs).toLocaleTimeString()} - ${new Date(cycleEndMs).toLocaleTimeString()}]`
+        `ArrivalSec=${arrivalSec} (${Math.floor(arrivalSec/3600)}:${Math.floor((arrivalSec%3600)/60)}:${arrivalSec%60}) | ` +
+        `WindowSec=[${cycleStartSec} - ${cycleEndSec}]`
     );
 
     if (windowMatches.length === 0) {
@@ -195,28 +213,29 @@ function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime) {
         return [];
     }
 
+    // Sort chronologically by seconds from midnight
     windowMatches.sort((a, b) => {
-        const ta = (parseYokotaTimestamp(a.timeDate, arrivalYear) || new Date(0)).getTime();
-        const tb = (parseYokotaTimestamp(b.timeDate, arrivalYear) || new Date(0)).getTime();
-        return ta - tb;
+        const sa = parseYokotaRecordSeconds(a.timeDate) || 0;
+        const sb = parseYokotaRecordSeconds(b.timeDate) || 0;
+        return sa - sb;
     });
 
-    // Group into clusters (consecutive items within 45 s = one multi-bolt tightening cycle)
+    // Group into clusters (consecutive items within 45s of each other)
     const clusters = [];
     let currentCluster = [];
 
     for (const item of windowMatches) {
-        const itemTime = (parseYokotaTimestamp(item.timeDate, arrivalYear) || new Date(0)).getTime();
+        const itemSec = parseYokotaRecordSeconds(item.timeDate) || 0;
 
         if (currentCluster.length === 0) {
-            currentCluster.push({ item, itemTime });
+            currentCluster.push({ item, itemSec });
         } else {
-            const lastTime = currentCluster[currentCluster.length - 1].itemTime;
-            if (itemTime - lastTime <= 45000) {
-                currentCluster.push({ item, itemTime });
+            const lastSec = currentCluster[currentCluster.length - 1].itemSec;
+            if (itemSec - lastSec <= 45) {
+                currentCluster.push({ item, itemSec });
             } else {
                 clusters.push(currentCluster);
-                currentCluster = [{ item, itemTime }];
+                currentCluster = [{ item, itemSec }];
             }
         }
     }
@@ -224,17 +243,21 @@ function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime) {
 
     if (clusters.length === 0) return [];
 
-    // Select the cluster whose first timestamp is closest to arrival time
+    // Select the cluster closest to arrival time
     let bestCluster = clusters[0];
-    let minDiff = Math.abs(bestCluster[0].itemTime - startTime.getTime());
+    let minDiff = Math.abs(bestCluster[0].itemSec - arrivalSec);
 
     for (let i = 1; i < clusters.length; i++) {
-        const diff = Math.abs(clusters[i][0].itemTime - startTime.getTime());
-        if (diff < minDiff) { minDiff = diff; bestCluster = clusters[i]; }
+        const diff = Math.abs(clusters[i][0].itemSec - arrivalSec);
+        if (diff < minDiff) {
+            minDiff = diff;
+            bestCluster = clusters[i];
+        }
     }
 
     return bestCluster.map(c => c.item);
 }
+
 
 // ---------------------------------------------------------------------------
 // Read a CONTROLLER-SPECIFIC Yokota file directly from the mounted share.
