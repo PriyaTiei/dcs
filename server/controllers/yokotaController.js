@@ -353,14 +353,15 @@ async function fetchYokotaControllerData(controllerFolder, formattedDate, statio
     // 3. Fallback to upstream 8127 API if direct mount read found no records
     try {
         const queryStation = stationNumber || controller3;
-        const apiUrl = `http://127.0.0.1:8127/api/station/${queryStation}/date/${formattedDate}`;
+        const baseUrl = process.env.YOKOTA_API_URL || 'http://127.0.0.1:8127';
+        const apiUrl = `${baseUrl}/api/station/${queryStation}/date/${formattedDate}`;
         console.log(`[Yokota Fallback] Querying API: ${apiUrl}`);
         const resp = await fetch(apiUrl, { signal: AbortSignal.timeout(5000) });
         if (resp.ok) {
             const json = await resp.json();
             const apiRecords = Array.isArray(json.data) ? json.data : [];
             const filtered = apiRecords.map(r => ({
-                controller:       r.controllerId || parts[0] || '',
+                controller:       r.controllerId || '',
                 controllerFolder: controller4,
                 folder:           r.folder || '',
                 program:          r.program || '',
