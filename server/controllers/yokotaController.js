@@ -275,9 +275,8 @@ function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime, toolFol
 
 let preferredYokotaBaseUrl = process.env.YOKOTA_API_URL || null;
 
-async function fetchYokotaStationData(stationNumber, formattedDate, arrivalTime, nextArrivalTime) {
-    const timeKey = arrivalTime ? formatLocalISOString(arrivalTime) : 'full';
-    const cacheKey = `${stationNumber}_${formattedDate}_${timeKey}`;
+async function fetchYokotaStationData(stationNumber, formattedDate) {
+    const cacheKey = `${stationNumber}_${formattedDate}`;
     const cached = dcsYokotaApiCache.get(cacheKey);
 
     if (cached && (Date.now() - cached.cachedAt < CACHE_TTL_MS)) {
@@ -295,22 +294,14 @@ async function fetchYokotaStationData(stationNumber, formattedDate, arrivalTime,
 
     const uniqueBaseUrls = [...new Set(baseUrls)];
 
-    let queryParams = '';
-    if (arrivalTime) {
-        queryParams += `?startTime=${encodeURIComponent(formatLocalISOString(arrivalTime))}`;
-        if (nextArrivalTime) {
-            queryParams += `&nextTime=${encodeURIComponent(formatLocalISOString(nextArrivalTime))}`;
-        }
-    }
-
     let records = null;
     let lastError = null;
 
     for (const baseUrl of uniqueBaseUrls) {
-        const urlWithWindow = `${baseUrl}/api/station/${stationNumber}/date/${formattedDate}${queryParams}`;
-        console.log(`[Yokota Fetch] Querying Yokota API: ${urlWithWindow}`);
+        const url = `${baseUrl}/api/station/${stationNumber}/date/${formattedDate}`;
+        console.log(`[Yokota Fetch] Querying Yokota API: ${url}`);
         try {
-            const yokotaResponse = await yokotaClient.get(urlWithWindow);
+            const yokotaResponse = await yokotaClient.get(url);
             if (yokotaResponse.status === 200 && yokotaResponse.data) {
                 records = Array.isArray(yokotaResponse.data.data) 
                     ? yokotaResponse.data.data.filter(item => item && item.folder && item.timeDate && !item.error) 
@@ -320,18 +311,6 @@ async function fetchYokotaStationData(stationNumber, formattedDate, arrivalTime,
                 break;
             } else if (yokotaResponse.status === 404) {
                 console.log(`[Yokota Fetch] Station ${stationNumber} on date ${formattedDate} returned 404 from ${baseUrl}`);
-                // Try fallback without window if queryParams were present
-                if (queryParams) {
-                    const fallbackUrl = `${baseUrl}/api/station/${stationNumber}/date/${formattedDate}`;
-                    console.log(`[Yokota Fetch] Retrying without time window: ${fallbackUrl}`);
-                    const fallbackResp = await yokotaClient.get(fallbackUrl);
-                    if (fallbackResp.status === 200 && fallbackResp.data && Array.isArray(fallbackResp.data.data)) {
-                        records = fallbackResp.data.data.filter(item => item && item.folder && item.timeDate && !item.error);
-                        preferredYokotaBaseUrl = baseUrl;
-                        console.log(`[Yokota Fetch] Retrieved ${records.length} valid records without time window from ${baseUrl}`);
-                        break;
-                    }
-                }
             }
         } catch (err) {
             lastError = err;
@@ -431,8 +410,8 @@ const getYokotaData = async (req, res) => {
                 const formattedDate = formatLocalDateString(arrival_time);
 
                 try {
-                    // Fetch station data via high-speed windowed fetch
-                    const rawYokotaData = await fetchYokotaStationData(station_number, formattedDate, arrival_time, next_arrival_time);
+                    // Fetch full day station data (time matching done locally by matchYokotaRecords)
+                    const rawYokotaData = await fetchYokotaStationData(station_number, formattedDate);
 
                     console.log(`[Yokota Engine Visit] Station ${station_number} raw records received: ${rawYokotaData ? rawYokotaData.length : 0}`);
 
