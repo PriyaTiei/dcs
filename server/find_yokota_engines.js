@@ -194,62 +194,119 @@ async function main() {
 
         console.log(`   Found ${activeDates.size} active date folder(s) on disk: [${Array.from(activeDates).sort().join(', ')}]\n`);
 
-        console.log('2. Querying PostgreSQL for engines produced across recent active dates...');
-        const recentDates = ['2026-08-19', '2026-08-18', '2026-08-20', '2026-08-21', '2026-08-24', '2026-08-25', '2026-08-26', '2026-08-14', '2026-08-13', '2026-08-12'];
+        console.log('2. Reading tightening event timestamps from mounted CSV files...');
+        
+        const candidateEngines = new Set();
+        
+        // Scan recent date folders (e.g. 20260819, 20260826, 20260825, etc.)
+        const targetDates = ['20260819', '20260826', '20260825', '20260820', '20260818'];
+        const sampleTimestamps = []; // { station, folder, dateStr, timeStr, fullDate }
 
-        const candidateQuery = `
-            WITH all_tracking AS (
-                SELECT engine_number, arrival_time, station_number::text as station_number FROM engine_tracking
-                UNION ALL
-                SELECT engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_two
-                UNION ALL
-                SELECT engine_number, arrival_time, station_number::text as station_number FROM engine_tracking_three
-                UNION ALL
-                SELECT engine_number, arrival_time, station_name as station_number FROM sub_assy
-            ),
-            yokota_visits AS (
-                SELECT 
-                    engine_number,
-                    arrival_time,
-                    station_number
-                FROM all_tracking
-                WHERE engine_number IS NOT NULL 
-                  AND engine_number != ''
-                  AND station_number IN (
-                      '20', '17', '21', '43', '45', '53', '58', '59', '60', '61',
-                      'Cam housing sub assy', 'CHS', 'Cam housing', 'CAM_HOUSING'
-                  )
-                  AND arrival_time::date::text = ANY($1)
-            )
-            SELECT 
-                engine_number,
-                arrival_time::date::text as prod_date,
-                COUNT(DISTINCT station_number) as yokota_station_count,
-                MIN(arrival_time) as first_arrival,
-                MAX(arrival_time) as latest_arrival
-            FROM yokota_visits
-            GROUP BY engine_number, arrival_time::date::text
-            ORDER BY yokota_station_count DESC, latest_arrival DESC
-            LIMIT 120;
-        `;
+        if (fs.existsSync(YOKOTA_BASE_PATH)) {
+            const controllers = fs.readdirSync(YOKOTA_BASE_PATH, { withFileTypes: true })
+                .filter(e => e.isDirectory())
+                .map(e => e.name);
 
-        const res = await pool.query(candidateQuery, [recentDates]);
+            for (const c of controllers) {
+                const cDir = path.join(YOKOTA_BASE_PATH, c);
+                try {
+                    const subdirs = fs.readdirSync(cDir, { withFileTypes: true })
+                        .filter(e => e.isDirectory())
+                        .map(e => e.name);
 
-        console.log(`   Found ${res.rows.length} candidate engines with Yokota station visits.`);
-        console.log('3. Scanning API for matched tightening records (checking each engine)...\n');
+                    for (const sub of subdirs) {
+                        const subDir = path.join(cDir, sub);
+                        for (const dt of targetDates) {
+                            const datePath = path.join(subDir, dt);
+                            if (fs.existsSync(datePath)) {
+                                try {
+                                    const files = fs.readdirSync(datePath).filter(f => f.endsWith('.csv'));
+                                    // Take sample of CSV files
+                                    files.slice(0, 30).forEach(f => {
+                                        // Match filename e.g. 0053_120_0_100_53_20260819_094511.csv
+                                        const match = f.match(/_(\d{8})_(\d{2})(\d{2})(\d{2})\.csv$/i);
+                                        if (match) {
+                                            const y = match[1].slice(0, 4);
+                                            const m = match[1].slice(4, 6);
+                                            const d = match[1].slice(6, 8);
+                                            const hh = match[2];
+                                            const mm = match[3];
+                                            const ss = match[4];
+                                            // 1 hour offset: RFID tracking clock is 1 hr behind Yokota hardware clock
+                                            const yokotaHour = parseInt(hh, 10);
+                                            const rfidHour = (yokotaHour - 1 + 24) % 24;
+                                            const rfidHH = String(rfidHour).padStart(2, '0');
+                                            
+                                            sampleTimestamps.push({
+                                                controller: c,
+                                                dateStr: `${y}-${m}-${d}`,
+                                                rfidTimeWindowStart: `${y}-${m}-${d} ${rfidHH}:${mm}:${ss}`,
+                                                exactFile: f
+                                            });
+                                        }
+                                    });
+                                } catch {}
+                            }
+                        }
+                    }
+                } catch {}
+            }
+        }
+
+        console.log(`   Scanned disk: Found ${sampleTimestamps.length} tightening event timestamps across active dates.\n`);
+        console.log('3. Matching CSV timestamps with PostgreSQL RFID arrivals...');
+
+        for (const sample of sampleTimestamps.slice(0, 80)) {
+            try {
+                const matchQuery = `
+                    WITH all_tracking AS (
+                        SELECT engine_number, arrival_time FROM engine_tracking
+                        UNION ALL
+                        SELECT engine_number, arrival_time FROM engine_tracking_two
+                        UNION ALL
+                        SELECT engine_number, arrival_time FROM engine_tracking_three
+                    )
+                    SELECT DISTINCT engine_number
+                    FROM all_tracking
+                    WHERE arrival_time >= ($1::timestamp - interval '2 minutes')
+                      AND arrival_time <= ($1::timestamp + interval '2 minutes')
+                      AND engine_number IS NOT NULL
+                      AND engine_number != ''
+                    LIMIT 2;
+                `;
+                const mRes = await pool.query(matchQuery, [sample.rfidTimeWindowStart]);
+                mRes.rows.forEach(r => candidateEngines.add(r.engine_number));
+            } catch {}
+        }
+
+        // Also add NG60753 and recent engines from August 19
+        candidateEngines.add('NG60753');
+        try {
+            const aug19Engines = await pool.query(`
+                SELECT DISTINCT engine_number 
+                FROM engine_tracking_three 
+                WHERE arrival_time::date = '2026-08-19'::date 
+                ORDER BY engine_number 
+                LIMIT 30;
+            `);
+            aug19Engines.rows.forEach(r => candidateEngines.add(r.engine_number));
+        } catch {}
+
+        console.log(`   Found ${candidateEngines.size} candidate engine(s) from disk & tracking.\n`);
+        console.log('4. Testing API for each candidate engine...\n');
 
         const engineResults = [];
 
-        for (const row of res.rows) {
-            const eng = row.engine_number;
+        for (const eng of candidateEngines) {
             try {
                 const apiResp = await axios.get(`http://localhost:5081/api/yokota/${eng}`, { timeout: 4000 });
                 const recs = Array.isArray(apiResp.data) ? apiResp.data : [];
                 if (recs.length > 0) {
                     const uniqueTools = Array.from(new Set(recs.map(r => r.tool_name || r.station)));
+                    const dateSample = recs[0].timeDate || '-';
                     engineResults.push({
                         engine_number: eng,
-                        date: row.prod_date,
+                        date: dateSample,
                         toolCount: uniqueTools.length,
                         boltCount: recs.length,
                         tools: uniqueTools
@@ -259,7 +316,7 @@ async function main() {
         }
 
         if (engineResults.length === 0) {
-            console.log('No engines currently matched in this sample. Running detailed check on NG60753...');
+            console.log('No matched engines found. Inspecting NG60753 directly...');
             await inspectEngineData('NG60753');
             return;
         }
