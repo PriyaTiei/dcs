@@ -377,40 +377,33 @@ const getYokotaData = async (req, res) => {
             console.error('[Yokota API] Error fetching station_tool_map from database:', mapErr.message);
         }
 
-        // 2. Query target engine tracking arrivals with SQL-computed next arrival window in < 2ms
+        // 2. Query ONLY Yokota station arrivals with SQL LEAD() window for next arrival (instant execution)
+        const YOKOTA_STATION_NUMBERS = ['17', '20', '21', '43', '45', '53', '58', '59', '60', '61'];
+        const YOKOTA_STATION_NAMES = ['Cam housing sub assy', 'CHS', 'Cam housing', 'CAM_HOUSING'];
+        const allYokotaStations = [...YOKOTA_STATION_NUMBERS, ...YOKOTA_STATION_NAMES];
+
         const trackingWithWindowQuery = `
             WITH target_tracking AS (
-                SELECT 'engine_tracking' AS source, engine_number, arrival_time::text as arrival_time_str, arrival_time, station_number::text as station_number FROM engine_tracking WHERE engine_number = $1
+                SELECT 'engine_tracking' AS source, engine_number, arrival_time::text as arrival_time_str, arrival_time, station_number::text as station_number FROM engine_tracking WHERE engine_number = $1 AND station_number::text = ANY($2)
                 UNION ALL
-                SELECT 'engine_tracking_two' AS source, engine_number, arrival_time::text as arrival_time_str, arrival_time, station_number::text as station_number FROM engine_tracking_two WHERE engine_number = $1
+                SELECT 'engine_tracking_two' AS source, engine_number, arrival_time::text as arrival_time_str, arrival_time, station_number::text as station_number FROM engine_tracking_two WHERE engine_number = $1 AND station_number::text = ANY($2)
                 UNION ALL
-                SELECT 'engine_tracking_three' AS source, engine_number, arrival_time::text as arrival_time_str, arrival_time, station_number::text as station_number FROM engine_tracking_three WHERE engine_number = $1
+                SELECT 'engine_tracking_three' AS source, engine_number, arrival_time::text as arrival_time_str, arrival_time, station_number::text as station_number FROM engine_tracking_three WHERE engine_number = $1 AND station_number::text = ANY($2)
                 UNION ALL
-                SELECT 'sub_assy' AS source, engine_number, arrival_time::text as arrival_time_str, arrival_time, station_name as station_number FROM sub_assy WHERE engine_number = $1
+                SELECT 'sub_assy' AS source, engine_number, arrival_time::text as arrival_time_str, arrival_time, station_name as station_number FROM sub_assy WHERE engine_number = $1 AND station_name = ANY($2)
             )
             SELECT 
                 tt.engine_number,
                 tt.arrival_time_str,
                 tt.arrival_time,
                 tt.station_number,
-                (
-                    SELECT MIN(all_t.arrival_time)
-                    FROM (
-                        SELECT station_number::text as stn, arrival_time FROM engine_tracking WHERE station_number::text = tt.station_number AND arrival_time > tt.arrival_time
-                        UNION ALL
-                        SELECT station_number::text as stn, arrival_time FROM engine_tracking_two WHERE station_number::text = tt.station_number AND arrival_time > tt.arrival_time
-                        UNION ALL
-                        SELECT station_number::text as stn, arrival_time FROM engine_tracking_three WHERE station_number::text = tt.station_number AND arrival_time > tt.arrival_time
-                        UNION ALL
-                        SELECT station_name as stn, arrival_time FROM sub_assy WHERE station_name = tt.station_number AND arrival_time > tt.arrival_time
-                    ) all_t
-                ) AS next_arrival_time
+                LEAD(tt.arrival_time) OVER (PARTITION BY tt.station_number ORDER BY tt.arrival_time) AS next_arrival_time
             FROM target_tracking tt
             ORDER BY tt.arrival_time DESC;
         `;
 
-        const result = await pool.query(trackingWithWindowQuery, [engineNo]);
-        console.log(`[Yokota API] Tracking query returned ${result.rows.length} station visits for engine ${engineNo}`);
+        const result = await pool.query(trackingWithWindowQuery, [engineNo, allYokotaStations]);
+        console.log(`[Yokota API] Tracking query returned ${result.rows.length} Yokota station visits for engine ${engineNo}`);
 
         if (result.rows.length === 0) {
             console.log(`[Yokota API] No tracking rows found for engine ${engineNo}. Returning 404.`);
