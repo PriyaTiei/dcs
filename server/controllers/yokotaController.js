@@ -305,9 +305,11 @@ async function fetchYokotaStationData(stationNumber, formattedDate, arrivalTime,
         console.log(`[Yokota Fetch] Querying Yokota API: ${urlWithWindow}`);
         try {
             const yokotaResponse = await yokotaClient.get(urlWithWindow);
-            if (yokotaResponse.status === 200 && yokotaResponse.data && Array.isArray(yokotaResponse.data.data)) {
-                records = yokotaResponse.data.data;
-                console.log(`[Yokota Fetch] Successfully retrieved ${records.length} records from ${baseUrl}`);
+            if (yokotaResponse.status === 200 && yokotaResponse.data) {
+                records = Array.isArray(yokotaResponse.data.data) 
+                    ? yokotaResponse.data.data.filter(item => item && item.folder && item.timeDate && !item.error) 
+                    : [];
+                console.log(`[Yokota Fetch] Successfully retrieved ${records.length} valid records from ${baseUrl}`);
                 break;
             } else if (yokotaResponse.status === 404) {
                 console.log(`[Yokota Fetch] Station ${stationNumber} on date ${formattedDate} returned 404 from ${baseUrl}`);
@@ -317,8 +319,8 @@ async function fetchYokotaStationData(stationNumber, formattedDate, arrivalTime,
                     console.log(`[Yokota Fetch] Retrying without time window: ${fallbackUrl}`);
                     const fallbackResp = await yokotaClient.get(fallbackUrl);
                     if (fallbackResp.status === 200 && fallbackResp.data && Array.isArray(fallbackResp.data.data)) {
-                        records = fallbackResp.data.data;
-                        console.log(`[Yokota Fetch] Retrieved ${records.length} records without time window from ${baseUrl}`);
+                        records = fallbackResp.data.data.filter(item => item && item.folder && item.timeDate && !item.error);
+                        console.log(`[Yokota Fetch] Retrieved ${records.length} valid records without time window from ${baseUrl}`);
                         break;
                     }
                 }
@@ -329,7 +331,7 @@ async function fetchYokotaStationData(stationNumber, formattedDate, arrivalTime,
         }
     }
 
-    if (!records) {
+    if (!records || records.length === 0) {
         console.warn(`[Yokota Fetch] Could not fetch data for station ${stationNumber} on ${formattedDate}. Last error: ${lastError ? lastError.message : 'No data'}`);
         return [];
     }
