@@ -38,9 +38,36 @@ const MASTER_YOKOTA_TOOL_MAP = [
     { contr_no: "70", station: "61", folder: "0102", alt_folder: "102", tool_name: "I/M BKT BOLT (IN MANI) (YOKOTA)", line: "MK3" }
 ];
 
+// Helper functions to format dates in local plant floor time (avoiding UTC timezone shift)
+function formatLocalDateString(d) {
+    if (!d) return '';
+    const dateObj = (d instanceof Date) ? d : new Date(d);
+    if (isNaN(dateObj.getTime())) return '';
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    return `${y}${m}${day}`;
+}
+
+function formatLocalISOString(d) {
+    if (!d) return '';
+    const dateObj = (d instanceof Date) ? d : new Date(d);
+    if (isNaN(dateObj.getTime())) return '';
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    const h = String(dateObj.getHours()).padStart(2, '0');
+    const min = String(dateObj.getMinutes()).padStart(2, '0');
+    const s = String(dateObj.getSeconds()).padStart(2, '0');
+    return `${y}-${m}-${day} ${h}:${min}:${s}`;
+}
+
 // Helper to resolve Yokota tools for a station, combining database entries with master dictionary
 function getYokotaToolsForStation(stationNumber, dbToolMap) {
+    if (stationNumber == null) return [];
     const stnStr = String(stationNumber).trim();
+    const stnNumMatch = stnStr.match(/\d+/);
+    const stnNum = stnNumMatch ? parseInt(stnNumMatch[0], 10) : null;
     
     // 1. Find master tools configured for this station
     const masterTools = MASTER_YOKOTA_TOOL_MAP.filter(tool => {
@@ -48,6 +75,9 @@ function getYokotaToolsForStation(stationNumber, dbToolMap) {
         if (toolStn.toUpperCase() === stnStr.toUpperCase()) return true;
         if (/^\d+$/.test(toolStn) && /^\d+$/.test(stnStr)) {
             return parseInt(toolStn, 10) === parseInt(stnStr, 10);
+        }
+        if (stnNum !== null && /^\d+$/.test(toolStn) && parseInt(toolStn, 10) === stnNum) {
+            return true;
         }
         return false;
     });
@@ -60,7 +90,8 @@ function getYokotaToolsForStation(stationNumber, dbToolMap) {
         dbToolMap.forEach(dbTool => {
             const dbStn = String(dbTool.station).trim();
             const matchesStn = (dbStn.toUpperCase() === stnStr.toUpperCase()) ||
-                (/^\d+$/.test(dbStn) && /^\d+$/.test(stnStr) && parseInt(dbStn, 10) === parseInt(stnStr, 10));
+                (/^\d+$/.test(dbStn) && /^\d+$/.test(stnStr) && parseInt(dbStn, 10) === parseInt(stnStr, 10)) ||
+                (stnNum !== null && /^\d+$/.test(dbStn) && parseInt(dbStn, 10) === stnNum);
 
             if (matchesStn) {
                 const normFolder = String(dbTool.folder).replace(/^0+/, '');
@@ -102,11 +133,11 @@ function parseYokotaTimestamp(timeDateStr, referenceYear) {
     }
 
     // 2. Yokota standard format "MM/DD HH:MM:SS" or "MM/DD HH:MM:SS.ssssss"
-    const parts = cleanStr.split(' ');
+    const parts = cleanStr.split(/\s+/);
     if (parts.length >= 2) {
         const monthDay = parts[0];
         const timePart = parts[1];
-        const md = monthDay.split('/');
+        const md = monthDay.split(/[-/]/);
         if (md.length === 2) {
             const month = md[0].padStart(2, '0');
             const day = md[1].padStart(2, '0');
@@ -124,11 +155,19 @@ function parseYokotaTimestamp(timeDateStr, referenceYear) {
 
 // Select matching Yokota records for a specific tool and arrival window
 function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime, toolFolder) {
+    if (!Array.isArray(rawYokotaData) || rawYokotaData.length === 0) {
+        return [];
+    }
+
     const startTime = new Date(arrivalTime);
-    if (isNaN(startTime.getTime())) return [];
+    if (isNaN(startTime.getTime())) {
+        console.warn(`[Yokota Matcher] Invalid arrivalTime: ${arrivalTime}`);
+        return [];
+    }
 
     const arrivalYear = startTime.getFullYear();
-    const arrivalDateStr = startTime.toDateString();
+    const arrivalMonth = startTime.getMonth();
+    const arrivalDateNum = startTime.getDate();
 
     // 60-second pre-arrival buffer for RFID scan jitter & controller clock drift
     const cycleStartMs = startTime.getTime() - 60000;
@@ -136,10 +175,14 @@ function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime, toolFol
     let cycleEndMs;
     if (nextArrivalTime) {
         const nextTime = new Date(nextArrivalTime).getTime();
-        // Cap single-station window to at most 240s to prevent grabbing far-future engines
-        cycleEndMs = Math.min(nextTime + 30000, startTime.getTime() + 240000);
+        if (!isNaN(nextTime)) {
+            // Cap single-station window to at most 300s
+            cycleEndMs = Math.min(nextTime + 45000, startTime.getTime() + 300000);
+        } else {
+            cycleEndMs = startTime.getTime() + 180000;
+        }
     } else {
-        cycleEndMs = startTime.getTime() + 150000; // 2.5 minutes default single-station cycle
+        cycleEndMs = startTime.getTime() + 180000; // 3.0 minutes default single-station cycle
     }
 
     // 1. Filter by folder if specified in tool mapping
@@ -148,6 +191,8 @@ function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime, toolFol
         const folderMatches = rawYokotaData.filter(item => isFolderMatch(item.folder, toolFolder));
         if (folderMatches.length > 0) {
             candidates = folderMatches;
+        } else {
+            console.log(`[Yokota Matcher] No folder match for folder ${toolFolder} among ${rawYokotaData.length} records. Searching across all records.`);
         }
     }
 
@@ -157,12 +202,25 @@ function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime, toolFol
         const itemDate = parseYokotaTimestamp(item.timeDate, arrivalYear);
         if (!itemDate) return false;
 
-        return itemDate.toDateString() === arrivalDateStr &&
-               itemDate.getTime() >= cycleStartMs &&
-               itemDate.getTime() <= cycleEndMs;
+        const isSameDay = (itemDate.getFullYear() === arrivalYear &&
+                           itemDate.getMonth() === arrivalMonth &&
+                           itemDate.getDate() === arrivalDateNum);
+
+        const itemTimeMs = itemDate.getTime();
+        const isInWindow = (itemTimeMs >= cycleStartMs && itemTimeMs <= cycleEndMs);
+
+        return isSameDay && isInWindow;
     });
 
-    if (windowMatches.length === 0) return [];
+    console.log(`[Yokota Matcher] Records in: ${rawYokotaData.length} | Folder candidates: ${candidates.length} | Window matches: ${windowMatches.length} | Arrival: ${startTime.toLocaleString()} | Window: [${new Date(cycleStartMs).toLocaleTimeString()} - ${new Date(cycleEndMs).toLocaleTimeString()}]`);
+
+    if (windowMatches.length === 0) {
+        if (candidates.length > 0) {
+            const sample = candidates.slice(0, 3).map(c => `[Folder:${c.folder} Time:${c.timeDate}]`).join(', ');
+            console.log(`[Yokota Matcher] 0 window matches. Sample records from candidate pool: ${sample}`);
+        }
+        return [];
+    }
 
     // 3. Sort chronologically
     windowMatches.sort((a, b) => {
@@ -213,47 +271,88 @@ function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime, toolFol
 }
 
 async function fetchYokotaStationData(stationNumber, formattedDate, arrivalTime, nextArrivalTime) {
-    const timeKey = arrivalTime ? new Date(arrivalTime).toISOString() : 'full';
+    const timeKey = arrivalTime ? formatLocalISOString(arrivalTime) : 'full';
     const cacheKey = `${stationNumber}_${formattedDate}_${timeKey}`;
     const cached = dcsYokotaApiCache.get(cacheKey);
 
     if (cached && (Date.now() - cached.cachedAt < CACHE_TTL_MS)) {
+        console.log(`[Yokota Fetch] Serving station ${stationNumber} date ${formattedDate} from cache (${cached.data.length} records)`);
         return cached.data;
     }
 
-    let url = `http://10.82.126.73:8127/api/station/${stationNumber}/date/${formattedDate}`;
+    const baseUrls = [
+        process.env.YOKOTA_API_URL,
+        'http://127.0.0.1:8127',
+        'http://localhost:8127',
+        'http://10.82.126.73:8127'
+    ].filter(Boolean);
+
+    const uniqueBaseUrls = [...new Set(baseUrls)];
+
+    let queryParams = '';
     if (arrivalTime) {
-        url += `?startTime=${encodeURIComponent(new Date(arrivalTime).toISOString())}`;
+        queryParams += `?startTime=${encodeURIComponent(formatLocalISOString(arrivalTime))}`;
         if (nextArrivalTime) {
-            url += `&nextTime=${encodeURIComponent(new Date(nextArrivalTime).toISOString())}`;
+            queryParams += `&nextTime=${encodeURIComponent(formatLocalISOString(nextArrivalTime))}`;
         }
     }
 
-    try {
-        const yokotaResponse = await yokotaClient.get(url);
-        const data = (yokotaResponse.status === 404 || !yokotaResponse.data || !Array.isArray(yokotaResponse.data.data))
-            ? []
-            : yokotaResponse.data.data;
+    let records = null;
+    let lastError = null;
 
-        if (dcsYokotaApiCache.size > MAX_CACHE_ENTRIES) {
-            const oldestKey = dcsYokotaApiCache.keys().next().value;
-            dcsYokotaApiCache.delete(oldestKey);
+    for (const baseUrl of uniqueBaseUrls) {
+        const urlWithWindow = `${baseUrl}/api/station/${stationNumber}/date/${formattedDate}${queryParams}`;
+        console.log(`[Yokota Fetch] Querying Yokota API: ${urlWithWindow}`);
+        try {
+            const yokotaResponse = await yokotaClient.get(urlWithWindow);
+            if (yokotaResponse.status === 200 && yokotaResponse.data && Array.isArray(yokotaResponse.data.data)) {
+                records = yokotaResponse.data.data;
+                console.log(`[Yokota Fetch] Successfully retrieved ${records.length} records from ${baseUrl}`);
+                break;
+            } else if (yokotaResponse.status === 404) {
+                console.log(`[Yokota Fetch] Station ${stationNumber} on date ${formattedDate} returned 404 from ${baseUrl}`);
+                // Try fallback without window if queryParams were present
+                if (queryParams) {
+                    const fallbackUrl = `${baseUrl}/api/station/${stationNumber}/date/${formattedDate}`;
+                    console.log(`[Yokota Fetch] Retrying without time window: ${fallbackUrl}`);
+                    const fallbackResp = await yokotaClient.get(fallbackUrl);
+                    if (fallbackResp.status === 200 && fallbackResp.data && Array.isArray(fallbackResp.data.data)) {
+                        records = fallbackResp.data.data;
+                        console.log(`[Yokota Fetch] Retrieved ${records.length} records without time window from ${baseUrl}`);
+                        break;
+                    }
+                }
+            }
+        } catch (err) {
+            lastError = err;
+            console.warn(`[Yokota Fetch] Failed connecting to ${baseUrl}: ${err.message}`);
         }
+    }
 
-        dcsYokotaApiCache.set(cacheKey, {
-            cachedAt: Date.now(),
-            data: data
-        });
-
-        return data;
-    } catch (err) {
+    if (!records) {
+        console.warn(`[Yokota Fetch] Could not fetch data for station ${stationNumber} on ${formattedDate}. Last error: ${lastError ? lastError.message : 'No data'}`);
         return [];
     }
+
+    if (dcsYokotaApiCache.size > MAX_CACHE_ENTRIES) {
+        const oldestKey = dcsYokotaApiCache.keys().next().value;
+        dcsYokotaApiCache.delete(oldestKey);
+    }
+
+    dcsYokotaApiCache.set(cacheKey, {
+        cachedAt: Date.now(),
+        data: records
+    });
+
+    return records;
 }
 
 const getYokotaData = async (req, res) => {
     try {
         const { engineNo } = req.params;
+        console.log(`\n======================================================`);
+        console.log(`[Yokota API] Executing Yokota Query for Engine No: ${engineNo}`);
+        console.log(`======================================================`);
 
         // 1. Fetch station tool map from PostgreSQL (with fallback to master dictionary)
         let stationToolMap = [];
@@ -263,8 +362,9 @@ const getYokotaData = async (req, res) => {
                 FROM station_tool_map
             `);
             stationToolMap = toolMapResult.rows || [];
+            console.log(`[Yokota API] Retrieved ${stationToolMap.length} station_tool_map entries from PostgreSQL`);
         } catch (mapErr) {
-            console.error('Error fetching station_tool_map from database:', mapErr.message);
+            console.error('[Yokota API] Error fetching station_tool_map from database:', mapErr.message);
         }
 
         // 2. Query target engine tracking arrivals with SQL-computed next arrival window in < 2ms
@@ -299,10 +399,11 @@ const getYokotaData = async (req, res) => {
             ORDER BY tt.arrival_time DESC;
         `;
 
-        console.log('Executing Yokota Query for Engine No:', engineNo);
         const result = await pool.query(trackingWithWindowQuery, [engineNo]);
+        console.log(`[Yokota API] Tracking query returned ${result.rows.length} station visits for engine ${engineNo}`);
 
         if (result.rows.length === 0) {
+            console.log(`[Yokota API] No tracking rows found for engine ${engineNo}. Returning 404.`);
             return res.status(404).json({ 
                 message: 'No data found for this engine number' 
             });
@@ -316,25 +417,32 @@ const getYokotaData = async (req, res) => {
                 // Resolve all Yokota tools for this station (from DB or Master Dictionary)
                 const stationTools = getYokotaToolsForStation(station_number, stationToolMap);
 
+                console.log(`[Yokota Engine Visit] Station: ${station_number} | Tools mapped: ${stationTools.length} | Arrival: ${arrival_time} | Next Arrival: ${next_arrival_time}`);
+
                 // If station has no mapped Yokota tools, skip it
                 if (stationTools.length === 0) {
+                    console.log(`[Yokota Engine Visit] Skipping station ${station_number} - no Yokota tools mapped.`);
                     return [];
                 }
 
-                const date = new Date(arrival_time);
-                const formattedDate = date.toISOString().split('T')[0].replace(/-/g, '');
+                const formattedDate = formatLocalDateString(arrival_time);
 
                 try {
                     // Fetch station data via high-speed windowed fetch
                     const rawYokotaData = await fetchYokotaStationData(station_number, formattedDate, arrival_time, next_arrival_time);
 
+                    console.log(`[Yokota Engine Visit] Station ${station_number} raw records received: ${rawYokotaData ? rawYokotaData.length : 0}`);
+
                     if (!rawYokotaData || rawYokotaData.length === 0) {
+                        console.log(`[Yokota Engine Visit] No raw data for station ${station_number} on ${formattedDate}.`);
                         return [];
                     }
 
                     // Match records for each tool mapped to this station
                     const toolDataEntries = stationTools.flatMap(tool => {
                         const matchedRecords = matchYokotaRecords(rawYokotaData, arrival_time, next_arrival_time, tool.folder);
+
+                        console.log(`[Yokota Engine Visit] Tool ${tool.tool_name} (folder: ${tool.folder}) matched records: ${matchedRecords.length}`);
 
                         if (matchedRecords.length === 0) {
                             return [];
@@ -361,12 +469,14 @@ const getYokotaData = async (req, res) => {
                     return toolDataEntries;
 
                 } catch (yokotaErr) {
+                    console.error(`[Yokota Engine Visit] Error processing station ${station_number}:`, yokotaErr);
                     return [];
                 }
             })
         );
 
         const finalData = processedData.flat();
+        console.log(`[Yokota API] Completed processing for Engine ${engineNo}. Total matched records: ${finalData.length}\n`);
         res.json(finalData);
 
     } catch (error) {
