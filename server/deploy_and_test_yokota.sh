@@ -159,3 +159,15 @@ echo ""
 echo "If everything looks good, test more engines:"
 echo "  curl http://localhost:5081/api/yokota/<ENGINE_NUMBER> | python3 -m json.tool"
 echo ""
+
+
+echo "=== 1. PM2 INFO ==="
+pm2 describe dcs | grep -E "script path|pm_cwd|status"
+pm2 describe yokota_api | grep -E "script path|pm_cwd|status"
+
+echo "=== 2. MOUNT INFO ==="
+ls -la /mnt/yokota/AppData/0053/ 2>/dev/null || echo "Cannot list /mnt/yokota/AppData/0053/"
+
+echo "=== 3. CURRENT USER & DIR ==="
+whoami
+pwd
