@@ -66,13 +66,15 @@ function formatLocalISOString(d) {
 function getYokotaToolsForStation(stationNumber, dbToolMap) {
     if (stationNumber == null) return [];
     const stnStr = String(stationNumber).trim();
+    const stnNorm = stnStr.toLowerCase().replace(/[\s_-]+/g, '');
     const stnNumMatch = stnStr.match(/\d+/);
     const stnNum = stnNumMatch ? parseInt(stnNumMatch[0], 10) : null;
     
     // 1. Find master tools configured for this station
     const masterTools = MASTER_YOKOTA_TOOL_MAP.filter(tool => {
         const toolStn = String(tool.station).trim();
-        if (toolStn.toUpperCase() === stnStr.toUpperCase()) return true;
+        const toolNorm = toolStn.toLowerCase().replace(/[\s_-]+/g, '');
+        if (toolNorm === stnNorm) return true;
         if (/^\d+$/.test(toolStn) && /^\d+$/.test(stnStr)) {
             return parseInt(toolStn, 10) === parseInt(stnStr, 10);
         }
@@ -85,19 +87,28 @@ function getYokotaToolsForStation(stationNumber, dbToolMap) {
     const resolvedTools = [...masterTools];
     const seenFolders = new Set(resolvedTools.map(t => String(t.folder).replace(/^0+/, '')));
 
-    // 2. Add any custom tools from DB that aren't already in master
+    // 2. Add custom tools from DB ONLY IF they are actual Yokota tools (exclude URYU wrench tools)
     if (Array.isArray(dbToolMap)) {
         dbToolMap.forEach(dbTool => {
             const dbStn = String(dbTool.station).trim();
-            const matchesStn = (dbStn.toUpperCase() === stnStr.toUpperCase()) ||
+            const dbNorm = dbStn.toLowerCase().replace(/[\s_-]+/g, '');
+            const matchesStn = (dbNorm === stnNorm) ||
                 (/^\d+$/.test(dbStn) && /^\d+$/.test(stnStr) && parseInt(dbStn, 10) === parseInt(stnStr, 10)) ||
                 (stnNum !== null && /^\d+$/.test(dbStn) && parseInt(dbStn, 10) === stnNum);
 
             if (matchesStn) {
-                const normFolder = String(dbTool.folder).replace(/^0+/, '');
-                if (!seenFolders.has(normFolder)) {
-                    resolvedTools.push(dbTool);
-                    seenFolders.add(normFolder);
+                const toolName = String(dbTool.tool_name || '').toUpperCase();
+                const isExplicitYokota = toolName.includes('YOKOTA') || toolName.includes('YKT');
+                const isMasterFolderMatch = MASTER_YOKOTA_TOOL_MAP.some(m => 
+                    isFolderMatch(m.folder, dbTool.folder)
+                );
+
+                if (isExplicitYokota || isMasterFolderMatch) {
+                    const normFolder = String(dbTool.folder).replace(/^0+/, '');
+                    if (!seenFolders.has(normFolder)) {
+                        resolvedTools.push(dbTool);
+                        seenFolders.add(normFolder);
+                    }
                 }
             }
         });
@@ -166,23 +177,21 @@ function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime, toolFol
     }
 
     const arrivalYear = startTime.getFullYear();
-    const arrivalMonth = startTime.getMonth();
-    const arrivalDateNum = startTime.getDate();
 
-    // 60-second pre-arrival buffer for RFID scan jitter & controller clock drift
-    const cycleStartMs = startTime.getTime() - 60000;
+    // 180-second (3 min) pre-arrival buffer for RFID scan jitter & controller clock drift
+    const cycleStartMs = startTime.getTime() - 180000;
 
     let cycleEndMs;
     if (nextArrivalTime) {
         const nextTime = new Date(nextArrivalTime).getTime();
         if (!isNaN(nextTime)) {
-            // Cap single-station window to at most 300s
-            cycleEndMs = Math.min(nextTime + 45000, startTime.getTime() + 300000);
+            // Cap single-station window to at most 600s
+            cycleEndMs = Math.min(nextTime + 60000, startTime.getTime() + 600000);
         } else {
-            cycleEndMs = startTime.getTime() + 180000;
+            cycleEndMs = startTime.getTime() + 300000;
         }
     } else {
-        cycleEndMs = startTime.getTime() + 180000; // 3.0 minutes default single-station cycle
+        cycleEndMs = startTime.getTime() + 300000; // 5.0 minutes default single-station cycle
     }
 
     // 1. Filter by folder if specified in tool mapping
@@ -196,20 +205,14 @@ function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime, toolFol
         }
     }
 
-    // 2. Filter by date and cycle window
+    // 2. Filter by cycle window
     const windowMatches = candidates.filter(item => {
         if (!item.timeDate) return false;
         const itemDate = parseYokotaTimestamp(item.timeDate, arrivalYear);
         if (!itemDate) return false;
 
-        const isSameDay = (itemDate.getFullYear() === arrivalYear &&
-                           itemDate.getMonth() === arrivalMonth &&
-                           itemDate.getDate() === arrivalDateNum);
-
         const itemTimeMs = itemDate.getTime();
-        const isInWindow = (itemTimeMs >= cycleStartMs && itemTimeMs <= cycleEndMs);
-
-        return isSameDay && isInWindow;
+        return (itemTimeMs >= cycleStartMs && itemTimeMs <= cycleEndMs);
     });
 
     console.log(`[Yokota Matcher] Records in: ${rawYokotaData.length} | Folder candidates: ${candidates.length} | Window matches: ${windowMatches.length} | Arrival: ${startTime.toLocaleString()} | Window: [${new Date(cycleStartMs).toLocaleTimeString()} - ${new Date(cycleEndMs).toLocaleTimeString()}]`);
