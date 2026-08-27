@@ -149,5 +149,37 @@ DETAILED YOKOTA TOOLS DATA REPORT FOR ENGINE: NG60753
 ================================================================================
 SUMMARY FOR NG60753: 2 / 10 Tools Matched | Total Bolts: 9
 ================================================================================
+s$ node -r dotenv/config server/find_top_yokota_engines.js
+================================================================================
+SEARCHING PLANT DATABASE & DISK FOR ENGINES WITH MAXIMUM YOKOTA TOOLS DATA
+================================================================================
 
+1. TOP PRODUCTION DATES WITH THE MOST ACTIVE YOKOTA CONTROLLERS ON DISK:
+--------------------------------------------------------------------------------
+[1] Date: 2026-08-18 (20260818) | Active Controllers: 12 / 10 | Folders: [####, 0038, 0039, 0053, 0102, 0103, 0104, 0230, 0240, 0250, 0255, 0257]
+[2] Date: 2026-08-17 (20260817) | Active Controllers: 12 / 10 | Folders: [####, 0038, 0039, 0053, 0102, 0103, 0104, 0230, 0240, 0250, 0255, 0257]
+[3] Date: 2026-08-14 (20260814) | Active Controllers: 12 / 10 | Folders: [####, 0038, 0039, 0053, 0102, 0103, 0104, 0230, 0240, 0250, 0255, 0257]
+[4] Date: 2026-08-13 (20260813) | Active Controllers: 12 / 10 | Folders: [####, 0038, 0039, 0053, 0102, 0103, 0104, 0230, 0240, 0250, 0255, 0257]
+[5] Date: 2026-08-07 (20260807) | Active Controllers: 12 / 10 | Folders: [####, 0038, 0039, 0053, 0102, 0103, 0104, 0230, 0240, 0250, 0255, 0257]
+[6] Date: 2026-08-06 (20260806) | Active Controllers: 12 / 10 | Folders: [####, 0038, 0039, 0053, 0102, 0103, 0104, 0230, 0240, 0250, 0255, 0257]
+[7] Date: 2026-08-05 (20260805) | Active Controllers: 12 / 10 | Folders: [####, 0038, 0039, 0053, 0102, 0103, 0104, 0230, 0240, 0250, 0255, 0257]
+[8] Date: 2026-08-04 (20260804) | Active Controllers: 12 / 10 | Folders: [####, 0038, 0039, 0053, 0102, 0103, 0104, 0230, 0240, 0250, 0255, 0257]
+[9] Date: 2026-04-03 (20260403) | Active Controllers: 12 / 10 | Folders: [####, 0038, 0039, 0053, 0102, 0103, 0104, 0230, 0240, 0250, 0255, 0257]
+[10] Date: 2026-04-02 (20260402) | Active Controllers: 12 / 10 | Folders: [####, 0038, 0039, 0053, 0102, 0103, 0104, 0230, 0240, 0250, 0255, 0257]
+--------------------------------------------------------------------------------
+
+2. Finding candidate engines produced on top dates: [2026-08-18, 2026-08-17, 2026-08-14, 2026-08-13, 2026-08-07]...
+Error acquiring client for PostgreSQL DB: SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string
+Error querying engines for 2026-08-18: SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string
+Error querying engines for 2026-08-17: SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string
+Error querying engines for 2026-08-14: SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string
+Error querying engines for 2026-08-13: SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string
+Error querying engines for 2026-08-07: SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string
+   Found 0 candidate engines across top dates.
+
+3. Testing DCS API (http://localhost:5081/api/yokota/:engineNo) for each candidate...
+
+
+No engines returned data via the general query. Inspecting known engine NG60753...
+tnga_iot@Ubuntu-TNGA-IOT:~/Yousuf/dcs/dcs$ 
 tnga_iot@Ubuntu-TNGA-IOT:~/Yousuf/dcs/dcs/server$ 
