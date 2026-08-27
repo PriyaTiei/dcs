@@ -1,7 +1,8 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const pool = require('./connections/postgresDB');
 const axios = require('axios');
 const fs = require('fs');
-const path = require('path');
 
 // Master List of 10 Yokota Tools & Folder Mappings
 const MASTER_YOKOTA_TOOLS = [

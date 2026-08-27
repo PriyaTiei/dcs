@@ -1,6 +1,7 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const pool = require('./connections/postgresDB');
 const fs = require('fs');
-const path = require('path');
 const axios = require('axios');
 
 const YOKOTA_BASE_PATH = process.env.YOKOTA_MOUNT_PATH || '/mnt/yokota/AppData';
