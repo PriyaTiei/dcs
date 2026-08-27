@@ -5,37 +5,51 @@ const pool = require('./connections/postgresDB');
 // Best dates = ones where all 10 Yokota controller folders exist on disk
 const BEST_DATES = ['2026-08-18', '2026-08-17', '2026-08-14', '2026-08-13', '2026-08-07'];
 
+// Yokota station numbers - engines must arrive at these stations on the best dates
+// (Yokota tightening is at the END of the assembly line)
+const YOKOTA_STATIONS = ['17', '20', '21', '43', '45', '53', '58', '59', '60', '61'];
+
 async function quickFindEngines() {
     console.log('================================================================');
-    console.log('QUICK ENGINE LIST - No API calls, just DB query');
+    console.log('QUICK ENGINE LIST - Filtered by YOKOTA STATION arrivals');
     console.log('================================================================\n');
-    console.log(`Querying engines from best production dates: ${BEST_DATES.join(', ')}\n`);
+    console.log(`Querying engines whose YOKOTA tightening happened on best dates: ${BEST_DATES.join(', ')}`);
+    console.log(`Yokota Stations checked: ${YOKOTA_STATIONS.join(', ')}\n`);
 
+    // KEY FIX: Filter by YOKOTA STATION arrivals specifically (not just any station).
+    // Engines enter the line on one date but reach Yokota stations at the END of the
+    // line (often the next morning). So we must filter by the arrival_time at the
+    // Yokota stations themselves to match the correct CSV files on disk.
     const sql = `
-        SELECT DISTINCT engine_number, arrival_time::date::text as prod_date, arrival_time
+        SELECT DISTINCT engine_number, arrival_time::date::text as prod_date, MAX(arrival_time) as last_yokota_time
         FROM (
-            SELECT engine_number, arrival_time FROM engine_tracking WHERE arrival_time::date::text = ANY($1)
+            SELECT engine_number, arrival_time FROM engine_tracking
+            WHERE arrival_time::date::text = ANY($1) AND station_number::text = ANY($2)
             UNION ALL
-            SELECT engine_number, arrival_time FROM engine_tracking_two WHERE arrival_time::date::text = ANY($1)
+            SELECT engine_number, arrival_time FROM engine_tracking_two
+            WHERE arrival_time::date::text = ANY($1) AND station_number::text = ANY($2)
             UNION ALL
-            SELECT engine_number, arrival_time FROM engine_tracking_three WHERE arrival_time::date::text = ANY($1)
+            SELECT engine_number, arrival_time FROM engine_tracking_three
+            WHERE arrival_time::date::text = ANY($1) AND station_number::text = ANY($2)
         ) t
         WHERE engine_number IS NOT NULL AND engine_number != ''
-        ORDER BY arrival_time DESC
+        GROUP BY engine_number, arrival_time::date::text
+        ORDER BY prod_date DESC, last_yokota_time DESC
         LIMIT 30;
     `;
 
-    const res = await pool.query(sql, [BEST_DATES]);
-    console.log(`Found ${res.rows.length} engines. These are the BEST engines to test (produced on dates with all 10 Yokota controllers active on disk):\n`);
+    const res = await pool.query(sql, [BEST_DATES, YOKOTA_STATIONS]);
+    console.log(`Found ${res.rows.length} engines whose Yokota tightening was on a date with ALL 10 controllers active.\n`);
 
-    console.log('  #  | Engine Number   | Production Date');
-    console.log('-----|-----------------|-----------------');
+    console.log('  #  | Engine Number   | Yokota Date  | Last Yokota Station Time');
+    console.log('-----|-----------------|--------------|---------------------------');
     res.rows.forEach((row, i) => {
-        console.log(`  ${String(i + 1).padStart(2)}  | ${row.engine_number.padEnd(15)} | ${row.prod_date}`);
+        const time = new Date(row.last_yokota_time).toLocaleTimeString('en-IN', { hour12: false });
+        console.log(`  ${String(i + 1).padStart(2)}  | ${row.engine_number.padEnd(15)} | ${row.prod_date}  | ${time}`);
     });
 
-    console.log('\n>>> Test any of the above engine numbers in the DCS UI at http://10.82.126.73:3000');
-    console.log('>>> They should all have Yokota AND URYU tightening data.\n');
+    console.log('\n>>> These engines have their Yokota CSV files on dates where ALL 10 controllers have data!');
+    console.log('>>> Test them in the DCS UI at http://10.82.126.73:3000\n');
 }
 
 async function main() {
