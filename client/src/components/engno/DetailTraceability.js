@@ -331,25 +331,51 @@ function DeatialTraceability() {
       dispatch(getProcessRangeDetailsAssy(processName, fromDateState, toDateState));
     }
   };
+  const customSelectStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      borderRadius: '8px',
+      borderColor: state.isFocused ? '#2563eb' : '#cbd5e1',
+      boxShadow: state.isFocused ? '0 0 0 3px rgba(37, 99, 235, 0.12)' : '0 1px 2px rgba(0,0,0,0.02)',
+      fontSize: '13px',
+      fontWeight: 500,
+      minHeight: '38px',
+      minWidth: '170px',
+      '&:hover': {
+        borderColor: '#93c5fd',
+      },
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      fontSize: '13px',
+      fontWeight: state.isSelected ? 600 : 400,
+      backgroundColor: state.isSelected ? '#2563eb' : state.isFocused ? '#eff6ff' : '#fff',
+      color: state.isSelected ? '#fff' : '#1e293b',
+      cursor: 'pointer',
+    }),
+  };
+
   return (
     <div>
-      {/* search engine no */}
+      {/* Modern Detail Traceability Container */}
+      <div className="trace-card">
+        <div className="trace-header">
+          <h3 className="trace-title">
+            <span>Detail & Sub-Assembly Process Traceability</span>
+          </h3>
+          <span className="trace-badge">
+            <span style={{ fontSize: "9px" }}>●</span> Deep Telemetry
+          </span>
+        </div>
 
-      <fieldset className="border p-3 mt-3 ">
-        <legend
-          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-success"
-          style={{ fontSize: "16px" }}
-        >
-          Detail Traceability
-        </legend>
-
-        <div className="d-flex gap-3 mt-0">
-          {/* Part selection */}
-
+        {/* Compact Controls Row */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "flex-end", marginBottom: "10px" }}>
+          {/* Section selects */}
           <div>
-            <div className="h5">Part Name</div>
-            <div className="d-flex gap-3 selection">
+            <div className="trace-section-label" style={{ marginBottom: "4px" }}>Part / Section</div>
+            <div className="d-flex gap-2">
               <Select
+                styles={customSelectStyles}
                 options={sectionData.map((item, index) => ({
                   value: item.section,
                   label: item.section,
@@ -359,115 +385,174 @@ function DeatialTraceability() {
                 onChange={(option) =>
                   handleSectionChange(option.value, option.index)
                 }
-                placeholder="Select Section"
+                placeholder="Section"
               />
 
               <Select
+                styles={customSelectStyles}
                 options={getSubSections()}
                 value={{ value: selectedSubSection, label: selectedSubSection }}
                 onChange={(option) =>
                   handleSubSectionChange(option.value, option.index)
                 }
-                placeholder="Select SubSection"
+                placeholder="Sub-Section"
                 isDisabled={!selectedSection}
               />
             </div>
           </div>
 
-          {/* Process data [Machining or Maching]  */}
-
-          <ProcessNumbers
-            processNoListInitial={
-              sectionData[indexI]["subSection"][indexJ]["processNo"]
-            }
-          />
-        </div>
-        {/*Results */}
-        <div className="d-flex align-items-start flex-row gap-3 mt-4">
-          <ReusablePartNo />
-          <ResultProcess />
+          {/* Process chips inline */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div className="trace-section-label" style={{ marginBottom: "4px" }}>Processes ({sectionData[indexI]["subSection"][indexJ]["processNo"]?.length || 0})</div>
+            <ProcessNumbers
+              processNoListInitial={
+                sectionData[indexI]["subSection"][indexJ]["processNo"]
+              }
+            />
+          </div>
         </div>
 
-        <div className="d-flex justify-content-start  mt-5">
-          <form onChange={radioHandler} className="form-group gap-3">
-            <div className="d-flex gap-3">
-              <label htmlFor="oneDay">One Day </label>
-              <input type="radio" name="isRange" id="oneDay" value="oneDay" />
-              <label htmlFor="dateRange">Date Range </label>
-              <input
-                type="radio"
-                name="isRange"
-                id="dateRange"
-                value="dateRange"
-              />
+        {/* Query Controls Bar */}
+        <div
+          style={{
+            background: "linear-gradient(135deg, #f0f7ff 0%, #f8fafc 100%)",
+            border: "1px solid #dbeafe",
+            borderRadius: "10px",
+            padding: "10px 14px",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "12px",
+            alignItems: "center",
+            marginBottom: "12px",
+          }}
+        >
+          {/* Segmented Mode Pill */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+            <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#94a3b8" }}>MODE</span>
+            <div style={{
+              display: "inline-flex",
+              background: "#e0e7ff",
+              borderRadius: "8px",
+              padding: "2px",
+              gap: "2px",
+            }}>
+              <button
+                onClick={() => setRange("oneDay")}
+                style={{
+                  padding: "4px 12px",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                  background: range === "oneDay" ? "#2563eb" : "transparent",
+                  color: range === "oneDay" ? "#ffffff" : "#4f46e5",
+                  boxShadow: range === "oneDay" ? "0 1px 4px rgba(37,99,235,0.35)" : "none",
+                }}
+              >
+                Single
+              </button>
+              <button
+                onClick={() => setRange("dateRange")}
+                style={{
+                  padding: "4px 12px",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  transition: "all 0.15s ease",
+                  background: range === "dateRange" ? "#2563eb" : "transparent",
+                  color: range === "dateRange" ? "#ffffff" : "#4f46e5",
+                  boxShadow: range === "dateRange" ? "0 1px 4px rgba(37,99,235,0.35)" : "none",
+                }}
+              >
+                Range
+              </button>
             </div>
-          </form>
-        </div>
+          </div>
 
-        {/* One day is selected*/}
-        {range === "oneDay" && (
-          <div className="mt-3">
-            <div className="h6">Select Date </div>
-            <div className="d-flex flex-wrap gap-3">
-              <div className="d-flex flex-column align-items-start">
+          {/* Divider */}
+          <div style={{ width: "1px", height: "32px", background: "#cbd5e1", flexShrink: 0 }} />
+
+          {/* Date + Run Query grouped together */}
+          <div style={{ display: "flex", alignItems: "flex-end", gap: "8px" }}>
+
+            {/* One day date picker */}
+            {range === "oneDay" && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#94a3b8" }}>DATE</span>
                 <input
                   type="date"
                   value={fromDateString.slice(0, 10)}
-                  className="bg-warning text-center"
+                  className="modern-date-input"
                   onChange={oneDayDateHandler}
                 />
               </div>
+            )}
 
-              <button
-                className="btn btn-primary align-self-end "
-                onClick={oneDayButtonHandler}
-              >
-                <div className="d-flex gap-2 align-items-center">
-                  <Search />
-                  Search
+            {/* Date Range pickers */}
+            {range === "dateRange" && (
+              <>
+                <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                  <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#94a3b8" }}>FROM</span>
+                  <input
+                    type="date"
+                    value={fromDateString.slice(0, 10)}
+                    className="modern-date-input"
+                    onChange={fromDateHandler}
+                  />
                 </div>
-              </button>
-            </div>
-          </div>
-        )}
 
-        {/* This is for Date Range */}
-        {range === "dateRange" && (
-          <div className="mt-3">
-            <div className="h5">Select Date Range</div>
-            <div className="d-flex flex-wrap gap-3">
-              <div className="d-flex flex-column align-items-start">
-                <div className="text-center font-weight-bold  ">From Date:</div>
-                <input
-                  type="date"
-                  value={fromDateString.slice(0, 10)}
-                  className="bg-warning text-center"
-                  onChange={fromDateHandler}
-                />
-              </div>
-
-              <div className="d-flex flex-column align-items-start">
-                <div className="text-center font-weight-bold">To Date</div>
-
-                <input
-                  type="date"
-                  value={toDateState.slice(0, 10)}
-                  className="bg-warning text-center"
-                  onChange={toDateHandler}
-                />
-              </div>
-              <button
-                className="btn btn-primary align-self-end "
-                onClick={rangeButtonHandler}
-              >
-                <div className="d-flex gap-2 align-items-center">
-                  <Search />
-                  Search
+                <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                  <span style={{ fontSize: "10px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#94a3b8" }}>TO</span>
+                  <input
+                    type="date"
+                    value={toDateState.slice(0, 10)}
+                    className="modern-date-input"
+                    onChange={toDateHandler}
+                  />
                 </div>
-              </button>
-            </div>
+              </>
+            )}
+
+            {/* Run Query Button — right beside the date */}
+            <button
+              onClick={range === "oneDay" ? oneDayButtonHandler : rangeButtonHandler}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "7px 20px",
+                height: "34px",
+                fontSize: "13px",
+                fontWeight: 700,
+                border: "none",
+                borderRadius: "9999px",
+                cursor: "pointer",
+                background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+                color: "#ffffff",
+                boxShadow: "0 2px 8px rgba(37, 99, 235, 0.4)",
+                letterSpacing: "0.02em",
+                transition: "all 0.2s ease",
+                flexShrink: 0,
+              }}
+              onMouseEnter={e => e.currentTarget.style.boxShadow = "0 4px 14px rgba(37, 99, 235, 0.55)"}
+              onMouseLeave={e => e.currentTarget.style.boxShadow = "0 2px 8px rgba(37, 99, 235, 0.4)"}
+            >
+              <Search size={13} />
+              Run Query
+            </button>
+
           </div>
-        )}
+        </div>
+
+        {/* Results Metadata */}
+        <div className="d-flex align-items-start flex-row gap-3 mt-3">
+          <ReusablePartNo />
+          <ResultProcess />
+        </div>
 
         {/* **************Table data
         {range === "oneDay" && (
@@ -852,7 +937,7 @@ function DeatialTraceability() {
             )}
           </>
         )}
-      </fieldset>
+      </div>
     </div>
   );
 }

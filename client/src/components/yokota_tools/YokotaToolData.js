@@ -15,7 +15,7 @@ const YokotaToolTable = ({ engineNo, triggerSearch }) => {
       
       try {
         setLoading(true);
-        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://10.82.126.73:5081';
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://10.82.126.73:5080';
         const response = await axios.get(
           `${backendUrl}/api/yokota/${engineNo}`
         );
@@ -108,71 +108,69 @@ const YokotaToolTable = ({ engineNo, triggerSearch }) => {
   };
 
   return (
-    <div className="yokota-container">
-      <div className="table-scroll-container">
-        <table className="yokota-table" ref={tableRef}>
-          <thead>
+    <div className="table-responsive wrench-container">
+      <table className="wrench-table" ref={tableRef}>
+        <thead>
+          <tr>
+            <th>Engine Number</th>
+            <th>Station No.</th>            
+            <th>Tool Name</th>
+            <th>Date & Time</th>
+            <th>Folder</th>
+            <th>Program</th>
+            <th>Unknown Value 1</th>
+            <th>Torque Duplicate</th>
+            <th>Unknown Value 2</th>
+            <th>Unknown Value 3</th>
+            <th>Unknown Value 4</th>
+            <th>Unknown Value 5</th>
+            <th>Torque</th>
+            <th>Judgement</th>         
+          </tr>
+        </thead>
+        <tbody>
+          {loading ? (
             <tr>
-              <th>Engine Number</th>
-              <th>Station No.</th>            
-              <th>Tool Name</th>
-              <th>Date & Time</th>
-              <th>Folder</th>
-              <th>Program</th>
-              <th>Unknown Value 1</th>
-              <th>Torque Duplicate</th>
-              <th>Unknown Value 2</th>
-              <th>Unknown Value 3</th>
-              <th>Unknown Value 4</th>
-              <th>Unknown Value 5</th>
-              <th>Torque</th>
-              <th>Judgement</th>         
+              <td colSpan={columnCount || 14} className="loading-spinner">
+                <div className='spinner'></div>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={columnCount} className="loading-spinner">
-                  <div className='spinner'></div>
-                </td>
+          ) : error ? (
+            <tr>
+              <td colSpan={columnCount || 14} className="error-message">
+                {error}
+              </td>
+            </tr>
+          ) : yokotaData.length === 0 ? (
+            <tr>
+              <td colSpan={columnCount || 14} className="text-center py-3 text-muted">
+                {triggerSearch ? 'No Yokota data found for this engine' : 'Enter an engine number and click Search'}
+              </td>
+            </tr>
+          ) : (
+            yokotaData.map((record, index) => (
+              <tr 
+                key={index} 
+                className={getRowClass(record.judgement)}>
+                <td>{record.engine_number || '-'}</td>
+                <td>{record.station}</td>
+                <td>{record.tool_name || '-'}</td>
+                <td>{formatDateTime(record.timeDate)}</td>
+                <td>{record.folder !== null ? record.folder : '-'}</td>
+                <td>{record.program !== null ? record.program : '-'}</td>
+                <td>{record.unknownValue1 !== null ? record.unknownValue1 : '-'}</td>
+                <td>{record.torqueDuplicate !== null ? record.torqueDuplicate : '-'}</td>
+                <td>{record.unknownValue2 !== null ? record.unknownValue2 : '-'}</td>
+                <td>{record.unknownValue3 !== null ? record.unknownValue3 : '-'}</td>
+                <td>{record.unknownValue4 !== null ? record.unknownValue4 : '-'}</td>
+                <td>{record.unknownValue5 !== null ? record.unknownValue5 : '-'}</td>
+                <td>{record.torque !== null ? record.torque : '-'}</td>               
+                <td>{record.judgement !== null ? record.judgement : '-'}</td>
               </tr>
-            ) : error ? (
-              <tr>
-                <td colSpan={columnCount} className="error-message">
-                  {error}
-                </td>
-              </tr>
-            ) : yokotaData.length === 0 ? (
-              <tr>
-                <td colSpan={columnCount}>
-                  {triggerSearch ? 'No Yokota data found for this engine' : 'Enter an engine number and click Search'}
-                </td>
-              </tr>
-            ) : (
-              yokotaData.map((record, index) => (
-                <tr 
-                  key={index} 
-                  className={getRowClass(record.judgement)}>
-                  <td>{record.engine_number || '-'}</td>
-                  <td>{record.station}</td>
-                  <td>{record.tool_name || '-'}</td>
-                  <td>{formatDateTime(record.timeDate)}</td>
-                  <td>{record.folder !== null ? record.folder : '-'}</td>
-                  <td>{record.program !== null ? record.program : '-'}</td>
-                  <td>{record.unknownValue1 !== null ? record.unknownValue1 : '-'}</td>
-                  <td>{record.torqueDuplicate !== null ? record.torqueDuplicate : '-'}</td>
-                  <td>{record.unknownValue2 !== null ? record.unknownValue2 : '-'}</td>
-                  <td>{record.unknownValue3 !== null ? record.unknownValue3 : '-'}</td>
-                  <td>{record.unknownValue4 !== null ? record.unknownValue4 : '-'}</td>
-                  <td>{record.unknownValue5 !== null ? record.unknownValue5 : '-'}</td>
-                  <td>{record.torque !== null ? record.torque : '-'}</td>               
-                  <td>{record.judgement !== null ? record.judgement : '-'}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+            ))
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };

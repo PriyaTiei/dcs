@@ -524,11 +524,11 @@
 //                 <td className="info-value">{camHousingSN || '-'}</td>
 //               </tr>
 //               <tr>
-//                 <td className="info-label">Cam Housing Exhaust:</td>
+//                 <td className="info-label">Cam Shaft Exhaust:</td>
 //                 <td className="info-value">{camHousingExhaust || '-'}</td>
 //               </tr>
 //               <tr>
-//                 <td className="info-label">Cam Housing Intake:</td>
+//                 <td className="info-label">Cam Shaft Intake:</td>
 //                 <td className="info-value">{camHousingIntake || '-'}</td>
 //               </tr>
 //             </tbody>
@@ -1078,8 +1078,8 @@ const PTTable = ({ engineNo, triggerSearch }) => {
           )}
         </div>
 
-        {/* Fuel Delivery Pipe Section */}
-        <div className="table-container">
+        {/* Fuel Delivery Pipe Section (Temporarily commented out) */}
+        {/* <div className="table-container">
           <h5>Fuel Delivery Pipe</h5>
           {loading ? (
             <div className="loading-state">Loading fuel delivery pipe data...</div>
@@ -1103,10 +1103,10 @@ const PTTable = ({ engineNo, triggerSearch }) => {
               </tbody>
             </table>
           )}
-        </div>
+        </div> */}
 
-        {/* PCV Section */}
-        <div className="table-container">
+        {/* PCV Section (Temporarily commented out) */}
+        {/* <div className="table-container">
           <h5>PCV</h5>
           {loading ? (
             <div className="loading-state">Loading PCV data...</div>
@@ -1130,7 +1130,7 @@ const PTTable = ({ engineNo, triggerSearch }) => {
               </tbody>
             </table>
           )}
-        </div>
+        </div> */}
 
         {/* Wire Harness Section */}
         <div className="table-container">
@@ -1197,11 +1197,11 @@ const PTTable = ({ engineNo, triggerSearch }) => {
                   <td className="info-value">{camHousingSN || '-'}</td>
                 </tr>
                 <tr>
-                  <td className="info-label">Cam Housing Exhaust:</td>
+                  <td className="info-label">Cam Shaft Exhaust:</td>
                   <td className="info-value">{camHousingExhaust || '-'}</td>
                 </tr>
                 <tr>
-                  <td className="info-label">Cam Housing Intake:</td>
+                  <td className="info-label">Cam Shaft Intake:</td>
                   <td className="info-value">{camHousingIntake || '-'}</td>
                 </tr>
               </tbody>
@@ -1233,11 +1233,11 @@ const PTTable = ({ engineNo, triggerSearch }) => {
                     <td className="info-value">{camHousingSN || '-'}</td>
                   </tr>
                   <tr>
-                    <td className="info-label">Cam Housing Exhaust:</td>
+                    <td className="info-label">Cam Shaft Exhaust:</td>
                     <td className="info-value">{camHousingExhaust || '-'}</td>
                   </tr>
                   <tr>
-                    <td className="info-label">Cam Housing Intake:</td>
+                    <td className="info-label">Cam Shaft Intake:</td>
                     <td className="info-value">{camHousingIntake || '-'}</td>
                   </tr>
                 </tbody>
@@ -1254,7 +1254,7 @@ const PTTable = ({ engineNo, triggerSearch }) => {
                       <div className="image-container">
                         <img
                           src={`${BACKEND_URL}/api/camhousing-image/${camHousingSN}?imageType=intake`}
-                          alt="Cam Housing Intake"
+                          alt="Cam Shaft Intake"
                           className="main-image"
                           onClick={() => setIsCamHousingIntakeImageOpen(true)}
                           onError={(e) => {
@@ -1274,7 +1274,7 @@ const PTTable = ({ engineNo, triggerSearch }) => {
                       <div className="image-container">
                         <img
                           src={`${BACKEND_URL}/api/camhousing-image/${camHousingSN}?imageType=exhaust`}
-                          alt="Cam Housing Exhaust"
+                          alt="Cam Shaft Exhaust"
                           className="main-image"
                           onClick={() => setIsCamHousingExhaustImageOpen(true)}
                           onError={(e) => {
@@ -1291,29 +1291,29 @@ const PTTable = ({ engineNo, triggerSearch }) => {
                 </div>
               )}
               
-              {/* Lightbox for Cam Housing Intake Image */}
+              {/* Lightbox for Cam Shaft Intake Image */}
               {isCamHousingIntakeImageOpen && (
                 <Lightbox
                   mainSrc={`${BACKEND_URL}/api/camhousing-image/${camHousingSN}?imageType=intake`}
                   onCloseRequest={() => setIsCamHousingIntakeImageOpen(false)}
-                  imageCaption="Cam Housing - Intake"
+                  imageCaption="Cam Shaft - Intake"
                 />
               )}
               
-              {/* Lightbox for Cam Housing Exhaust Image */}
+              {/* Lightbox for Cam Shaft Exhaust Image */}
               {isCamHousingExhaustImageOpen && (
                 <Lightbox
                   mainSrc={`${BACKEND_URL}/api/camhousing-image/${camHousingSN}?imageType=exhaust`}
                   onCloseRequest={() => setIsCamHousingExhaustImageOpen(false)}
-                  imageCaption="Cam Housing - Exhaust"
+                  imageCaption="Cam Shaft - Exhaust"
                 />
               )}
             </>
           )}
         </div>
       
-        {/* Port Injector Section */}
-        <div className="table-container">
+        {/* Port Injector Section (Temporarily commented out) */}
+        {/* <div className="table-container">
           <h5>Port Injector Data</h5>
           {loading ? (
             <div className="loading-state">Loading port injector data...</div>
@@ -1358,7 +1358,7 @@ const PTTable = ({ engineNo, triggerSearch }) => {
               </tbody>
             </table>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );

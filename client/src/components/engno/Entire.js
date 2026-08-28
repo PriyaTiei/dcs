@@ -19,6 +19,8 @@ import CrankInfo from "../crank/CrankInfo";
 import ImpactWrenchTable from "../impact_wrench/ImpactWrenchData";
 import YokotaToolTable from "../yokota_tools/YokotaToolData";
 import PTTable from "../part_traceability/pt_table";
+import { TbFileSpreadsheet } from "react-icons/tb";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
 
@@ -2050,23 +2052,107 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
     URL.revokeObjectURL(url);
   };
 
+  const hasMachiningData = Boolean(
+    display_B1_ENGRAVED ||
+    castingDetails_B1_ENGRAVED ||
+    display_B4_Finishing_gantry ||
+    display_B7_OP990 ||
+    display_B3_OP190 ||
+    display_B5_OP235 ||
+    display_H1_Material_input_engraving ||
+    castingDetails_H1_Material_input_engraving ||
+    display_H12_OP990 ||
+    display_H2_OP050 ||
+    display_H3_OP055 ||
+    display_H5_OP310 ||
+    display_C1_Comaterial ||
+    display_C7_Gantry_after_OP140 ||
+    display_C6_OP170_front_gantry ||
+    display_C8_OP990 ||
+    display_C3_OP150_170 ||
+    display_C4_OP220
+  );
+
+  const hasSubAssemblyData = Boolean(
+    display ||
+    display_FuelLeak ||
+    display_WalterLeak ||
+    display_OileLeak ||
+    display_Engine_quality_information ||
+    display_TEST_ON ||
+    display_MAIN_ON ||
+    display_CRANK_ON ||
+    display_BLOCKSUB_ON ||
+    display_HEADSUB_OFF ||
+    display_CAMHOUSINGSIB_OFF ||
+    display_EX_cam_S_N ||
+    display_IN_cam_S_N ||
+    display_CamHousing_S_N ||
+    display_Head_S_N ||
+    display_Crank_S_N ||
+    display_Block_S_N ||
+    display_HeadboltNR
+  );
+
   return (
-    <div className="d-flex flex-column gap-3 mt-3">
-      <hr></hr>
-      <div className="h4 text-primary"> Assembly data</div>
-      
-      <button
-        className="btn btn-primary"
-        style={{ width: "150px" }}
-        onClick={exportToExcel}
-      >
-        Export to Excel
-      </button>
-      {/* Add ImpactWrenchTable in a container with some styling */}
+    <div className="d-flex flex-column gap-2 mt-2">
+      {/* 1. Machining Data Section (Only when data exists) */}
+      {hasMachiningData && (
+        <div>
+          <div className="h4 text-primary">Machining Data</div>
+          <div className="d-flex flex-row gap-3">
+            <>{display_B1_ENGRAVED}</>
+            <>{castingDetails_B1_ENGRAVED}</>
+            <>{display_B4_Finishing_gantry}</>
+            <>{display_B7_OP990}</>
+          </div>
+          <>{display_B3_OP190}</>
+          <>{display_B5_OP235}</>
+
+          <div className="d-flex flex-row gap-3">
+            <>{display_H1_Material_input_engraving}</>
+            <>{castingDetails_H1_Material_input_engraving}</>
+            <>{display_H12_OP990}</>
+          </div>
+          <>{display_H2_OP050}</>
+          <>{display_H3_OP055}</>
+          <>{display_H5_OP310}</>
+
+          <div className="d-flex flex-row gap-3">
+            <>{display_C1_Comaterial}</>
+            <>{display_C7_Gantry_after_OP140}</>
+            <>{display_C6_OP170_front_gantry}</>
+            <>{display_C8_OP990}</>
+          </div>
+
+          <>{display_C3_OP150_170}</>
+          <>{display_C4_OP220}</>
+        </div>
+      )}
+
+      {/* 2. Impact Wrench Data Section */}
+      <div className="d-flex justify-content-between align-items-center mt-2 mb-1">
+        <div className="h4 text-primary mb-0">Impact Wrench Data</div>
+        <OverlayTrigger
+          placement="left"
+          overlay={<Tooltip id="export-excel-tooltip">Export tightening data to Excel (.xlsx)</Tooltip>}
+        >
+          <button
+            className="export-excel-btn"
+            onClick={exportToExcel}
+            aria-label="Export to Excel"
+          >
+            <TbFileSpreadsheet size={15} />
+            <span>Export to Excel</span>
+          </button>
+        </OverlayTrigger>
+      </div>
+
+      {/* URYU Impact Wrench Table */}
       <div className="wrench-section" style={{ width: '100%' }}>
           <div className="card">
             <div className="card-body">
-              <h5 className="card-title">Impact Wrench Data</h5>
+              <h5 className="card-title">URYU Tightening Data</h5>
               <ImpactWrenchTable 
                 engineNo={engineNo}    
                 triggerSearch={triggerSearch}
@@ -2075,12 +2161,11 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
           </div>
       </div>
 
-
-
+      {/* Yokota Tool Table */}
       <div className="wrench-section" style={{ width: '100%' }}>
           <div className="card">
             <div className="card-body">
-              <h5 className="card-title">Impact Wrench Data</h5>
+              <h5 className="card-title">Yokota Nutrunner Data</h5>
               <YokotaToolTable
                 engineNo={engineNo}    
                 triggerSearch={triggerSearch}
@@ -2088,77 +2173,53 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
             </div>
           </div>
       </div>
-     
-      <>{display}</>
 
-      <div className="d-flex flex-row gap-3">
-        <>{display_FuelLeak}</>
-        <>{display_WalterLeak}</>
-        <>{display_OileLeak}</>
-      </div>
-      <>{display_Engine_quality_information}</>
-      <div className="d-flex flex-row gap-3">
-        <>{display_TEST_ON}</>
-        <>{display_MAIN_ON}</>
-        <>{display_CRANK_ON}</>
-      </div>
-      <div className="d-flex flex-row gap-3">
-        <>{display_BLOCKSUB_ON}</>
-        <>{display_HEADSUB_OFF}</>
-        <>{display_CAMHOUSINGSIB_OFF}</>
-      </div>
-      <div className="d-flex flex-row gap-3">
-        <>{display_EX_cam_S_N}</>
-        <>{display_IN_cam_S_N}</>
-        <>{display_CamHousing_S_N}</>
-      </div>
-      <div className="d-flex flex-row gap-3">
-        <>{display_Head_S_N}</>
-        <>{display_Crank_S_N}</>
-        <>{display_Block_S_N}</>
-      </div>
-      <>{display_HeadboltNR}</>
-
-      <CrankInfo crankinfo={crankinfo}/>
-
-      <div>
+      {/* 3. Sub-Assembly, Quality & Leak Tests (Only when data exists) */}
+      {hasSubAssemblyData && (
         <div>
-              <PTTable 
-                engineNo={engineNo}    
-                triggerSearch={triggerSearch}
-              /> 
+          <>{display}</>
+
+          <div className="d-flex flex-row gap-3">
+            <>{display_FuelLeak}</>
+            <>{display_WalterLeak}</>
+            <>{display_OileLeak}</>
+          </div>
+          <>{display_Engine_quality_information}</>
+          <div className="d-flex flex-row gap-3">
+            <>{display_TEST_ON}</>
+            <>{display_MAIN_ON}</>
+            <>{display_CRANK_ON}</>
+          </div>
+          <div className="d-flex flex-row gap-3">
+            <>{display_BLOCKSUB_ON}</>
+            <>{display_HEADSUB_OFF}</>
+            <>{display_CAMHOUSINGSIB_OFF}</>
+          </div>
+          <div className="d-flex flex-row gap-3">
+            <>{display_EX_cam_S_N}</>
+            <>{display_IN_cam_S_N}</>
+            <>{display_CamHousing_S_N}</>
+          </div>
+          <div className="d-flex flex-row gap-3">
+            <>{display_Head_S_N}</>
+            <>{display_Crank_S_N}</>
+            <>{display_Block_S_N}</>
+          </div>
+          <>{display_HeadboltNR}</>
         </div>
-      </div>
+      )}
 
-           
-      <div className="h4 text-primary"> Machining Data</div>
-      <div className="d-flex flex-row gap-3">
-        <>{display_B1_ENGRAVED}</>
-        <>{castingDetails_B1_ENGRAVED}</>
-        <>{display_B4_Finishing_gantry}</>
-        <>{display_B7_OP990}</>
-      </div>
-      <>{display_B3_OP190}</>
-      <>{display_B5_OP235}</>
+      {/* Crank Case Stiffner Section (Temporarily commented out) */}
+      {/* {crankinfo && <CrankInfo crankinfo={crankinfo}/>} */}
 
-      <div className="d-flex flex-row gap-3">
-        <>{display_H1_Material_input_engraving}</>
-        <>{castingDetails_H1_Material_input_engraving}</>
-        <>{display_H12_OP990}</>
+      {/* 4. Part Traceability Table */}
+      <div className="mt-2">
+        <div className="h4 text-primary mb-2">Part Traceability</div>
+        <PTTable 
+          engineNo={engineNo}    
+          triggerSearch={triggerSearch}
+        /> 
       </div>
-      <>{display_H2_OP050}</>
-      <>{display_H3_OP055}</>
-      <>{display_H5_OP310}</>
-
-      <div className="d-flex flex-row gap-3">
-        <>{display_C1_Comaterial}</>
-        <>{display_C7_Gantry_after_OP140}</>
-        <>{display_C6_OP170_front_gantry}</>
-        <>{display_C8_OP990}</>
-      </div>
-
-      <>{display_C3_OP150_170}</>
-      <>{display_C4_OP220}</>
     </div>
   );
 }

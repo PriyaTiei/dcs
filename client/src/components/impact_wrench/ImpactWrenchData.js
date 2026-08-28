@@ -366,7 +366,7 @@ const ImpactWrenchTable = ({ engineNo, triggerSearch }) => {
       
       try {
         setLoading(true);
-        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://10.82.126.73:5081';
+        const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://10.82.126.73:5080';
         console.log(`[ImpactWrench] Fetching from: ${backendUrl}/api/impactWrench/${engineNo}`);
         const response = await axios.get(
           `${backendUrl}/api/impactWrench/${engineNo}`
@@ -450,158 +450,70 @@ const ImpactWrenchTable = ({ engineNo, triggerSearch }) => {
     return 'highlight-red';
   };
 
-  // Function to handle opening the authentication modal
-  const handleEditToolDetails = () => {
-    setShowAuthModal(true);
-    setUsername('');
-    setPassword('');
-    setAuthError('');
-  };
-
-  // Function to handle authentication
-  const handleAuthentication = () => {
-    if (username === 'admin' && password === 'admin') {
-      // Authentication successful, redirect to external URL
-      window.location.href = 'http://10.82.126.73:5080/edit-tool-details';
-    } else {
-      setAuthError('Invalid username or password');
-    }
-  };
-
-  // Function to close the modal
-  const handleCloseModal = () => {
-    setShowAuthModal(false);
-    setUsername('');
-    setPassword('');
-    setAuthError('');
-  };
-
-  // Handle Enter key press in the modal
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleAuthentication();
-    }
-  };
-
   return (
-    <div className="wrench-container">
-      <div className="wrench-header">
-        <button 
-          className="edit-tool-btn"
-          onClick={handleEditToolDetails}
-        >
-          Edit tool details
-        </button>
-      </div>
-      
-      <div className="table-scroll-container">
-        <table className="wrench-table" ref={tableRef}>
-          <thead>
+    <div className="table-responsive wrench-container">
+      <table className="wrench-table" ref={tableRef}>
+        <thead>
+          <tr>
+            <th>Station No.</th>            
+            <th>Tool Name</th>
+            <th>Date & Time</th>
+            <th>Work No.</th>
+            <th>Axis No.</th>
+            <th>Count</th>
+            <th>Torque</th>
+            <th>Angle</th>
+            <th>No. of pulses</th>
+            <th>Tightening Time</th>
+            <th>Free Run Angle</th>
+            <th>Snug Angle</th>
+            <th>Torque Angle Change</th>
+            <th>Judgement</th>         
+          </tr>
+        </thead>
+        <tbody>
+          {loading ? (
             <tr>
-              <th>Station No.</th>            
-              <th>Tool Name</th>
-              <th>Date & Time</th>
-              <th>Work No.</th>
-              <th>Axis No.</th>
-              <th>Count</th>
-              <th>Torque</th>
-              <th>Angle</th>
-              <th>No. of pulses</th>
-              <th>Tightening Time</th>
-              <th>Free Run Angle</th>
-              <th>Snug Angle</th>
-              <th>Torque Angle Change</th>
-              <th>Judgement</th>         
+              <td colSpan={columnCount || 14} className="loading-spinner">
+                <div className='spinner'></div>
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={columnCount} className="loading-spinner">
-                  <div className='spinner'></div>
-                </td>
+          ) : error ? (
+            <tr>
+              <td colSpan={columnCount || 14} className="error-message">
+                {error}
+              </td>
+            </tr>
+          ) : wrenchData.length === 0 ? (
+            <tr>
+              <td colSpan={columnCount || 14} className="text-center py-3 text-muted">
+                {triggerSearch ? 'No wrench data found for this engine' : 'Enter an engine number and click Search'}
+              </td>
+            </tr>
+          ) : (
+            wrenchData.map((record, index) => (
+              <tr 
+                key={index} 
+                className={getRowClass(record.judgement)}>
+                <td>{record.station}</td>
+                <td>{record.tool_name}</td>
+                <td>{record.tightening_datetime ? new Date(record.tightening_datetime).toLocaleString() : '-'}</td>
+                <td>{record.work_no !== null ? record.work_no : '-'}</td>
+                <td>{record.axis_number !== null ? record.axis_number : '-'}</td>
+                <td>{record.count !== null ? record.count : '-'}</td>
+                <td>{record.torque !== null ? record.torque : '-'}</td>
+                <td>{record.angle !== null ? record.angle : '-'}</td>
+                <td>{record.number_of_pulses !== null ? record.number_of_pulses : '-'}</td>
+                <td>{record.tightening_time !== null ? record.tightening_time : '-'}</td>
+                <td>{record.free_run_angle !== null ? record.free_run_angle : '-'}</td>
+                <td>{record.snug_angle !== null ? record.snug_angle : '-'}</td>
+                <td>{record.torque_angle_change !== null ? record.torque_angle_change : '-'}</td>               
+                <td>{record.judgement !== null ? record.judgement : '-'}</td>
               </tr>
-            ) : error ? (
-              <tr>
-                <td colSpan={columnCount} className="error-message">
-                  {error}
-                </td>
-              </tr>
-            ) : wrenchData.length === 0 ? (
-              <tr>
-                <td colSpan={columnCount}>
-                  {triggerSearch ? 'No wrench data found for this engine' : 'Enter an engine number and click Search'}
-                </td>
-              </tr>
-            ) : (
-              wrenchData.map((record, index) => (
-                <tr 
-                  key={index} 
-                  className={getRowClass(record.judgement)}>
-                  <td>{record.station}</td>
-                  <td>{record.tool_name}</td>
-                  <td>{record.tightening_datetime ? new Date(record.tightening_datetime).toLocaleString() : '-'}</td>
-                  <td>{record.work_no !== null ? record.work_no : '-'}</td>
-                  <td>{record.axis_number !== null ? record.axis_number : '-'}</td>
-                  <td>{record.count !== null ? record.count : '-'}</td>
-                  <td>{record.torque !== null ? record.torque : '-'}</td>
-                  <td>{record.angle !== null ? record.angle : '-'}</td>
-                  <td>{record.number_of_pulses !== null ? record.number_of_pulses : '-'}</td>
-                  <td>{record.tightening_time !== null ? record.tightening_time : '-'}</td>
-                  <td>{record.free_run_angle !== null ? record.free_run_angle : '-'}</td>
-                  <td>{record.snug_angle !== null ? record.snug_angle : '-'}</td>
-                  <td>{record.torque_angle_change !== null ? record.torque_angle_change : '-'}</td>               
-                  <td>{record.judgement !== null ? record.judgement : '-'}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Authentication Modal */}
-      {showAuthModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h3>Authentication Required</h3>
-              <button className="close-btn" onClick={handleCloseModal}>×</button>
-            </div>
-            <div className="modal-body">
-              <div className="form-group">
-                <label htmlFor="username">Username:</label>
-                <input
-                  type="text"
-                  id="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  autoFocus
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="password">Password:</label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                />
-              </div>
-              {authError && <div className="auth-error">{authError}</div>}
-            </div>
-            <div className="modal-footer">
-              <button className="cancel-btn" onClick={handleCloseModal}>
-                Cancel
-              </button>
-              <button className="login-btn" onClick={handleAuthentication}>
-                Login
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            ))
+          )}
+        </tbody>
+      </table>
     </div>
   );
 };

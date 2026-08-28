@@ -1,10 +1,5 @@
-import Navbar from "./NavBar";
+import React from "react";
 
 export default function ContentWrapper({ children }) {
-  return (
-    <div>
-      <Navbar />
-      <div style={{ marginTop: "60px" }}>{children}</div>
-    </div>
-  );
+  return <>{children}</>;
 }

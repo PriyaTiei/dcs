@@ -21,7 +21,9 @@ import EntireResultProcess from "./Entire.js";
 import { getProcess3Details } from "../../redux/slices/processData/processActions.js";
 import { CSVLink } from "react-csv";
 import { toast } from "react-toastify";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import ReusageImageCards from "../reworkImage/ReusageImageCards.js";
+import { TbSearch, TbEngine, TbBarcode, TbX, TbRefresh, TbQrcode } from "react-icons/tb";
 
 
 function EngNo() {
@@ -79,18 +81,43 @@ function EngNo() {
 
   const [searchTriggered, setSearchTriggered] = useState(false);
 
-  const getOracleData = () => {
-    setSearchEngineNo(engineNo); 
+  const getOracleData = (customEngineNo) => {
+    const targetNo = typeof customEngineNo === "string" ? customEngineNo : engineNo;
+    if (!targetNo || !targetNo.trim()) {
+      toast.warn("Please enter an Engine Number", {
+        position: "top-right",
+        autoClose: 2500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+      });
+      return;
+    }
+    const cleanNo = targetNo.trim();
+    setSearchEngineNo(cleanNo); 
     setSearchTriggered(true);
     dispatch(processDataClear());
-    dispatch(getEngineData(engineNo));
-    fetchCrankData();
-    getImages();
+    dispatch(getEngineData(cleanNo));
+    fetchCrankData(cleanNo);
+    getImages(cleanNo);
   };
-const fetchCrankData = async () => {
+
+  const handleClearInput = () => {
+    setEngineNo("");
+  };
+
+  const handleResetSearch = () => {
+    setEngineNo("");
+    setSearchEngineNo("");
+    setSearchTriggered(false);
+    dispatch(processDataClear());
+  };
+
+  const fetchCrankData = async (targetNo) => {
+    const no = targetNo || engineNo;
     try {
       const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/crank/crankinformation/${engineNo}`);
+          `${process.env.REACT_APP_BACKEND_URL}/crank/crankinformation/${no}`);
      
       setCrankInfo(response.data);
       setError(''); 
@@ -159,9 +186,6 @@ const fetchCrankData = async () => {
       <div className="d-flex gap-0">
         <div className="p-2 border hist  ">MTB</div>
         <div className="p-2 border histValue ">
-          {/* {moment(shippingRow ? shippingRow[3] : null).format(
-          "YYYY-MM-DD HH:mm:ss"
-        )} */}
           Under progress
         </div>
       </div>
@@ -171,16 +195,12 @@ const fetchCrankData = async () => {
   ) : null;
 
   // list of image _  function
-  const getImages = () => {
-    // if (engineNo == "") {
-    //   toast.error(
-    //     `Engine no. input can not be blank, please enter the Engine no.`
-    //   );
-    // } else {
+  const getImages = (targetNo) => {
+    const no = targetNo || engineNo;
     try {
       axios
         .get(
-          `${process.env.REACT_APP_BACKEND_URL}/dcs/reworkImagesListQuery?engineNo=${engineNo}`
+          `${process.env.REACT_APP_BACKEND_URL}/dcs/reworkImagesListQuery?engineNo=${no}`
         )
         .then((result) => {
           setListOfImages(result.data.result);
@@ -188,13 +208,12 @@ const fetchCrankData = async () => {
         .catch((e) => {
           console.log(e);
           setListOfImages([]);
-          toast.error(`Images of engine number '${engineNo}' not available`);
+          toast.error(`Images of engine number '${no}' not available`);
         });
     } catch (e) {
       console.log(e);
       toast.error("Please check Network connection");
     }
-    // }
   };
 
   // card with all images
@@ -204,126 +223,151 @@ const fetchCrankData = async () => {
 
   return (
     <div>
-      {/*************** * search engine no */}
+      {/* Page Header Banner */}
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+        <div
+          style={{
+            width: "38px",
+            height: "38px",
+            borderRadius: "10px",
+            background: "#eff6ff",
+            border: "1px solid #bfdbfe",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#2563eb",
+          }}
+        >
+          <TbEngine size={22} />
+        </div>
+        <div>
+          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "#0f172a" }}>
+            Engine Traceability
+          </h2>
+          <div style={{ fontSize: "12.5px", color: "#64748b", marginTop: "2px" }}>
+            Complete engine serial genealogy, assembly telemetry & machining logs
+          </div>
+        </div>
+      </div>
 
-      <div>
-        <div>Engine Number</div>
-        {/* {console.log("oracleData?.data ")}
-        {console.log(oracleData?.data )}
-        <CSVLink data= {oracleData?.data ===undefined? [["please search before you click on download button"]]:oracleData?.data } filename="assembly_data.csv"> <button className="btn btn-primary">Assy data</button></CSVLink>
-        <CSVLink data= {data3?.data ===undefined? [["please search before you click on download button"]]:data3?.data } filename="machining_data.csv"> <button className="btn btn-primary">machining data</button></CSVLink>
-        */}
-        <div className="d-flex gap-3">
+      {/* 1. Enterprise Search Engine Card */}
+      <div className="enterprise-search-card">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            getOracleData();
+          }}
+          className="split-search-container"
+        >
+          <div className="search-lead-icon">
+            <TbSearch size={19} />
+          </div>
+
           <input
             type="text"
             placeholder="Please enter engine no."
             value={engineNo}
             onChange={(e) => setEngineNo(e.target.value)}
-            className="form-control w-25"
-          ></input>
-          <button className="btn btn-primary" onClick={getOracleData}>
-            <div className="d-flex gap-2 align-items-center">
-              <Search />
-              Search
-            </div>
-          </button>
-          <div>{leakData}</div>
-        </div>
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.keyCode === 13) {
+                e.preventDefault();
+                getOracleData();
+              }
+            }}
+            className="split-search-input"
+          />
+
+          {engineNo && (
+            <OverlayTrigger
+              placement="top"
+              overlay={<Tooltip id="clear-search-tooltip">Clear Input</Tooltip>}
+            >
+              <button
+                type="button"
+                className="search-clear-btn"
+                onClick={handleClearInput}
+                aria-label="Clear input"
+              >
+                <TbX size={13} />
+              </button>
+            </OverlayTrigger>
+          )}
+
+          <OverlayTrigger
+            placement="top"
+            overlay={<Tooltip id="search-btn-tooltip">Search Engine</Tooltip>}
+          >
+            <button
+              type="submit"
+              className="split-primary-btn"
+              disabled={loading}
+              aria-label="Search Engine"
+            >
+              {loading ? (
+                <span className="spinner-border spinner-border-sm" role="status" style={{ width: "15px", height: "15px", borderWidth: "2px" }} />
+              ) : (
+                <TbSearch size={18} />
+              )}
+            </button>
+          </OverlayTrigger>
+        </form>
+        {leakData && <div className="mt-2 badge bg-light text-dark border p-2">{leakData}</div>}
       </div>
      
-      <EntireResultProcess 
-        crankinfo = {crankinfo} 
-        engineNo={searchEngineNo}
-        triggerSearch={searchTriggered}
-        />
-      
-      {/* images display */}
-      <div className="d-flex flex-wrap my-3"> {images}</div>
-
-      {/* *****************Assembly fieldset */}
-      <fieldset className="border p-3 mt-3 ">
+      {/* 2. Assembly Data fieldset (Shipping Detail & Engine History) */}
+      <fieldset className="border p-3 mt-2">
         <legend
-          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-primary"
-          style={{ fontSize: "16px" }}
+          className="text-primary"
         >
           Assembly Data
         </legend>
-        <div className="d-flex gap-3 mt-0">
+        <div className="d-flex gap-3 mt-1 flex-wrap">
           {/* Shipping Detail */}
-          <ShippingDetails />
+          <div className="data-box-card">
+            <ShippingDetails />
+          </div>
 
           {/* Engine History */}
-          <div>
+          <div className="data-box-card">
             <div className="h5">Engine history</div>
 
-            <div className="d-flex gap-0">
-              <div className="p-2 border hist h6 text-center bg-light">
+            <div className="d-flex gap-0 mb-1">
+              <div className="p-2 border hist h6 text-center">
                 EVENT
               </div>
-              <div className="p-2 border histValue h6  text-center bg-light">
+              <div className="p-2 border histValue h6 text-center">
                 DATE & TIME
               </div>
             </div>
             {loading ? <Loading /> : fullHistory}
           </div>
-
-          {/*  */}
-
-          {/* Change point information  */}
-          {/* <ChangePointAssembly /> */}
         </div>
       </fieldset>
 
+      {/* 3. EntireResultProcess (Machining Data -> Impact Wrench Data -> Part Traceability) */}
+      <EntireResultProcess 
+        crankinfo={crankinfo} 
+        engineNo={searchEngineNo}
+        triggerSearch={searchTriggered}
+      />
+      
+      {/* 4. Images display */}
+      <div className="d-flex flex-wrap my-2">{images}</div>
 
-       {/* *****************Crank fieldset */}
-       {/* <fieldset className="border p-3 mt-3 ">
-        <legend
-          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-primary"
-          style={{ fontSize: "16px" }}
-        >
-         Crank Information
-        </legend>
-        <div className="d-flex gap-3 mt-0">
-         
-          <EntireResultProcess crankinfo = {crankinfo}/>
-          {/* <CrankDetails /> 
-        </div>
-      </fieldset> */}
-
-      {/* ************Machining Field set */}
-      <fieldset className="border p-3 mt-3 ">
-        <legend
-          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-success"
-          style={{ fontSize: "16px" }}
-        >
-          Machining Data
-        </legend>
-        {/* Change point information for Machining */}
-        {/* <ChangePointMachining /> */}
-      </fieldset>
-      {/* ****************Detail Traceability */}
-      <div className="d-flex gap-3 mt-0">
-        {/* Supplier details */}
+      {/* 5. Detail Traceability */}
+      <div style={{ width: "100%", marginTop: "12px" }}>
         <DetailTraceability />
-
-        {/* Part selection */}
-
-        {/* RM Detail */}
-
-        {/* Part History */}
       </div>
-      {/* ***************** Supplier Field set */}
-      <fieldset className="border p-3 mt-3 ">
-        <legend
-          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-success"
-          style={{ fontSize: "16px" }}
-        >
-          Supplier Part traceability
-        </legend>
-        <div className="d-flex gap-3 mt-0">
-          {/* Supplier Part selection */}
 
-          <div>
+      {/* 6. Supplier Field set */}
+      <fieldset className="border p-3 mt-2">
+        <legend
+          className="text-success"
+        >
+          Supplier Part Traceability
+        </legend>
+        <div className="d-flex gap-3 mt-1 flex-wrap">
+          <div className="data-box-card" style={{ maxWidth: "280px" }}>
             <div className="h5">Supplier Part Name</div>
             <Select
               options={supplierPartOptions}
@@ -332,10 +376,14 @@ const fetchCrankData = async () => {
             />
           </div>
           {/* RM details */}
-          <RawMaterialDetails />
+          <div className="data-box-card">
+            <RawMaterialDetails />
+          </div>
 
           {/* Part History */}
-          <PartHistory />
+          <div className="data-box-card">
+            <PartHistory />
+          </div>
         </div>
       </fieldset>
     </div>

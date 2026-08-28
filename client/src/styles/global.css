@@ -1,0 +1,85 @@
+@import './variables.css';
+@import './components.css';
+
+/* ==========================================================================
+   GLOBAL RESETS & INDUSTRIAL LAYOUT SYSTEM
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  background-color: var(--slate-50);
+  color: var(--slate-800);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--slate-900);
+  font-weight: 600;
+  margin-top: 0;
+}
+
+/* Layout Utilities */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+.main-content {
+  flex: 1;
+  padding: 84px 32px 40px 32px;
+  background-color: var(--slate-50);
+  min-height: 100vh;
+  transition: margin-left 0.3s ease;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.gap-1 { gap: 4px; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.gap-4 { gap: 16px; }
+.gap-5 { gap: 24px; }
+
+.align-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.flex-wrap { flex-wrap: wrap; }
+.w-full { width: 100%; }
+
+/* Form controls */
+label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--slate-700);
+  margin-bottom: 4px;
+  display: block;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 14px;
+}
