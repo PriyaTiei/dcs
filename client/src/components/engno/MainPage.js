@@ -339,16 +339,14 @@ function EngNo() {
           >
             Assembly Data
           </legend>
-          <div className="d-flex flex-column gap-3 mt-1">
-            {/* Shipping Detail (Only rendered when real shipping data is present) */}
-            {hasShippingDetails && (
-              <div className="data-box-card" style={{ maxWidth: "450px" }}>
-                <ShippingDetails shippingData={shippingRow} />
-              </div>
-            )}
+          <div className="d-flex gap-3 mt-1 flex-wrap align-items-start">
+            {/* Shipping Detail Card (Always rendered) */}
+            <div className="data-box-card" style={{ minWidth: "270px", flexShrink: 0 }}>
+              <ShippingDetails shippingData={shippingRow} />
+            </div>
 
             {/* Dynamic Multi-Column Engine History */}
-            <div className="data-box-card" style={{ width: "100%" }}>
+            <div className="data-box-card" style={{ flex: 1, minWidth: "320px" }}>
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <div className="h5 mb-0" style={{ fontSize: "13px", fontWeight: 700, textTransform: "uppercase", color: "#334155" }}>
                   Engine History

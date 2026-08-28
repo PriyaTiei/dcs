@@ -268,6 +268,93 @@ legend.text-success {
   letter-spacing: 0.01em !important;
 }
 
+/* 3C Machining Assembly Container Cards */
+.machining-assembly-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  padding: 16px 18px !important;
+  margin-bottom: 16px !important;
+  box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.05) !important;
+}
+
+.machining-assembly-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+
+.machining-assembly-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.machining-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.machining-summary-item {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.machining-summary-item .item-title {
+  background: #f8fafc;
+  padding: 5px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.machining-summary-item .item-row {
+  display: flex;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 12px;
+}
+
+.machining-summary-item .item-row:last-child {
+  border-bottom: none;
+}
+
+.machining-summary-item .item-label {
+  width: 120px;
+  min-width: 100px;
+  background: #fafafa;
+  color: #64748b;
+  font-weight: 600;
+  padding: 5px 8px;
+  border-right: 1px solid #f1f5f9;
+  white-space: nowrap;
+}
+
+.machining-summary-item .item-value {
+  flex: 1;
+  padding: 5px 8px;
+  color: #0f172a;
+  font-weight: 500;
+  font-family: monospace, "Inter", sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Compact Modern Unified Machining Tables */
 .machining-compact-table {
   width: 100%;
@@ -312,6 +399,27 @@ legend.text-success {
   font-weight: 700 !important;
   text-align: left;
   min-width: 100px;
+}
+
+.machining-status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.machining-status-ok {
+  background: #ecfdf5 !important;
+  color: #065f46 !important;
+  border: 1px solid #a7f3d0 !important;
+}
+
+.machining-status-ng {
+  background: #fef2f2 !important;
+  color: #991b1b !important;
+  border: 1px solid #fecaca !important;
 }
 
 .pros, .prosMach, .chan {

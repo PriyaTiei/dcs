@@ -1,22 +1,10 @@
 import React from 'react';
 
 function ShippingDetails({ shippingData }) {
-  if (!shippingData) return null;
-
-  const consignmentNo = shippingData.consignmentNo || shippingData[0] || '-';
-  const truckNo = shippingData.truckNo || shippingData[1] || '-';
-  const customerName = shippingData.customerName || shippingData[2] || '-';
-  const moduleNo = shippingData.moduleNo || '-';
-
-  // If all fields are empty or dashes, don't waste space
-  if (
-    (consignmentNo === '-' || !consignmentNo) &&
-    (truckNo === '-' || !truckNo) &&
-    (customerName === '-' || !customerName) &&
-    (moduleNo === '-' || !moduleNo)
-  ) {
-    return null;
-  }
+  const consignmentNo = shippingData?.consignmentNo || shippingData?.[0] || '-';
+  const truckNo = shippingData?.truckNo || shippingData?.[1] || '-';
+  const customerName = shippingData?.customerName || shippingData?.[2] || '-';
+  const moduleNo = shippingData?.moduleNo || '-';
 
   return (
     <div>
