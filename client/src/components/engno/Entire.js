@@ -238,51 +238,31 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
   );
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     var result = decodeBlock235(processNoFiltered[0][1]);
-    var plug2to5 = [];
+    var plugRows = [];
     var PLabel = [
-      "Plug1 ",
-      "Plug2 ",
-      "Plug3 ",
-      "Plug4 ",
-      "Plug5 ",
-      "Plug6 ",
+      "Plug1",
+      "Plug2",
+      "Plug3",
+      "Plug4",
+      "Plug5",
+      "Plug6",
       "",
-      "ScrewPlug ",
+      "ScrewPlug",
     ];
     for (let i = 0; i < 40; i += 5) {
       if (i === 30) {
         continue;
       }
-      let el = (
-        <div className="d-flex flex-row flex-wrap mb-2" key={i}>
-          <div className="d-flex flex-column dt3">
-            <div className="bg-warning text-light">{PLabel[i / 5]}</div>{" "}
-            {/* <div>{correctList[1]}</div> */}
-          </div>
-          <div className="d-flex flex-column dt3">
-            <div className="bg-dark text-light">Judgement</div>{" "}
-            <div>{result[i + 3]}</div>
-          </div>
-          <div className="d-flex flex-column dt3">
-            <div className="bg-dark text-light">Leak Value(mL / min)</div>{" "}
-            <div>{result[i + 4]}</div>
-          </div>
-
-          <div className="d-flex flex-column dt3">
-            <div className="bg-dark text-light">Correction (mL / min)</div>{" "}
-            <div>{result[i + 5]}</div>
-          </div>
-          <div className="d-flex flex-column dt3">
-            <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
-            <div>{result[i + 6]}</div>
-          </div>
-          <div className="d-flex flex-column dt3">
-            <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
-            <div>{result[i + 7]}</div>
-          </div>
-        </div>
+      plugRows.push(
+        <tr key={i}>
+          <td className="row-tag-warning">{PLabel[i / 5]}</td>
+          <td>{result[i + 3]}</td>
+          <td>{result[i + 4]}</td>
+          <td>{result[i + 5]}</td>
+          <td>{result[i + 6]}</td>
+          <td>{result[i + 7]}</td>
+        </tr>
       );
-      plug2to5.push(el);
     }
   }
 
@@ -291,7 +271,7 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
       <div>
         <div className="h6 mb-2">Block OP235 - Leak Testing Details</div>
         <div>
-          <div className="d-flex flex-row flex-wrap gap-2">
+          <div className="d-flex flex-row flex-wrap gap-2 mb-2">
             <div className="d-flex flex-column dt2 ">
               <div className="dt1f1 text-center bg-dark text-light ">Model</div>{" "}
               <div className="dt1f1 text-center">{result[1].model}</div>
@@ -312,26 +292,35 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
             </div>
             <div
               className="d-flex flex-column dt2 flex-1 "
-              style={{ width: "200px" }}
+              style={{ minWidth: "200px" }}
             >
               <div
                 className="dt1f1 text-center bg-dark text-light "
-                style={{ width: "200px" }}
+                style={{ width: "100%" }}
               >
                 Leak Test Date & Time
               </div>{" "}
-              <div className="dt1f1 text-center" style={{ width: "200px" }}>
+              <div className="dt1f1 text-center" style={{ width: "100%" }}>
                 {moment(processNoFiltered[0][8]).format(
                   "DD-MMMM-YYYY HH:mm:ss"
                 )}
               </div>
             </div>
           </div>
-          <div className="mt-2 h6">Block Plug Leak Values</div>
-          <div className="mt-2 ">
-            {/* plug1~6 and SrewPlug */}
-            {plug2to5}
-          </div>
+          <div className="mt-2 h6 mb-1">Block Plug Leak Values</div>
+          <table className="machining-compact-table">
+            <thead>
+              <tr>
+                <th style={{ width: "110px" }}>Plug / Sensor</th>
+                <th>Judgement</th>
+                <th>Leak Value (mL / min)</th>
+                <th>Correction (mL / min)</th>
+                <th>Test pressure (kPa)</th>
+                <th>K (Ve) value (mL)</th>
+              </tr>
+            </thead>
+            <tbody>{plugRows}</tbody>
+          </table>
         </div>
       </div>
     );
@@ -520,17 +509,27 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
       correctList = H_OP310_list.map((item) => parseFloat(item));
     }
 
+    const getJudgeText = (val) => {
+      const s = val ? val.toString() : "";
+      if (s === "1") return "LL NG";
+      if (s === "2") return "OK";
+      if (s === "4") return "UL NG";
+      if (s === "9") return "LL2 NG";
+      if (s === "D") return "ERR";
+      return s || "-";
+    };
+
     display_H5_OP310 =
       processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
         <div className="d-flex flex-column">
           <div className="h6 mb-2">OP310 - Leak Testing Details</div>
-          <div className="d-flex flex-row flex-wrap">
-            <div className="d-flex flex-column flex-wrap dt3">
-              <div>Process Name</div> <div>Leak Test Date & Time</div>
+          <div className="d-flex flex-row flex-wrap gap-2 mb-2">
+            <div className="d-flex flex-column dt3">
+              <div>Process Name</div> <div>Leak Test</div>
             </div>
 
-            <div className="d-flex flex-column flex-wrap dt3">
-              <div>Leak Test</div>{" "}
+            <div className="d-flex flex-column dt3">
+              <div>Leak Test Date & Time</div>{" "}
               <div>
                 {moment(processNoFiltered[0][8]).format(
                   "DD-MMMM-YYYY HH:mm:ss"
@@ -539,203 +538,62 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
             </div>
           </div>
 
-          <div className="d-flex flex-row flex-wrap mt-2">
-            <div className="d-flex flex-column dt3">
-              <div className="bg-warning text-light" style={{ width: "120px" }}>
-                Water Jacket{" "}
-              </div>{" "}
-              {/* <div>{correctList[1]}</div> */}
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="d-flex flex-column dt3 bg-dark text-light">
-                Judgement
-              </div>{" "}
-              <div>
-                {f1 == "1"
-                  ? "LL NG"
-                  : f1 == "2"
-                  ? "OK"
-                  : f1 == "4"
-                  ? "UL NG"
-                  : f1 == "9"
-                  ? "LL2 NG"
-                  : f1 == "D"
-                  ? "ERR"
-                  : ""}
-              </div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">Leak Value(mL / min)</div>{" "}
-              <div>{correctList[1]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">STD(Upper Limit)</div>{" "}
-              <div>{correctList[2]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">STD(Lower Limit)</div>{" "}
-              <div>{correctList[3]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">Correction (mL / min)</div>{" "}
-              <div>{correctList[4]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
-              <div>{correctList[5]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
-              <div>{correctList[6]}</div>
-            </div>
-          </div>
-
-          <div className="d-flex flex-row flex-wrap mt-2">
-            <div className="d-flex flex-column dt3">
-              <div className="bg-warning text-light" style={{ width: "120px" }}>
-                Oil Hole
-              </div>{" "}
-              {/* <div>{correctList[1]}</div> */}
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">Judgement</div>{" "}
-              <div>
-                {correctList[7].toString() == "1"
-                  ? "LL NG"
-                  : correctList[7].toString() == "2"
-                  ? "OK"
-                  : correctList[7].toString() == "4"
-                  ? "UL NG"
-                  : correctList[7].toString() == "9"
-                  ? "LL2 NG"
-                  : correctList[7].toString() == "D"
-                  ? "ERR"
-                  : ""}
-              </div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">Leak Value(mL / min)</div>{" "}
-              <div>{correctList[8]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">STD(Upper Limit)</div>{" "}
-              <div>{correctList[9]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">STD(Lower Limit)</div>{" "}
-              <div>{correctList[10]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">Correction (mL / min)</div>{" "}
-              <div>{correctList[11]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
-              <div>{correctList[12]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
-              <div>{correctList[13]}</div>
-            </div>
-          </div>
-
-          <div className="d-flex flex-row flex-wrap mt-2">
-            <div className="d-flex flex-column dt3">
-              <div className="bg-warning text-light" style={{ width: "120px" }}>
-                Cam Case{" "}
-              </div>{" "}
-              {/* <div>{correctList[1]}</div> */}
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">Judgement</div>{" "}
-              <div>
-                {correctList[14].toString() == "1"
-                  ? "LL NG"
-                  : correctList[14].toString() == "2"
-                  ? "OK"
-                  : correctList[14].toString() == "4"
-                  ? "UL NG"
-                  : correctList[14].toString() == "9"
-                  ? "LL2 NG"
-                  : correctList[14].toString() == "D"
-                  ? "ERR"
-                  : ""}
-              </div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">Leak Value(mL / min)</div>{" "}
-              <div>{correctList[15]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">STD(Upper Limit)</div>{" "}
-              <div>{correctList[16]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">STD(Lower Limit)</div>{" "}
-              <div>{correctList[17]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">Correction (mL / min)</div>{" "}
-              <div>{correctList[18]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
-              <div>{correctList[19]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
-              <div>{correctList[20]}</div>
-            </div>
-          </div>
-
-          <div className="d-flex flex-row flex-wrap mt-2">
-            <div className="d-flex flex-column dt3">
-              <div className="bg-warning text-light" style={{ width: "120px" }}>
-                EGR
-              </div>{" "}
-              {/* <div>{correctList[1]}</div> */}
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">Judgement</div>{" "}
-              <div>
-                {correctList[21].toString() == "1"
-                  ? "LL NG"
-                  : correctList[21].toString() == "2"
-                  ? "OK"
-                  : correctList[21].toString() == "4"
-                  ? "UL NG"
-                  : correctList[21].toString() == "9"
-                  ? "LL2 NG"
-                  : correctList[21].toString() == "D"
-                  ? "ERR"
-                  : ""}
-              </div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">Leak Value(mL / min)</div>{" "}
-              <div>{correctList[22]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">STD(Upper Limit)</div>{" "}
-              <div>{correctList[23]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">STD(Lower Limit)</div>{" "}
-              <div>{correctList[24]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">Correction (mL / min)</div>{" "}
-              <div>{correctList[25]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
-              <div>{correctList[26]}</div>
-            </div>
-            <div className="d-flex flex-column dt3">
-              <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
-              <div>{correctList[27]}</div>
-            </div>
-          </div>
+          <table className="machining-compact-table">
+            <thead>
+              <tr>
+                <th style={{ width: "120px" }}>Test Circuit</th>
+                <th>Judgement</th>
+                <th>Leak Value (mL / min)</th>
+                <th>STD (Upper Limit)</th>
+                <th>STD (Lower Limit)</th>
+                <th>Correction (mL / min)</th>
+                <th>Test pressure (kPa)</th>
+                <th>K (Ve) value (mL)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="row-tag-warning">Water Jacket</td>
+                <td>{getJudgeText(f1)}</td>
+                <td>{correctList[1]}</td>
+                <td>{correctList[2]}</td>
+                <td>{correctList[3]}</td>
+                <td>{correctList[4]}</td>
+                <td>{correctList[5]}</td>
+                <td>{correctList[6]}</td>
+              </tr>
+              <tr>
+                <td className="row-tag-warning">Oil Hole</td>
+                <td>{getJudgeText(correctList[7])}</td>
+                <td>{correctList[8]}</td>
+                <td>{correctList[9]}</td>
+                <td>{correctList[10]}</td>
+                <td>{correctList[11]}</td>
+                <td>{correctList[12]}</td>
+                <td>{correctList[13]}</td>
+              </tr>
+              <tr>
+                <td className="row-tag-warning">Cam Case</td>
+                <td>{getJudgeText(correctList[14])}</td>
+                <td>{correctList[15]}</td>
+                <td>{correctList[16]}</td>
+                <td>{correctList[17]}</td>
+                <td>{correctList[18]}</td>
+                <td>{correctList[19]}</td>
+                <td>{correctList[20]}</td>
+              </tr>
+              <tr>
+                <td className="row-tag-warning">EGR</td>
+                <td>{getJudgeText(correctList[21])}</td>
+                <td>{correctList[22]}</td>
+                <td>{correctList[23]}</td>
+                <td>{correctList[24]}</td>
+                <td>{correctList[25]}</td>
+                <td>{correctList[26]}</td>
+                <td>{correctList[27]}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       );
   }
@@ -852,7 +710,8 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     var result = decode_C_150_170(processNoFiltered[0][1]);
 
-    var crankOP150_170_Elements = [];
+    var cwRows = [];
+    var measureRows = [];
     var PLabel = [
       "1st CW",
       "2nd CW",
@@ -866,107 +725,54 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
       "Final",
     ];
     for (let i = 0; i < 32; i += 4) {
-      let el = (
-        <div className="d-flex flex-row flex-wrap mt-2" key={i}>
-          <div className="d-flex flex-column dt3">
-            <div className="bg-warning text-light" style={{ minWidth: "70px" }}>
-              {PLabel[i / 4]}
-            </div>{" "}
-            {/* <div>{correctList[1]}</div> */}
-          </div>
-          <div className="d-flex flex-column dt3">
-            <div className="bg-dark text-light">
-              1st hole Hole angle (0.1 °)
-            </div>{" "}
-            <div>{result[i + 3]}</div>
-          </div>
-          <div className="d-flex flex-column dt3">
-            <div className="bg-dark text-light">
-              1st hole Hole depth (0.1mm)
-            </div>{" "}
-            <div>{result[i + 4]}</div>
-          </div>
-
-          <div className="d-flex flex-column dt3">
-            <div className="bg-dark text-light">
-              1st hole Hole depth (0.1mm)
-            </div>{" "}
-            <div>{result[i + 5]}</div>
-          </div>
-          <div className="d-flex flex-column dt3">
-            <div className="bg-dark text-light">
-              2nd hole Hole depth (0.1mm)
-            </div>{" "}
-            <div>{result[i + 6]}</div>
-          </div>
-        </div>
+      cwRows.push(
+        <tr key={i}>
+          <td className="row-tag-warning">{PLabel[i / 4]}</td>
+          <td>{result[i + 3]}</td>
+          <td>{result[i + 4]}</td>
+          <td>{result[i + 5]}</td>
+          <td>{result[i + 6]}</td>
+        </tr>
       );
-      crankOP150_170_Elements.push(el);
     }
 
     for (let i = 32; i < 40; i += 4) {
-      let el = (
-        <div className="d-flex flex-row flex-wrap mt-2" key={i}>
-          <div className="d-flex flex-column dt3">
-            <div className="bg-warning text-light" style={{ minWidth: "70px" }}>
-              {PLabel[i / 4]}
-            </div>{" "}
-            {/* <div>{correctList[1]}</div> */}
-          </div>
-          <div className="d-flex flex-column dt3">
-            <div className="bg-dark text-light">1-sided measure (0.1 gcm)</div>{" "}
-            <div>{result[i + 3]}</div>
-          </div>
-          <div className="d-flex flex-column dt3">
-            <div className="bg-dark text-light">
-              two-sided measure (0.1 gcm)
-            </div>{" "}
-            <div>{result[i + 4]}</div>
-          </div>
-
-          <div className="d-flex flex-column dt3">
-            <div className="bg-dark text-light">
-              1-sided measurement angle (0.1 °)
-            </div>{" "}
-            <div>{result[i + 5]}</div>
-          </div>
-          <div className="d-flex flex-column dt3">
-            <div className="bg-dark text-light">
-              two-sided measurement angle (0.1 °)
-            </div>{" "}
-            <div>{result[i + 6]}</div>
-          </div>
-        </div>
+      measureRows.push(
+        <tr key={i}>
+          <td className="row-tag-warning">{PLabel[i / 4]}</td>
+          <td>{result[i + 3]}</td>
+          <td>{result[i + 4]}</td>
+          <td>{result[i + 5]}</td>
+          <td>{result[i + 6]}</td>
+        </tr>
       );
-      crankOP150_170_Elements.push(el);
     }
   }
 
   display_C3_OP150_170 =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
-      <div className="d-flex flex-column gap-3">
+      <div className="d-flex flex-column gap-2">
         <div className="d-flex flex-column">
           <div className="h6 mb-2">
             Crank OP 150 & 170 Final Balancing Details
           </div>
-          <div className="d-flex flex-row flex-wrap">
-            <div className="d-flex flex-column flex-wrap dt3">
+          <div className="d-flex flex-row flex-wrap gap-2 mb-2">
+            <div className="d-flex flex-column dt3">
               <div>Process Name</div> <div>Balancing</div>
             </div>
 
-            <div className="d-flex flex-column flex-wrap dt3">
+            <div className="d-flex flex-column dt3">
               <div>Date & Time</div>{" "}
               <div>
-                {" "}
                 {moment(processNoFiltered[0][8]).format(
                   "DD-MMMM-YYYY HH:mm:ss"
                 )}
               </div>
             </div>
-            <div className="d-flex flex-column flex-wrap dt3">
+            <div className="d-flex flex-column dt3">
               <div>Process No</div> <div>{result[1]}</div>
             </div>
-            <div className="d-flex flex-column flex-wrap dt3">
+            <div className="d-flex flex-column dt3">
               <div>Model</div>{" "}
               <div>
                 {result[2] == "Model3"
@@ -978,11 +784,32 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
             </div>
           </div>
         </div>
-        <div className="gap-0 d-flex flex-column ">
-          {/* <div className="d-flex flex-row flex-wrap"> */}
-          {crankOP150_170_Elements}
-          {/* </div> */}
-        </div>
+        
+        <table className="machining-compact-table">
+          <thead>
+            <tr>
+              <th style={{ width: "100px" }}>Counterweight</th>
+              <th>1st hole Hole angle (0.1 °)</th>
+              <th>1st hole Hole depth (0.1mm)</th>
+              <th>1st hole Hole depth 2 (0.1mm)</th>
+              <th>2nd hole Hole depth (0.1mm)</th>
+            </tr>
+          </thead>
+          <tbody>{cwRows}</tbody>
+        </table>
+
+        <table className="machining-compact-table">
+          <thead>
+            <tr>
+              <th style={{ width: "100px" }}>Stage</th>
+              <th>1-sided measure (0.1 gcm)</th>
+              <th>two-sided measure (0.1 gcm)</th>
+              <th>1-sided measurement angle (0.1 °)</th>
+              <th>two-sided measurement angle (0.1 °)</th>
+            </tr>
+          </thead>
+          <tbody>{measureRows}</tbody>
+        </table>
       </div>
     );
 
@@ -2100,7 +1927,7 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
       {hasMachiningData && (
         <div>
           <div className="h4 text-primary">Machining Data</div>
-          <div className="d-flex flex-row gap-3">
+          <div className="d-flex flex-row flex-wrap gap-3 mb-2">
             <>{display_B1_ENGRAVED}</>
             <>{castingDetails_B1_ENGRAVED}</>
             <>{display_B4_Finishing_gantry}</>
@@ -2109,7 +1936,7 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
           <>{display_B3_OP190}</>
           <>{display_B5_OP235}</>
 
-          <div className="d-flex flex-row gap-3">
+          <div className="d-flex flex-row flex-wrap gap-3 my-2">
             <>{display_H1_Material_input_engraving}</>
             <>{castingDetails_H1_Material_input_engraving}</>
             <>{display_H12_OP990}</>
@@ -2118,7 +1945,7 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
           <>{display_H3_OP055}</>
           <>{display_H5_OP310}</>
 
-          <div className="d-flex flex-row gap-3">
+          <div className="d-flex flex-row flex-wrap gap-3 my-2">
             <>{display_C1_Comaterial}</>
             <>{display_C7_Gantry_after_OP140}</>
             <>{display_C6_OP170_front_gantry}</>

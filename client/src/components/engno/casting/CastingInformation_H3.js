@@ -192,7 +192,8 @@ function CastingInformation_H({ castingNo }) {
               type="date"
               value={date.slice(0, 10)}
               onChange={castingDateHandler}
-              className="bg-warning text-center"
+              className="text-center"
+              style={{ padding: "4px 8px", border: "1px solid #cbd5e1", borderRadius: "4px" }}
             />
           </div>
 

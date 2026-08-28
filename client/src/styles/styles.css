@@ -250,6 +250,70 @@ legend.text-success {
   margin-bottom: 6px;
 }
 
+/* Highlighted Inner Section Titles */
+.machining-title-badge,
+.data-box-card .h6,
+.data-box-card h6,
+.h6.mb-2 {
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+  border: 1px solid #bfdbfe !important;
+  border-radius: 6px !important;
+  padding: 4px 10px !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  margin-bottom: 8px !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Compact Modern Unified Machining Tables */
+.machining-compact-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+.machining-compact-table th {
+  background: #0f172a !important;
+  color: #f8fafc !important;
+  font-weight: 600 !important;
+  font-size: 11.5px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 6px 10px !important;
+  border: 1px solid #334155 !important;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.machining-compact-table td {
+  padding: 6px 10px !important;
+  border: 1px solid #e2e8f0 !important;
+  text-align: center;
+  font-size: 12px !important;
+  color: #1e293b !important;
+  background: #ffffff;
+}
+
+.machining-compact-table tr:hover td {
+  background-color: #f8fafc !important;
+}
+
+.machining-compact-table .row-tag-warning {
+  background: #fef3c7 !important;
+  color: #92400e !important;
+  font-weight: 700 !important;
+  text-align: left;
+  min-width: 100px;
+}
+
 .pros, .prosMach, .chan {
   display: flex;
   gap: 8px;

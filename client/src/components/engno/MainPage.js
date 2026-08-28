@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import ChangePointValue from "./ReuasableChangePointValues.js";
 // import Select from "react-select"
 import Select from "react-select";
@@ -165,34 +165,50 @@ function EngNo() {
     }
   }, [oracleData]);
 
-  const history = oracleData?.data?.map((item, index) =>
-    item[17] != "EGNO" ? (
-      <DateTable key={index} title={item[17]} date={item[21]} />
-    ) : null
+  const historyItems = useMemo(() => {
+    if (!oracleData?.data) return [];
+    const items = [];
+
+    if (shippingRow && shippingRow[3]) {
+      items.push({
+        title: "SHIPMENT",
+        date: moment(shippingRow[3]).format("YYYY-MM-DD HH:mm:ss"),
+      });
+    }
+
+    items.push({
+      title: "MTB",
+      date: "Under progress",
+    });
+
+    oracleData.data.forEach((item) => {
+      if (item[17] && item[17] !== "EGNO") {
+        let title = item[17].toUpperCase();
+        if (title === "FUELLEAK") title = "FUEL LEAK";
+        else if (title === "OILELEAK") title = "OIL LEAK";
+        else if (title === "WALTERLEAK") title = "WATER LEAK";
+
+        const formattedDate = item[21]
+          ? moment(item[21]).format("YYYY-MM-DD HH:mm:ss")
+          : "-";
+
+        items.push({
+          title,
+          date: formattedDate,
+        });
+      }
+    });
+
+    return items;
+  }, [oracleData, shippingRow]);
+
+  const hasShippingDetails = Boolean(
+    shippingRow &&
+      (shippingRow.consignmentNo ||
+        shippingRow.truckNo ||
+        shippingRow.customerName ||
+        shippingRow.moduleNo)
   );
-
-  const fullHistory = oracleData ? (
-    <>
-      <div className="d-flex gap-0">
-        <div className="p-2 border hist  ">SHIPMENT</div>
-        <div className="p-2 border histValue ">
-          {shippingRow
-            ? shippingRow[3]
-              ? moment(shippingRow[3]).format("YYYY-MM-DD HH:mm:ss")
-              : null
-            : null}
-        </div>
-      </div>
-      <div className="d-flex gap-0">
-        <div className="p-2 border hist  ">MTB</div>
-        <div className="p-2 border histValue ">
-          Under progress
-        </div>
-      </div>
-
-      {history}
-    </>
-  ) : null;
 
   // list of image _  function
   const getImages = (targetNo) => {
@@ -314,35 +330,107 @@ function EngNo() {
         {leakData && <div className="mt-2 badge bg-light text-dark border p-2">{leakData}</div>}
       </div>
      
-      {/* 2. Assembly Data fieldset (Shipping Detail & Engine History) */}
-      <fieldset className="border p-3 mt-2">
-        <legend
-          className="text-primary"
-        >
-          Assembly Data
-        </legend>
-        <div className="d-flex gap-3 mt-1 flex-wrap">
-          {/* Shipping Detail */}
-          <div className="data-box-card">
-            <ShippingDetails />
-          </div>
-
-          {/* Engine History */}
-          <div className="data-box-card">
-            <div className="h5">Engine history</div>
-
-            <div className="d-flex gap-0 mb-1">
-              <div className="p-2 border hist h6 text-center">
-                EVENT
+      {/* 2. Assembly Data fieldset (Dynamic Multi-Column Layout) */}
+      {(oracleData || loading) && (
+        <fieldset className="border p-3 mt-2" style={{ borderRadius: "10px", background: "#ffffff" }}>
+          <legend
+            className="text-primary"
+            style={{ fontSize: "14px", fontWeight: 700, padding: "0 8px" }}
+          >
+            Assembly Data
+          </legend>
+          <div className="d-flex flex-column gap-3 mt-1">
+            {/* Shipping Detail (Only rendered when real shipping data is present) */}
+            {hasShippingDetails && (
+              <div className="data-box-card" style={{ maxWidth: "450px" }}>
+                <ShippingDetails shippingData={shippingRow} />
               </div>
-              <div className="p-2 border histValue h6 text-center">
-                DATE & TIME
+            )}
+
+            {/* Dynamic Multi-Column Engine History */}
+            <div className="data-box-card" style={{ width: "100%" }}>
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <div className="h5 mb-0" style={{ fontSize: "13px", fontWeight: 700, textTransform: "uppercase", color: "#334155" }}>
+                  Engine History
+                </div>
+                {historyItems.length > 0 && (
+                  <span style={{ fontSize: "12px", color: "var(--slate-500)", fontWeight: 600 }}>
+                    {historyItems.length} Milestones Recorded
+                  </span>
+                )}
               </div>
+
+              {loading ? (
+                <Loading />
+              ) : historyItems.length === 0 ? (
+                <div style={{ color: "#64748b", fontSize: "13px", fontStyle: "italic", padding: "8px 0" }}>
+                  No engine history milestones found.
+                </div>
+              ) : (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(310px, 1fr))",
+                    gap: "6px 12px",
+                    width: "100%",
+                  }}
+                >
+                  {historyItems.map((item, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        display: "flex",
+                        alignItems: "stretch",
+                        borderRadius: "6px",
+                        overflow: "hidden",
+                        border: "1px solid #e2e8f0",
+                        background: "#ffffff",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: "165px",
+                          minWidth: "145px",
+                          background: "#f8fafc",
+                          padding: "6px 10px",
+                          fontSize: "12px",
+                          fontWeight: 600,
+                          color: "#475569",
+                          borderRight: "1px solid #e2e8f0",
+                          display: "flex",
+                          alignItems: "center",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                        title={item.title}
+                      >
+                        {item.title}
+                      </div>
+                      <div
+                        style={{
+                          flex: 1,
+                          padding: "6px 10px",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          color: item.date === "Under progress" ? "#2563eb" : "#0f172a",
+                          background: "#ffffff",
+                          display: "flex",
+                          alignItems: "center",
+                          fontFamily: "monospace, 'Inter', sans-serif",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {item.date}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            {loading ? <Loading /> : fullHistory}
           </div>
-        </div>
-      </fieldset>
+        </fieldset>
+      )}
 
       {/* 3. EntireResultProcess (Machining Data -> Impact Wrench Data -> Part Traceability) */}
       <EntireResultProcess 
