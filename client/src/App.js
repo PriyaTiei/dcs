@@ -1,6 +1,5 @@
 import { ToastContainer } from "react-toastify";
 import { Routes, Route } from "react-router-dom";
-import Navbar from "./components/NavBar";
 import { DefectFormScreen } from "./screens/DefectFormScreen";
 import DefectTraceabilityScreen from "./screens/DefectTraceabilityScreen";
 import { AppSidebar } from "./components/Sidebar";
@@ -18,8 +17,7 @@ import "./styles/styles.css";
 export default function App() {
   return (
     <>
-      <ToastContainer position="top-right" autoClose={2500} hideProgressBar={false} newestOnTop closeOnClick pauseOnHover />
-      <Navbar />
+      <ToastContainer autoClose={500} />
       <AppSidebar>
         <ContentWrapper>
           <Routes>

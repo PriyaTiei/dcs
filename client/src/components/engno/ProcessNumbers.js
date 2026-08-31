@@ -127,35 +127,35 @@ function ProcessData({ processNoListInitial }) {
   }, [processEngineData]);
 
   //populate process no
-  const processNoElements = (processNoListInitial || []).map((item, index) => {
-    const isCurrentActive = indexButton === index || processNo === item.label;
-    const isDisabled = item.value === item.label && !item.value;
-
-    return (
-      <div
-        key={index}
-        className={`process-chip ${isDisabled ? "disabled" : ""} ${isCurrentActive ? "active" : ""}`}
-        onClick={() => !isDisabled && processHandler(item.label, item.value, index)}
-        title={`Select Process: ${item.label}`}
-      >
-        <span style={{ fontSize: "12px", opacity: isCurrentActive ? 1 : 0.7 }}>●</span>
-        {item.label}
-      </div>
-    );
-  });
+  const processNoElements = processNoListInitial.map((item, index) => (
+    <div
+      key={index}
+      className={` p-2 border btn ${
+        item.value == item.label ? "disabled" : null
+      } ${indexButton===index?"bg-warning":null}`}
+      onClick={() => processHandler(item.label, item.value, index)}
+    >
+      {item.label}
+    </div>
+  ));
+  // console.log(processNo, "process No");
 
   //dispatch process no & fetch the required data
   const processHandler = (processNo, processName, index) => {
+   
     dispatch(setProcessNo(processNo, processName));
-    setIndexButton(index);
+    setIndexButton(index)
     setColorOfButtonClicked();
+
+    // dispatch(getProcessDetails(processNo));
   };
 
   //return the component
   return (
-    <div style={{ flex: 1 }}>
-      <div className="process-chips-container">
-        {machiningDataLoading ? <Loading /> : processNoElements}
+    <div>
+      <div className="h5">Process Numbers </div>
+      <div className="d-flex flex-wrap gap-1 prosMach " style={{minWidth:"800px"}}>
+        {machiningDataLoading?<Loading />:processNoElements}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import ChangePointValue from "./ReuasableChangePointValues.js";
 // import Select from "react-select"
 import Select from "react-select";
@@ -21,9 +21,7 @@ import EntireResultProcess from "./Entire.js";
 import { getProcess3Details } from "../../redux/slices/processData/processActions.js";
 import { CSVLink } from "react-csv";
 import { toast } from "react-toastify";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import ReusageImageCards from "../reworkImage/ReusageImageCards.js";
-import { TbSearch, TbEngine, TbBarcode, TbX, TbRefresh, TbQrcode } from "react-icons/tb";
 
 
 function EngNo() {
@@ -81,43 +79,18 @@ function EngNo() {
 
   const [searchTriggered, setSearchTriggered] = useState(false);
 
-  const getOracleData = (customEngineNo) => {
-    const targetNo = typeof customEngineNo === "string" ? customEngineNo : engineNo;
-    if (!targetNo || !targetNo.trim()) {
-      toast.warn("Please enter an Engine Number", {
-        position: "top-right",
-        autoClose: 2500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-      });
-      return;
-    }
-    const cleanNo = targetNo.trim();
-    setSearchEngineNo(cleanNo); 
+  const getOracleData = () => {
+    setSearchEngineNo(engineNo); 
     setSearchTriggered(true);
     dispatch(processDataClear());
-    dispatch(getEngineData(cleanNo));
-    fetchCrankData(cleanNo);
-    getImages(cleanNo);
+    dispatch(getEngineData(engineNo));
+    fetchCrankData();
+    getImages();
   };
-
-  const handleClearInput = () => {
-    setEngineNo("");
-  };
-
-  const handleResetSearch = () => {
-    setEngineNo("");
-    setSearchEngineNo("");
-    setSearchTriggered(false);
-    dispatch(processDataClear());
-  };
-
-  const fetchCrankData = async (targetNo) => {
-    const no = targetNo || engineNo;
+const fetchCrankData = async () => {
     try {
       const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/crank/crankinformation/${no}`);
+          `${process.env.REACT_APP_BACKEND_URL}/crank/crankinformation/${engineNo}`);
      
       setCrankInfo(response.data);
       setError(''); 
@@ -165,58 +138,49 @@ function EngNo() {
     }
   }, [oracleData]);
 
-  const historyItems = useMemo(() => {
-    if (!oracleData?.data) return [];
-    const items = [];
-
-    if (shippingRow && shippingRow[3]) {
-      items.push({
-        title: "SHIPMENT",
-        date: moment(shippingRow[3]).format("YYYY-MM-DD HH:mm:ss"),
-      });
-    }
-
-    items.push({
-      title: "MTB",
-      date: "Under progress",
-    });
-
-    oracleData.data.forEach((item) => {
-      if (item[17] && item[17] !== "EGNO") {
-        let title = item[17].toUpperCase();
-        if (title === "FUELLEAK") title = "FUEL LEAK";
-        else if (title === "OILELEAK") title = "OIL LEAK";
-        else if (title === "WALTERLEAK") title = "WATER LEAK";
-
-        const formattedDate = item[21]
-          ? moment(item[21]).format("YYYY-MM-DD HH:mm:ss")
-          : "-";
-
-        items.push({
-          title,
-          date: formattedDate,
-        });
-      }
-    });
-
-    return items;
-  }, [oracleData, shippingRow]);
-
-  const hasShippingDetails = Boolean(
-    shippingRow &&
-      (shippingRow.consignmentNo ||
-        shippingRow.truckNo ||
-        shippingRow.customerName ||
-        shippingRow.moduleNo)
+  const history = oracleData?.data?.map((item, index) =>
+    item[17] != "EGNO" ? (
+      <DateTable key={index} title={item[17]} date={item[21]} />
+    ) : null
   );
 
+  const fullHistory = oracleData ? (
+    <>
+      <div className="d-flex gap-0">
+        <div className="p-2 border hist  ">SHIPMENT</div>
+        <div className="p-2 border histValue ">
+          {shippingRow
+            ? shippingRow[3]
+              ? moment(shippingRow[3]).format("YYYY-MM-DD HH:mm:ss")
+              : null
+            : null}
+        </div>
+      </div>
+      <div className="d-flex gap-0">
+        <div className="p-2 border hist  ">MTB</div>
+        <div className="p-2 border histValue ">
+          {/* {moment(shippingRow ? shippingRow[3] : null).format(
+          "YYYY-MM-DD HH:mm:ss"
+        )} */}
+          Under progress
+        </div>
+      </div>
+
+      {history}
+    </>
+  ) : null;
+
   // list of image _  function
-  const getImages = (targetNo) => {
-    const no = targetNo || engineNo;
+  const getImages = () => {
+    // if (engineNo == "") {
+    //   toast.error(
+    //     `Engine no. input can not be blank, please enter the Engine no.`
+    //   );
+    // } else {
     try {
       axios
         .get(
-          `${process.env.REACT_APP_BACKEND_URL}/dcs/reworkImagesListQuery?engineNo=${no}`
+          `${process.env.REACT_APP_BACKEND_URL}/dcs/reworkImagesListQuery?engineNo=${engineNo}`
         )
         .then((result) => {
           setListOfImages(result.data.result);
@@ -224,12 +188,13 @@ function EngNo() {
         .catch((e) => {
           console.log(e);
           setListOfImages([]);
-          toast.error(`Images of engine number '${no}' not available`);
+          toast.error(`Images of engine number '${engineNo}' not available`);
         });
     } catch (e) {
       console.log(e);
       toast.error("Please check Network connection");
     }
+    // }
   };
 
   // card with all images
@@ -239,221 +204,126 @@ function EngNo() {
 
   return (
     <div>
-      {/* Page Header Banner */}
-      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
-        <div
-          style={{
-            width: "38px",
-            height: "38px",
-            borderRadius: "10px",
-            background: "#eff6ff",
-            border: "1px solid #bfdbfe",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#2563eb",
-          }}
-        >
-          <TbEngine size={22} />
-        </div>
-        <div>
-          <h2 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "#0f172a" }}>
-            Engine Traceability
-          </h2>
-          <div style={{ fontSize: "12.5px", color: "#64748b", marginTop: "2px" }}>
-            Complete engine serial genealogy, assembly telemetry & machining logs
-          </div>
-        </div>
-      </div>
+      {/*************** * search engine no */}
 
-      {/* 1. Enterprise Search Engine Card */}
-      <div className="enterprise-search-card">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            getOracleData();
-          }}
-          className="split-search-container"
-        >
-          <div className="search-lead-icon">
-            <TbSearch size={19} />
-          </div>
-
+      <div>
+        <div>Engine Number</div>
+        {/* {console.log("oracleData?.data ")}
+        {console.log(oracleData?.data )}
+        <CSVLink data= {oracleData?.data ===undefined? [["please search before you click on download button"]]:oracleData?.data } filename="assembly_data.csv"> <button className="btn btn-primary">Assy data</button></CSVLink>
+        <CSVLink data= {data3?.data ===undefined? [["please search before you click on download button"]]:data3?.data } filename="machining_data.csv"> <button className="btn btn-primary">machining data</button></CSVLink>
+        */}
+        <div className="d-flex gap-3">
           <input
             type="text"
             placeholder="Please enter engine no."
             value={engineNo}
             onChange={(e) => setEngineNo(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.keyCode === 13) {
-                e.preventDefault();
-                getOracleData();
-              }
-            }}
-            className="split-search-input"
-          />
-
-          {engineNo && (
-            <OverlayTrigger
-              placement="top"
-              overlay={<Tooltip id="clear-search-tooltip">Clear Input</Tooltip>}
-            >
-              <button
-                type="button"
-                className="search-clear-btn"
-                onClick={handleClearInput}
-                aria-label="Clear input"
-              >
-                <TbX size={13} />
-              </button>
-            </OverlayTrigger>
-          )}
-
-          <OverlayTrigger
-            placement="top"
-            overlay={<Tooltip id="search-btn-tooltip">Search Engine</Tooltip>}
-          >
-            <button
-              type="submit"
-              className="split-primary-btn"
-              disabled={loading}
-              aria-label="Search Engine"
-            >
-              {loading ? (
-                <span className="spinner-border spinner-border-sm" role="status" style={{ width: "15px", height: "15px", borderWidth: "2px" }} />
-              ) : (
-                <TbSearch size={18} />
-              )}
-            </button>
-          </OverlayTrigger>
-        </form>
-        {leakData && <div className="mt-2 badge bg-light text-dark border p-2">{leakData}</div>}
+            className="form-control w-25"
+          ></input>
+          <button className="btn btn-primary" onClick={getOracleData}>
+            <div className="d-flex gap-2 align-items-center">
+              <Search />
+              Search
+            </div>
+          </button>
+          <div>{leakData}</div>
+        </div>
       </div>
      
-      {/* 2. Assembly Data fieldset (Dynamic Multi-Column Layout) */}
-      {(oracleData || loading) && (
-        <fieldset className="border p-3 mt-2" style={{ borderRadius: "10px", background: "#ffffff" }}>
-          <legend
-            className="text-primary"
-            style={{ fontSize: "14px", fontWeight: 700, padding: "0 8px" }}
-          >
-            Assembly Data
-          </legend>
-          <div className="d-flex gap-3 mt-1 flex-wrap align-items-start">
-            {/* Shipping Detail Card (Always rendered) */}
-            <div className="data-box-card" style={{ minWidth: "270px", flexShrink: 0 }}>
-              <ShippingDetails shippingData={shippingRow} />
-            </div>
-
-            {/* Dynamic Multi-Column Engine History */}
-            <div className="data-box-card" style={{ flex: 1, minWidth: "320px" }}>
-              <div className="d-flex justify-content-between align-items-center mb-2">
-                <div className="h5 mb-0" style={{ fontSize: "13px", fontWeight: 700, textTransform: "uppercase", color: "#334155" }}>
-                  Engine History
-                </div>
-                {historyItems.length > 0 && (
-                  <span style={{ fontSize: "12px", color: "var(--slate-500)", fontWeight: 600 }}>
-                    {historyItems.length} Milestones Recorded
-                  </span>
-                )}
-              </div>
-
-              {loading ? (
-                <Loading />
-              ) : historyItems.length === 0 ? (
-                <div style={{ color: "#64748b", fontSize: "13px", fontStyle: "italic", padding: "8px 0" }}>
-                  No engine history milestones found.
-                </div>
-              ) : (
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fill, minmax(310px, 1fr))",
-                    gap: "6px 12px",
-                    width: "100%",
-                  }}
-                >
-                  {historyItems.map((item, idx) => (
-                    <div
-                      key={idx}
-                      style={{
-                        display: "flex",
-                        alignItems: "stretch",
-                        borderRadius: "6px",
-                        overflow: "hidden",
-                        border: "1px solid #e2e8f0",
-                        background: "#ffffff",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "165px",
-                          minWidth: "145px",
-                          background: "#f8fafc",
-                          padding: "6px 10px",
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          color: "#475569",
-                          borderRight: "1px solid #e2e8f0",
-                          display: "flex",
-                          alignItems: "center",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                        title={item.title}
-                      >
-                        {item.title}
-                      </div>
-                      <div
-                        style={{
-                          flex: 1,
-                          padding: "6px 10px",
-                          fontSize: "12px",
-                          fontWeight: 500,
-                          color: item.date === "Under progress" ? "#2563eb" : "#0f172a",
-                          background: "#ffffff",
-                          display: "flex",
-                          alignItems: "center",
-                          fontFamily: "monospace, 'Inter', sans-serif",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {item.date}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </fieldset>
-      )}
-
-      {/* 3. EntireResultProcess (Machining Data -> Impact Wrench Data -> Part Traceability) */}
       <EntireResultProcess 
-        crankinfo={crankinfo} 
+        crankinfo = {crankinfo} 
         engineNo={searchEngineNo}
         triggerSearch={searchTriggered}
-      />
+        />
       
-      {/* 4. Images display */}
-      <div className="d-flex flex-wrap my-2">{images}</div>
+      {/* images display */}
+      <div className="d-flex flex-wrap my-3"> {images}</div>
 
-      {/* 5. Detail Traceability */}
-      <div style={{ width: "100%", marginTop: "12px" }}>
-        <DetailTraceability />
-      </div>
-
-      {/* 6. Supplier Field set */}
-      <fieldset className="border p-3 mt-2">
+      {/* *****************Assembly fieldset */}
+      <fieldset className="border p-3 mt-3 ">
         <legend
-          className="text-success"
+          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-primary"
+          style={{ fontSize: "16px" }}
         >
-          Supplier Part Traceability
+          Assembly Data
         </legend>
-        <div className="d-flex gap-3 mt-1 flex-wrap">
-          <div className="data-box-card" style={{ maxWidth: "280px" }}>
+        <div className="d-flex gap-3 mt-0">
+          {/* Shipping Detail */}
+          <ShippingDetails />
+
+          {/* Engine History */}
+          <div>
+            <div className="h5">Engine history</div>
+
+            <div className="d-flex gap-0">
+              <div className="p-2 border hist h6 text-center bg-light">
+                EVENT
+              </div>
+              <div className="p-2 border histValue h6  text-center bg-light">
+                DATE & TIME
+              </div>
+            </div>
+            {loading ? <Loading /> : fullHistory}
+          </div>
+
+          {/*  */}
+
+          {/* Change point information  */}
+          {/* <ChangePointAssembly /> */}
+        </div>
+      </fieldset>
+
+
+       {/* *****************Crank fieldset */}
+       {/* <fieldset className="border p-3 mt-3 ">
+        <legend
+          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-primary"
+          style={{ fontSize: "16px" }}
+        >
+         Crank Information
+        </legend>
+        <div className="d-flex gap-3 mt-0">
+         
+          <EntireResultProcess crankinfo = {crankinfo}/>
+          {/* <CrankDetails /> 
+        </div>
+      </fieldset> */}
+
+      {/* ************Machining Field set */}
+      <fieldset className="border p-3 mt-3 ">
+        <legend
+          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-success"
+          style={{ fontSize: "16px" }}
+        >
+          Machining Data
+        </legend>
+        {/* Change point information for Machining */}
+        {/* <ChangePointMachining /> */}
+      </fieldset>
+      {/* ****************Detail Traceability */}
+      <div className="d-flex gap-3 mt-0">
+        {/* Supplier details */}
+        <DetailTraceability />
+
+        {/* Part selection */}
+
+        {/* RM Detail */}
+
+        {/* Part History */}
+      </div>
+      {/* ***************** Supplier Field set */}
+      <fieldset className="border p-3 mt-3 ">
+        <legend
+          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-success"
+          style={{ fontSize: "16px" }}
+        >
+          Supplier Part traceability
+        </legend>
+        <div className="d-flex gap-3 mt-0">
+          {/* Supplier Part selection */}
+
+          <div>
             <div className="h5">Supplier Part Name</div>
             <Select
               options={supplierPartOptions}
@@ -462,14 +332,10 @@ function EngNo() {
             />
           </div>
           {/* RM details */}
-          <div className="data-box-card">
-            <RawMaterialDetails />
-          </div>
+          <RawMaterialDetails />
 
           {/* Part History */}
-          <div className="data-box-card">
-            <PartHistory />
-          </div>
+          <PartHistory />
         </div>
       </fieldset>
     </div>

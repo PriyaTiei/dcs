@@ -1,1447 +1,273 @@
-/* ==========================================================================
-   GLOBAL DESIGN SYSTEM & MODERN UI TOKENS
-   ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-@import './variables.css';
-@import './components.css';
-
 * {
-  margin: 0px;
-  padding: 0px;
-  box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
 }
 
-body, #root, .pushable, .pusher {
-  background-color: #f8fafc !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-  color: #1e293b;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ==========================================================================
-   1. MODERN ENTERPRISE SPLIT-ACTION ENGINE SEARCH BAR
-   ========================================================================== */
-.enterprise-search-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 12px 16px;
-  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04);
-  margin-bottom: 12px;
-  position: relative;
-}
-
-.search-main-heading {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1d4ed8;
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 8px;
-  padding: 4px 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* The Unified Split Search Container */
-.split-search-container {
-  display: flex;
-  align-items: center;
-  background: #ffffff;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 2px 4px 2px 12px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.split-search-container:focus-within {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-}
-
-.search-lead-icon {
-  color: #64748b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 8px;
-  flex-shrink: 0;
-}
-
-.split-search-input {
-  flex: 1;
-  border: none !important;
-  outline: none !important;
-  background: transparent !important;
-  font-size: 13.5px !important;
-  font-weight: 500 !important;
-  color: #0f172a !important;
-  padding: 6px 4px !important;
-  box-shadow: none !important;
-  min-width: 200px;
-}
-
-.split-search-input::placeholder {
-  color: #94a3b8;
-  font-weight: 400;
-}
-
-.search-clear-btn {
-  background: #f1f5f9;
-  border: none;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #64748b;
-  cursor: pointer;
-  margin-right: 6px;
-  transition: all 0.15s ease;
-}
-
-.search-clear-btn:hover {
-  background: #e2e8f0;
-  color: #0f172a;
-}
-
-.split-primary-btn {
-  background: #2563eb;
-  color: #ffffff;
-  border: none;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  flex-shrink: 0;
-}
-
-.split-primary-btn:hover {
-  background: #1d4ed8;
-  transform: scale(1.04);
-}
-
-/* ==========================================================================
-   2. MODERN SECTION CARDS & FIELDSETS
-   ========================================================================== */
-fieldset.border {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 12px !important;
-  padding: 14px 18px !important;
-  margin-top: 12px !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
-}
-
-legend {
-  float: none !important;
-  width: auto !important;
-  padding: 3px 12px !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  letter-spacing: -0.01em !important;
-  border-radius: 6px !important;
-  margin-bottom: 8px !important;
-}
-
-legend.text-primary {
-  background: #eff6ff !important;
-  color: #1d4ed8 !important;
-  border: 1px solid #dbeafe !important;
-}
-
-legend.text-success {
-  background: #ecfdf5 !important;
-  color: #047857 !important;
-  border: 1px solid #a7f3d0 !important;
-}
-
-.data-box-card {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 12px 14px;
-  flex: 1;
-}
-
-.data-box-header, .h5 {
-  font-size: 12.5px !important;
-  font-weight: 700 !important;
-  color: #334155 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.04em !important;
-  margin-bottom: 8px !important;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* ==========================================================================
-   3. KEY-VALUE TABLES (SHIPPING, ENGINE HISTORY, RM)
-   ========================================================================== */
-.ship, .hist, .histValue {
-  padding: 6px 10px !important;
-  font-size: 12.5px !important;
-  border: 1px solid #e2e8f0 !important;
-  transition: background 0.15s ease;
-}
-
-.ship:first-child, .hist:first-child {
-  background-color: #f8fafc !important;
-  color: #475569 !important;
-  font-weight: 600 !important;
-  min-width: 140px !important;
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
-}
-
-.ship:last-child, .histValue:last-child {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  font-weight: 500 !important;
-  min-width: 170px !important;
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
-}
-
-.hist.h6, .histValue.h6 {
-  background-color: #f1f5f9 !important;
-  color: #334155 !important;
-  font-weight: 700 !important;
-  font-size: 12px !important;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* ==========================================================================
-   4. 3C MACHINING PROCESS CELLS & DATA BLOCKS
-   ========================================================================== */
-.dt1 > div > div, .dt2 > div, .dt3 > div {
-  border: 1px solid #e2e8f0 !important;
-  padding: 8px 12px !important;
-  font-size: 12.5px !important;
-}
-
-.dt1f1 {
-  background-color: #f8fafc !important;
-  color: #475569 !important;
-  font-weight: 600 !important;
-  min-width: 110px !important;
-}
-
-.dt1f2 {
-  background-color: #ffffff !important;
-  color: #0f172a !important;
-  font-weight: 500 !important;
-  min-width: 150px !important;
-}
-
-.dt1, .dt2, .dt3 {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 6px;
-}
-
-/* Highlighted Inner Section Titles */
-.machining-title-badge,
-.data-box-card .h6,
-.data-box-card h6,
-.h6.mb-2 {
-  background: #eff6ff !important;
-  color: #1d4ed8 !important;
-  border: 1px solid #bfdbfe !important;
-  border-radius: 6px !important;
-  padding: 4px 10px !important;
-  font-size: 12.5px !important;
-  font-weight: 700 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  margin-bottom: 8px !important;
-  letter-spacing: 0.01em !important;
-}
-
-/* 3C Machining Assembly Container Cards */
-.machining-assembly-card {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 10px !important;
-  padding: 16px 18px !important;
-  margin-bottom: 16px !important;
-  box-shadow: 0 2px 8px -2px rgba(15, 23, 42, 0.05) !important;
-}
-
-.machining-assembly-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #f1f5f9;
-  padding-bottom: 10px;
-  margin-bottom: 14px;
-}
-
-.machining-assembly-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.machining-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 10px;
-  margin-bottom: 14px;
-}
-
-.machining-summary-item {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  overflow: hidden;
-  background: #ffffff;
-}
-
-.machining-summary-item .item-title {
-  background: #f8fafc;
-  padding: 5px 10px;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #475569;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.machining-summary-item .item-row {
-  display: flex;
-  border-bottom: 1px solid #f1f5f9;
-  font-size: 12px;
-}
-
-.machining-summary-item .item-row:last-child {
-  border-bottom: none;
-}
-
-.machining-summary-item .item-label {
-  width: 120px;
-  min-width: 100px;
-  background: #fafafa;
-  color: #64748b;
-  font-weight: 600;
-  padding: 5px 8px;
-  border-right: 1px solid #f1f5f9;
-  white-space: nowrap;
-}
-
-.machining-summary-item .item-value {
-  flex: 1;
-  padding: 5px 8px;
-  color: #0f172a;
-  font-weight: 500;
-  font-family: monospace, "Inter", sans-serif;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Compact Modern Unified Machining Tables */
-.machining-compact-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  overflow: hidden;
-  margin-top: 4px;
-  margin-bottom: 12px;
-}
-
-.machining-compact-table th {
-  background: #0f172a !important;
-  color: #f8fafc !important;
-  font-weight: 600 !important;
-  font-size: 11.5px !important;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  padding: 6px 10px !important;
-  border: 1px solid #334155 !important;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.machining-compact-table td {
-  padding: 6px 10px !important;
-  border: 1px solid #e2e8f0 !important;
-  text-align: center;
-  font-size: 12px !important;
-  color: #1e293b !important;
-  background: #ffffff;
-}
-
-.machining-compact-table tr:hover td {
-  background-color: #f8fafc !important;
-}
-
-.machining-compact-table .row-tag-warning {
-  background: #fef3c7 !important;
-  color: #92400e !important;
-  font-weight: 700 !important;
-  text-align: left;
-  min-width: 100px;
-}
-
-.machining-status-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-.machining-status-ok {
-  background: #ecfdf5 !important;
-  color: #065f46 !important;
-  border: 1px solid #a7f3d0 !important;
-}
-
-.machining-status-ng {
-  background: #fef2f2 !important;
-  color: #991b1b !important;
-  border: 1px solid #fecaca !important;
-}
-
-.pros, .prosMach, .chan {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-}
-
-.pros div {
-  background-color: #ecfdf5 !important;
-  color: #065f46 !important;
-  font-weight: 600 !important;
-  border: 1px solid #a7f3d0 !important;
-  border-radius: 6px !important;
-  padding: 7px 12px !important;
-  font-size: 12.5px !important;
-}
-
-.prosMach div {
-  background-color: #eff6ff !important;
-  color: #1e40af !important;
-  font-weight: 600 !important;
-  border: 1px solid #bfdbfe !important;
-  border-radius: 6px !important;
-  padding: 7px 12px !important;
-  font-size: 12.5px !important;
-}
-
-.chan div {
-  background-color: #f8fafc !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 6px !important;
-  padding: 7px 12px !important;
-  font-size: 12.5px !important;
-  font-weight: 500 !important;
-  color: #334155 !important;
-}
-
-.yesHighlight {
-  background-color: #fef2f2 !important;
-  color: #991b1b !important;
-  border-color: #fecaca !important;
-  font-weight: 600 !important;
-}
-
-/* ==========================================================================
-   5. TIGHTENING DATA & TABLES (URYU, YOKOTA, PART TRACEABILITY)
-   ========================================================================== */
-.wrench-section {
-  margin-top: 8px;
-  margin-bottom: 12px;
-}
-
-.wrench-section .card {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 12px !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
-  overflow: hidden;
-}
-
-.wrench-section .card-body {
-  padding: 14px 18px !important;
-}
-
-.wrench-section .card-title {
-  font-size: 14px !important;
-  font-weight: 700 !important;
-  color: #0f172a !important;
-  margin-bottom: 10px !important;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.wrench-container {
-  width: 100% !important;
-  overflow-x: auto !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 8px !important;
-  background: #ffffff !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02) !important;
-}
-
-.wrench-table, .yokota-table {
-  width: 100% !important;
-  min-width: 100% !important;
-  table-layout: auto !important;
-  border-collapse: collapse !important;
-  font-size: 11.5px !important;
-}
-
-.wrench-table th, .yokota-table th {
-  background: #f1f5f9 !important;
-  color: #334155 !important;
-  font-weight: 700 !important;
-  font-size: 10.5px !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.02em !important;
-  border: 1px solid #cbd5e1 !important;
-  padding: 6px 3px !important;
-  white-space: normal !important;
-  word-wrap: break-word !important;
-  word-break: break-word !important;
-  line-height: 1.15 !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-}
-
-.wrench-table td, .yokota-table td {
-  border: 1px solid #e2e8f0 !important;
-  padding: 5px 3px !important;
-  color: #1e293b !important;
-  font-size: 11px !important;
-  text-align: center !important;
-  vertical-align: middle !important;
-  white-space: normal !important;
-  word-wrap: break-word !important;
-}
-
-.wrench-table tbody tr:hover, .yokota-table tbody tr:hover {
-  background-color: #f8fafc !important;
-}
-
-.highlight-green {
-  background-color: #ecfdf5 !important;
-  color: #065f46 !important;
-  font-weight: 600 !important;
-}
-
-.highlight-green:hover {
-  background-color: #d1fae5 !important;
-}
-
-.highlight-red {
-  background-color: #fef2f2 !important;
-  color: #991b1b !important;
-  font-weight: 600 !important;
-}
 
-.highlight-red:hover {
-  background-color: #fee2e2 !important;
+/* shipping table */
+.ship {
+   width:10vw
 }
 
-/* ==========================================================================
-   6. SECTION HEADINGS & BUTTONS
-   ========================================================================== */
-.h4.text-primary {
-  font-size: 15.5px !important;
-  font-weight: 700 !important;
-  color: #0f172a !important;
-  letter-spacing: -0.01em !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  margin-top: 14px !important;
-  margin-bottom: 8px !important;
-}
-
-hr {
-  border: none !important;
-  border-top: 1px solid #e2e8f0 !important;
-  margin: 14px 0 !important;
-}
-
-.btn-primary, .btn.btn-primary {
-  background-color: #2563eb !important;
-  border-color: #2563eb !important;
-  border-radius: 9999px !important;
-  font-weight: 600 !important;
-  font-size: 13.5px !important;
-  padding: 8px 20px !important;
-  box-shadow: 0 2px 6px 0 rgba(37, 99, 235, 0.28) !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  letter-spacing: 0.01em !important;
-}
-
-.btn-primary:hover, .btn.btn-primary:hover {
-  background-color: #1d4ed8 !important;
-  border-color: #1d4ed8 !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px 0 rgba(37, 99, 235, 0.38) !important;
-}
-
-.btn-secondary, .btn.btn-secondary {
-  background-color: #ffffff !important;
-  border: 1px solid #cbd5e1 !important;
-  border-radius: 9999px !important;
-  color: #334155 !important;
-  font-weight: 600 !important;
-  font-size: 13.5px !important;
-  padding: 8px 20px !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-.btn-secondary:hover, .btn.btn-secondary:hover {
-  background-color: #f8fafc !important;
-  border-color: #94a3b8 !important;
-  color: #0f172a !important;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.08) !important;
-}
-
-.btn, button.btn {
-  border-radius: 9999px !important;
-  padding: 8px 20px !important;
-  font-weight: 600 !important;
-  font-size: 13.5px !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
-/* ==========================================================================
-   7. SHADCN MODERN SIDEBAR & NAVIGATION STYLES
-   ========================================================================== */
-.navbar-toggle-btn {
-  background: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 8px !important;
-  width: 38px !important;
-  height: 38px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  cursor: pointer !important;
-  box-shadow: none !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  color: #334155 !important;
-  outline: none !important;
-}
-
-.navbar-toggle-btn:hover {
-  background: #f8fafc !important;
-  border-color: #cbd5e1 !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-  color: #0f172a !important;
-  transform: translateY(-1px);
-}
-
-.toggle-icon-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease;
-}
-
-.navbar-toggle-btn:hover .toggle-icon-container {
-  transform: scale(1.06);
-}
-
-.sidebar-nav-item {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  padding: 10px 14px !important;
-  border-radius: 8px !important;
-  color: #475569 !important;
-  font-size: 13.5px !important;
-  font-weight: 500 !important;
-  text-decoration: none !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  background: transparent !important;
-  position: relative;
-}
-
-.sidebar-item-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.sidebar-icon {
-  font-size: 16px !important;
-  color: #64748b !important;
-  transition: color 0.2s ease, transform 0.2s ease !important;
-  margin: 0 !important;
-  flex-shrink: 0;
-}
-
-.sidebar-title {
-  color: inherit;
-  letter-spacing: -0.01em;
-}
-
-.sidebar-arrow {
-  font-size: 13px !important;
-  color: #2563eb !important;
-  opacity: 0 !important;
-  transform: translateX(-6px) !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  margin: 0 !important;
-  flex-shrink: 0;
-}
-
-.sidebar-nav-item:hover {
-  background: #f1f5f9 !important;
-  color: #0f172a !important;
-  padding-left: 16px !important;
-}
-
-.sidebar-nav-item:hover .sidebar-icon {
-  color: #2563eb !important;
-  transform: scale(1.08);
-}
-
-.sidebar-nav-item:hover .sidebar-arrow {
-  opacity: 1 !important;
-  transform: translateX(0px) !important;
-}
-
-.sidebar-nav-item.active {
-  background: #eff6ff !important;
-  color: #1d4ed8 !important;
-  font-weight: 600 !important;
-  border-left: 3px solid #2563eb !important;
-  border-radius: 0 8px 8px 0 !important;
-}
-
-.sidebar-nav-item.active .sidebar-icon {
-  color: #1d4ed8 !important;
-}
-
-/* Compact Export to Excel Button */
-.export-excel-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #ffffff;
-  color: #166534;
-  border: 1px solid #bbf7d0;
-  border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.export-excel-btn:hover {
-  background: #f0fdf4;
-  border-color: #86efac;
-  color: #14532d;
-  box-shadow: 0 1px 3px rgba(22, 101, 52, 0.12);
-  transform: translateY(-1px);
-}
-
-/* ==========================================================================
-   MODERN TOASTIFY NOTIFICATIONS
-   ========================================================================== */
-.Toastify__toast-container {
-  z-index: 999999 !important;
-  width: 340px !important;
-  padding: 10px !important;
-}
-
-.Toastify__toast {
-  border-radius: 10px !important;
-  font-family: inherit !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
-  padding: 10px 14px !important;
-  min-height: 48px !important;
-}
-
-.Toastify__toast--warning {
-  background: #fffbeb !important;
-  color: #92400e !important;
-  border: 1px solid #fde68a !important;
-}
-
-.Toastify__toast--warning .Toastify__toast-icon svg {
-  fill: #d97706 !important;
-}
-
-.Toastify__toast--error {
-  background: #fef2f2 !important;
-  color: #991b1b !important;
-  border: 1px solid #fecaca !important;
-}
-
-.Toastify__toast--success {
-  background: #ecfdf5 !important;
-  color: #065f46 !important;
-  border: 1px solid #a7f3d0 !important;
-}
-
-.Toastify__toast--info {
-  background: #eff6ff !important;
-  color: #1e40af !important;
-  border: 1px solid #bfdbfe !important;
-}
-
-.Toastify__progress-bar--warning {
-  background: #f59e0b !important;
-}
+.hist {
+    width:12vw
+ }
 
-.Toastify__progress-bar--error {
-  background: #ef4444 !important;
-}
-
-.Toastify__progress-bar--success {
-  background: #10b981 !important;
-}
-
-.Toastify__close-button {
-  color: #64748b !important;
-  opacity: 0.8 !important;
-}
-
-.Toastify__close-button:hover {
-  opacity: 1 !important;
-  color: #0f172a !important;
-}
-
-/* ==========================================================================
-   8. MODERN DETAIL TRACEABILITY & TELEMETRY TABLES (.deta, .deta2, .detaBOP235)
-   ========================================================================== */
-.trace-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04);
-  margin-top: 12px;
-  margin-bottom: 20px;
-  width: 100% !important;
-}
-
-.trace-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 14px;
-  margin-bottom: 18px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.trace-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0;
-}
-
-.trace-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #ecfdf5;
-  color: #047857;
-  border: 1px solid #a7f3d0;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.trace-section-label {
-  font-size: 11.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #64748b;
-  margin-bottom: 8px;
-}
-
-/* Process Number Interactive Chips */
-.process-chips-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.process-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #f8fafc;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 7px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #334155;
-  cursor: pointer;
-  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  user-select: none;
-}
-
-.process-chip:hover {
-  background: #eff6ff;
-  border-color: #93c5fd;
-  color: #1d4ed8;
-  transform: translateY(-1px);
-}
-
-.process-chip.active {
-  background: #2563eb !important;
-  border-color: #2563eb !important;
-  color: #ffffff !important;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
-}
-
-.process-chip.disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-/* Modern Segmented Control for Radio Mode */
-.segmented-mode-group {
-  display: inline-flex;
-  background: #f1f5f9;
-  padding: 3px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  gap: 2px;
-}
-
-.segmented-mode-option {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 11px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #64748b;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  user-select: none;
-}
+ .histValue {
+    width:12vw
+ }
 
-.segmented-mode-option:hover {
-  color: #0f172a;
-}
-
-.segmented-mode-option.active {
-  background: #ffffff;
-  color: #2563eb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-}
+ .pros {
+    width:30vw
+ }
 
-/* Modern Date Input Controls */
-.modern-date-input {
-  display: inline-flex;
-  align-items: center;
-  background: #ffffff;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 4px 10px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #0f172a;
-  outline: none;
-  transition: all 0.15s ease;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
-  height: 34px;
-}
-
-.modern-date-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-}
+ .pros div {
+   
+    width:9vw;
+    background-color: lightgreen;
+ }
 
-/* Telemetry Data Tables (.deta, .deta2, .detaBOP235) */
-.telemetry-table-container {
-  width: 100%;
-  overflow-x: auto;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  background: #ffffff;
-  margin-top: 14px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-}
 
-.deta, .deta2, .detaBOP235 {
-  display: flex !important;
-  align-items: center !important;
-  border-bottom: 1px solid #f1f5f9 !important;
-  transition: background 0.12s ease !important;
-  min-width: 800px;
-}
+ .prosMach {
+    
+    min-width: 70vw;
+ }
 
-.deta:nth-child(even), .deta2:nth-child(even), .detaBOP235:nth-child(even) {
-  background-color: #fcfdfe !important;
-}
+ .prosMach div {
+   
+    width:6vw;
+    background-color: lightblue;
+ }
 
-.deta:hover, .deta2:hover, .detaBOP235:hover {
-  background-color: #f8fafc !important;
-}
+ 
+ .chan {
+    width:45vw
+ }
 
-.deta > div, .deta2 > div, .detaBOP235 > div {
-  padding: 10px 14px !important;
-  font-size: 12.5px !important;
-  color: #1e293b !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
-  word-break: break-word !important;
-  border-right: 1px solid #f1f5f9;
-}
+ .chan div {   
+    width: 8vw;
+    border: 1px solid grey;    
+    
+ }
 
-.deta > div:last-child, .deta2 > div:last-child, .detaBOP235 > div:last-child {
-  border-right: none;
-}
+ .yesHighlight {
+    background-color: lightcoral ;
+ }
 
-/* Table Header Styles */
-.deta:has(.font-weight-bold), .telemetry-table-header, .deta.telemetry-table-header {
-  background: #f1f5f9 !important;
-  border-bottom: 2px solid #cbd5e1 !important;
-  border-top: 1px solid #e2e8f0 !important;
-  border-radius: 8px 8px 0 0;
-  font-weight: 700 !important;
-  color: #334155 !important;
-  font-size: 11.5px !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.04em !important;
-}
+ .selection{
+   width:20vw
+ }
 
-.deta:has(.font-weight-bold) > div, .telemetry-table-header > div {
-  color: #334155 !important;
-  font-weight: 700 !important;
-  padding: 11px 14px !important;
-  background: transparent !important;
+ .res1 {
+   width:40vw
 }
 
-/* Status Chips inside Data Tables */
-.chip-dispatched {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: #eff6ff;
-  color: #1d4ed8;
-  border: 1px solid #bfdbfe;
-  padding: 3px 8px;
-  border-radius: 9999px;
-  font-size: 11.5px;
-  font-weight: 600;
+.res1 div {   
+   width:10vw;
+   border: 1px solid grey;    
+   
 }
 
-.chip-ok {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: #ecfdf5;
-  color: #047857;
-  border: 1px solid #a7f3d0;
-  padding: 3px 8px;
-  border-radius: 9999px;
-  font-size: 11.5px;
-  font-weight: 600;
+.res2 {
+   width:40vw;
+   margin-top: 16px;
 }
 
-.chip-ng {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: #fef2f2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
-  padding: 3px 8px;
-  border-radius: 9999px;
-  font-size: 11.5px;
-  font-weight: 600;
+.res2 div {   
+   width:8vw;
+   border: 1px solid grey;    
+   
+   
 }
 
-/* ==========================================================================
-   9. MODERN ASSEMBLY OFFLINE TREATMENT SHEET & PQCS TABLE
-   ========================================================================== */
-.defect-form-container {
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 20px;
-  align-items: start;
+.deta {
+   width:90vw
 }
-
-@media (max-width: 992px) {
-  .defect-form-container {
-    grid-template-columns: 1fr;
-  }
+.deta div {   
+   /* width:10vw; */
+   flex:1;
+   border: 1px solid grey;    
+   
 }
-
-.defect-card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04);
+.hB div {   
+   
+   border: 1px solid grey;    
+   
 }
 
-.form-label-styled {
-  display: block;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #334155;
-  margin-bottom: 5px;
+/* .deta {
+   width:90vw
 }
-
-.form-label-styled span.required {
-  color: #ef4444;
-  margin-left: 2px;
+.deta div {   
+   border: 1px solid grey;    
+   
+} */
+.detaBOP235 {
+   
 }
-
-.form-input-styled {
-  width: 100%;
-  background: #ffffff;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 13.5px;
-  color: #0f172a;
-  outline: none;
-  transition: all 0.15s ease;
+.detaBOP235 div {   
+  
+   border: 1px solid grey;   
+   
 }
 
-.form-input-styled:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+.deta2 {
+   width:90vw
 }
-
-/* Photo Dropzone / Box */
-.photo-attachment-card {
-  background: #f8fafc;
-  border: 1.5px dashed #cbd5e1;
-  border-radius: 10px;
-  padding: 14px;
-  text-align: center;
-  transition: all 0.2s ease;
-  margin-bottom: 16px;
+.deta2 div {   
+   width:6vw;
+   border: 1px solid grey;    
+   
 }
 
-.photo-attachment-card:hover {
-  border-color: #2563eb;
-  background: #eff6ff;
+.rang {
+   width:20vw;
+   margin-top: 16px;
 }
 
-.photo-preview-box {
-  position: relative;
-  width: 100%;
-  max-height: 180px;
-  border-radius: 8px;
-  overflow: hidden;
-  margin-top: 10px;
-  border: 1px solid #e2e8f0;
+.rang div {   
+   /* width:8vw; */
+   /* border: 1px solid grey;     */
+   
+   
 }
 
-.photo-preview-box img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
+.dt1>div>div{
+   border: 1px solid black;
+   padding: 5px;
 }
 
-.photo-remove-btn {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  background: rgba(239, 68, 68, 0.9);
-  color: #ffffff;
-  border: none;
-  border-radius: 50%;
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: transform 0.15s ease;
-}
+.dt1f1{
+   width: 8vw;
 
-.photo-remove-btn:hover {
-  transform: scale(1.1);
-  background: #dc2626;
 }
 
-/* Process Quality Confirmation Sheet (PQCS) Table */
-.pqcs-table-wrapper {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+.dt1f2{
+   width: 13vw;
 }
 
-.pqcs-table-custom {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-  text-align: center;
-}
 
-.pqcs-table-custom th {
-  background: #f1f5f9;
-  color: #334155;
-  font-weight: 700;
-  padding: 8px 6px;
-  border: 1px solid #cbd5e1;
-  font-size: 11px;
+.dt2>div{
+   border: 1px solid black;
+   padding: 5px;
+   /* margin-top: 3px; */
 }
+.dt2f1{
+   width: 10vw;
 
-.pqcs-table-custom td {
-  padding: 7px 5px;
-  border: 1px solid #e2e8f0;
-  color: #1e293b;
-  font-size: 11.5px;
 }
 
-.pqcs-table-custom tr:hover td {
-  background-color: #f8fafc;
+.dt2f2{
+   width: 10vw;
 }
 
-/* ==========================================================================
-   10. MODERN 4M CHANGE POINT MONITORING SHEET
-   ========================================================================== */
-.cp-hero-header {
-  position: sticky !important;
-  top: 70px !important;
-  z-index: 1100 !important;
-  background: rgba(255, 255, 255, 0.96) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(226, 232, 240, 0.9) !important;
-  border-radius: 12px !important;
-  padding: 14px 20px !important;
-  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.08) !important;
-  margin-bottom: 16px !important;
+.dt3>div{
+   border: 1px solid black;
+   padding: 5px;
+   /* margin-top: 3px; */
 }
 
-.cp-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 9px;
-  border-radius: 6px;
-  font-size: 11.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+.dt3 :last-child{
+   text-align:center;
+  
 }
-
-.cp-badge.man {
-  background: #eff6ff;
-  color: #1d4ed8;
-  border: 1px solid #bfdbfe;
+body {
+   font-family: 'Arial', sans-serif !important; 
+   margin: 0 !important; 
+   padding: 0 !important; 
+   background-color: #f4f4f4 !important; 
 }
 
-.cp-badge.machine {
-  background: #faf5ff;
-  color: #7e22ce;
-  border: 1px solid #e9d5ff;
-}
+/* Add this CSS to your styles.css or in a <style> tag in your HTML file */
 
-.cp-badge.material {
-  background: #fffbeb;
-  color: #b45309;
-  border: 1px solid #fde68a;
+/* Global Styles */
+/* body {
+   font-family: 'Arial', sans-serif !important; 
+   margin: 0 !important; 
+   padding: 0 !important; 
+   background-color: #f4f4f4 !important; 
 }
 
-.cp-badge.method {
-  background: #f0fdfa;
-  color: #0f766e;
-  border: 1px solid #99f6e4;
-}
+.container {
+   max-width: 1200px !important; 
+   margin: 0 auto !important; 
+   padding: 20px !important; 
+} */
 
-.cp-table-container {
-  width: 100%;
-  overflow-x: auto;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+/* Search Engine Section */
+/* #search-engine-section {
+   background-color: #ffffff !important; 
+   padding: 20px !important; 
+   margin-bottom: 20px !important; 
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important; 
 }
 
-.cp-table-header-row {
-  display: grid;
-  grid-template-columns: 125px 90px 80px 80px 140px 140px 140px 110px 80px 130px 110px 140px;
-  background: #f1f5f9;
-  border-bottom: 1.5px solid #cbd5e1;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: #334155;
-}
+#search-engine-section input {
+   padding: 10px !important; 
+   margin-right: 10px !important; 
+} */
 
-.cp-table-header-cell {
-  padding: 10px 8px;
-  text-align: center;
-  border-right: 1px solid #e2e8f0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
+/* #search-engine-section button {
+   background-color: #007bff !important; 
+   color: #ffffff !important; 
+   padding: 10px !important; 
+   cursor: pointer !important; 
 }
 
-.cp-table-data-row {
-  display: grid;
-  grid-template-columns: 125px 90px 80px 80px 140px 140px 140px 110px 80px 130px 110px 140px;
-  border-bottom: 1px solid #f1f5f9;
-  font-size: 12px;
-  color: #1e293b;
-  transition: background 0.12s ease;
-  min-width: 1375px;
-}
+#search-engine-section button:hover {
+   background-color: #0056b3 !important; 
+} */
 
-.cp-table-data-row:hover {
-  background: #f8fafc;
-}
+/* Assembly Data Section */
+/* .assembly-data-section {
+   background-color: #ffffff !important; 
+   padding: 20px !important; 
+   margin-bottom: 20px !important; 
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important; 
+} */
 
-.cp-table-data-cell {
-  padding: 9px 8px;
-  text-align: center;
-  border-right: 1px solid #f1f5f9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  word-break: break-word;
-}
+/* .assembly-data-section fieldset {
+   border: 1px solid #007bff !important; 
+   padding: 10px !important; 
+   margin-top: 20px !important; 
+} */
 
-/* ==========================================================================
-   11. UNIFIED PAGE TYPOGRAPHY & BADGED TITLE SYSTEM
-   ========================================================================== */
-
-/* Main Page Header Titles */
-.page-main-header,
-.page-title,
-.app-main-title,
-h1.page-title,
-.dcs-hero-title {
-  font-size: 32px !important;
-  font-weight: 800 !important;
-  color: #0f172a !important;
-  letter-spacing: -0.025em !important;
-  line-height: 1.2 !important;
-  margin: 0 !important;
+/* Machining Field set */
+/* .machining-fieldset {
+   background-color: #ffffff !important; 
+   padding: 20px !important; 
+   margin-bottom: 20px !important; 
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important; 
 }
 
-.cp-hero-header h2 {
-  font-size: 18px !important;
-  font-weight: 700 !important;
-  color: #0f172a !important;
-  letter-spacing: -0.015em !important;
-  line-height: 1.2 !important;
-  margin: 0 !important;
-}
+.machining-fieldset legend {
+   color: #28a745 !important; 
+} */
 
-.page-title-banner {
-  background: linear-gradient(135deg, rgba(239, 246, 255, 0.95) 0%, rgba(219, 234, 254, 0.75) 100%) !important;
-  backdrop-filter: blur(10px) !important;
-  border: 1px solid #bfdbfe !important;
-  border-radius: 12px !important;
-  padding: 14px 20px !important;
-  margin-bottom: 20px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  box-shadow: 0 4px 14px -3px rgba(37, 99, 235, 0.08) !important;
-}
+/* Detail Traceability Section */
+/* .detail-traceability-section {
+   background-color: #ffffff !important; 
+   padding: 20px !important; 
+   margin-bottom: 20px !important; 
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important; 
+} */
 
-/* Section, Card, and Legend Titles (Size 16px with Blue Background Badge) */
-legend,
-fieldset > legend,
-.section-title-badge,
-.text-primary.h4,
-.text-primary.h5,
-.trace-title,
-.dcs-card-title,
-.trace-card .trace-title,
-.defect-card .trace-title {
-  font-size: 16px !important;
-  font-weight: 700 !important;
-  color: #1d4ed8 !important;
-  background: #eff6ff !important;
-  border: 1px solid #bfdbfe !important;
-  border-radius: 8px !important;
-  padding: 5px 14px !important;
-  margin-bottom: 8px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.05) !important;
-  width: auto !important;
+/* Supplier Field set */
+/* .supplier-fieldset {
+   background-color: #ffffff !important; 
+   padding: 20px !important; 
+   margin-bottom: 20px !important; 
+   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1) !important; 
 }
 
-/* Inner card titles — no background, compact 12px */
-.data-box-card .h5,
-.data-box-card .h4 {
-  font-size: 12px !important;
-  font-weight: 700 !important;
-  color: #1d4ed8 !important;
-  background: none !important;
-  border: none !important;
-  border-radius: 0 !important;
-  padding: 0 !important;
-  margin-bottom: 6px !important;
-  display: block !important;
-  box-shadow: none !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.06em !important;
-}
+.supplier-fieldset legend {
+   color: #28a745 !important; 
+} */
 
-/* Remove default fieldset border overlap issues */
-fieldset {
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 12px !important;
-  background: #ffffff !important;
-  padding: 16px 20px 20px 20px !important;
-  margin-bottom: 18px !important;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03) !important;
+/* Additional Styles for Select Component (Assuming it uses react-select) */
+/* .select-container {
+   margin-bottom: 20px !important; 
 }
 
-fieldset > legend {
-  float: none !important;
-  margin-left: 4px !important;
-}
+Add more styles as needed for other components */

@@ -19,8 +19,6 @@ import CrankInfo from "../crank/CrankInfo";
 import ImpactWrenchTable from "../impact_wrench/ImpactWrenchData";
 import YokotaToolTable from "../yokota_tools/YokotaToolData";
 import PTTable from "../part_traceability/pt_table";
-import { TbFileSpreadsheet } from "react-icons/tb";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
 
@@ -149,30 +147,50 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
   }
   display_B3_OP190 =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
-      <div className="d-flex flex-column my-2">
+      <div className="d-flex flex-column">
         <div className="h6 mb-2">
           Block OP190 - Journal diameter Measurement in microns
         </div>
-        <table className="machining-compact-table" style={{ maxWidth: '600px' }}>
-          <thead>
-            <tr>
-              <th>J1</th>
-              <th>J2</th>
-              <th>J3</th>
-              <th>J4</th>
-              <th>J5</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{parseInt(op190Data[7].slice(0, 6)) * 0.0001}</td>
-              <td>{parseInt(op190Data[8].slice(0, 6))}</td>
-              <td>{parseInt(op190Data[9].slice(0, 6))}</td>
-              <td>{parseInt(op190Data[10].slice(0, 6))}</td>
-              <td>{parseInt(op190Data[11].slice(0, 6))}</td>
-            </tr>
-          </tbody>
-        </table>
+        {/* <div className="d-flex ">
+                  <div className="dt1f1">Process No.</div>{" "}
+                  <div className="dt1f2">{processNoFiltered[0][5]}</div>
+                </div> */}
+        <div className="d-flex  ">
+          <div className="d-flex flex-column dt2 ">
+            <div className="dt1f1 text-center bg-dark text-light ">J1</div>{" "}
+            <div className="dt1f1 text-center">
+              {parseInt(op190Data[7].slice(0, 6)) * 0.0001}
+            </div>
+          </div>
+          <div className="d-flex flex-column dt2">
+            <div className="dt1f1 text-center bg-dark text-light ">J2</div>{" "}
+            <div className="dt1f1 text-center">
+              {parseInt(op190Data[8].slice(0, 6))}
+            </div>
+          </div>
+          <div className="d-flex flex-column dt2">
+            <div className="dt1f1 text-center bg-dark text-light ">J3</div>{" "}
+            <div className="dt1f1 text-center">
+              {parseInt(op190Data[9].slice(0, 6))}
+            </div>
+          </div>
+          <div className="d-flex flex-column dt2">
+            <div className="dt1f1 text-center bg-dark text-light ">J4</div>{" "}
+            <div className="dt1f1 text-center">
+              {parseInt(op190Data[10].slice(0, 6))}
+            </div>
+          </div>
+          <div className="d-flex flex-column dt2">
+            <div className="dt1f1 text-center bg-dark text-light ">J5</div>{" "}
+            <div className="dt1f1 text-center">
+              {parseInt(op190Data[11].slice(0, 6))}
+            </div>
+          </div>
+        </div>
+        {/* <div className="d-flex">
+                  <div className="dt1f1">Date</div>{" "}
+                  <div className="dt1f2">{processNoFiltered[0][8]}</div>
+                </div> */}
       </div>
     );
   //   break;
@@ -218,31 +236,51 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
   );
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     var result = decodeBlock235(processNoFiltered[0][1]);
-    var plugRows = [];
+    var plug2to5 = [];
     var PLabel = [
-      "Plug1",
-      "Plug2",
-      "Plug3",
-      "Plug4",
-      "Plug5",
-      "Plug6",
+      "Plug1 ",
+      "Plug2 ",
+      "Plug3 ",
+      "Plug4 ",
+      "Plug5 ",
+      "Plug6 ",
       "",
-      "ScrewPlug",
+      "ScrewPlug ",
     ];
     for (let i = 0; i < 40; i += 5) {
       if (i === 30) {
         continue;
       }
-      plugRows.push(
-        <tr key={i}>
-          <td className="row-tag-warning">{PLabel[i / 5]}</td>
-          <td>{result[i + 3]}</td>
-          <td>{result[i + 4]}</td>
-          <td>{result[i + 5]}</td>
-          <td>{result[i + 6]}</td>
-          <td>{result[i + 7]}</td>
-        </tr>
+      let el = (
+        <div className="d-flex flex-row flex-wrap mb-2" key={i}>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-warning text-light">{PLabel[i / 5]}</div>{" "}
+            {/* <div>{correctList[1]}</div> */}
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">Judgement</div>{" "}
+            <div>{result[i + 3]}</div>
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">Leak Value(mL / min)</div>{" "}
+            <div>{result[i + 4]}</div>
+          </div>
+
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">Correction (mL / min)</div>{" "}
+            <div>{result[i + 5]}</div>
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
+            <div>{result[i + 6]}</div>
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
+            <div>{result[i + 7]}</div>
+          </div>
+        </div>
       );
+      plug2to5.push(el);
     }
   }
 
@@ -251,7 +289,7 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
       <div>
         <div className="h6 mb-2">Block OP235 - Leak Testing Details</div>
         <div>
-          <div className="d-flex flex-row flex-wrap gap-2 mb-2">
+          <div className="d-flex flex-row flex-wrap gap-2">
             <div className="d-flex flex-column dt2 ">
               <div className="dt1f1 text-center bg-dark text-light ">Model</div>{" "}
               <div className="dt1f1 text-center">{result[1].model}</div>
@@ -272,35 +310,26 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
             </div>
             <div
               className="d-flex flex-column dt2 flex-1 "
-              style={{ minWidth: "200px" }}
+              style={{ width: "200px" }}
             >
               <div
                 className="dt1f1 text-center bg-dark text-light "
-                style={{ width: "100%" }}
+                style={{ width: "200px" }}
               >
                 Leak Test Date & Time
               </div>{" "}
-              <div className="dt1f1 text-center" style={{ width: "100%" }}>
+              <div className="dt1f1 text-center" style={{ width: "200px" }}>
                 {moment(processNoFiltered[0][8]).format(
                   "DD-MMMM-YYYY HH:mm:ss"
                 )}
               </div>
             </div>
           </div>
-          <div className="mt-2 h6 mb-1">Block Plug Leak Values</div>
-          <table className="machining-compact-table">
-            <thead>
-              <tr>
-                <th style={{ width: "110px" }}>Plug / Sensor</th>
-                <th>Judgement</th>
-                <th>Leak Value (mL / min)</th>
-                <th>Correction (mL / min)</th>
-                <th>Test pressure (kPa)</th>
-                <th>K (Ve) value (mL)</th>
-              </tr>
-            </thead>
-            <tbody>{plugRows}</tbody>
-          </table>
+          <div className="mt-2 h6">Block Plug Leak Values</div>
+          <div className="mt-2 ">
+            {/* plug1~6 and SrewPlug */}
+            {plug2to5}
+          </div>
         </div>
       </div>
     );
@@ -378,45 +407,49 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
   );
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     let result = decodeHead50(processNoFiltered[0][1]);
-    var headOP50Ths = [];
-    var headOP50Tds = [];
+    var headOP50Elements = [];
     if (result.length > 0) {
       for (let i = 22; i < 30; i++) {
-        headOP50Ths.push(<th key={i}>T{i - 21} (0.001g/s)</th>);
-        headOP50Tds.push(<td key={i}>{result[i]}</td>);
+        headOP50Elements.push(
+          <div className="d-flex flex-column dt3" key={i}>
+            <div className="bg-dark text-light">T{i - 21} (0.001g/sec)</div>
+            <div>{result[i]}</div>
+          </div>
+        );
       }
     }
   }
   display_H2_OP050 =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
-      <div className="d-flex flex-column my-2">
-        <div className="h6 mb-2">OP050 - Laser Cladding Details</div>
-        <div className="d-flex flex-row flex-wrap gap-2 mb-2">
-          <div className="d-flex flex-column dt3">
-            <div>Process Name</div> <div>{processNoFiltered[0][5]}</div>
-          </div>
+      <div>
+        <div className="h6 mb-2">OP050-Laser Clading Details</div>
+        <div className="d-flex flex-row gap-3">
+          <div className="d-flex flex-row">
+            <div className="d-flex flex-row flex-wrap">
+              <div className="d-flex flex-column flex-wrap dt3">
+                <div>Process Name</div> <div>{processNoFiltered[0][5]}</div>
+              </div>
 
-          <div className="d-flex flex-column dt3">
-            <div>Laser Cladding Date & Time</div>{" "}
-            <div>
-              {moment(processNoFiltered[0][8]).format(
-                "DD-MMMM-YYYY HH:mm:ss"
-              )}
+              <div className="d-flex flex-column flex-wrap dt3">
+                <div>Laser Clading</div>{" "}
+                <div>
+                  {moment(processNoFiltered[0][8]).format(
+                    "DD-MMMM-YYYY HH:mm:ss"
+                  )}
+                </div>
+              </div>
             </div>
           </div>
+          <div
+            className="gap-0 d-flex flex-column "
+            style={{ width: "max-content" }}
+          >
+            <div className="border border-dark gap-0 font-weight-bold text-center p-1 ">
+              Laser clad powder flow rate
+            </div>
+            <div className="d-flex flex-row">{headOP50Elements}</div>
+          </div>
         </div>
-
-        <div style={{ fontSize: "11.5px", fontWeight: 700, color: "#475569", marginBottom: "3px" }}>
-          Laser Clad Powder Flow Rate:
-        </div>
-        <table className="machining-compact-table" style={{ maxWidth: '800px' }}>
-          <thead>
-            <tr>{headOP50Ths}</tr>
-          </thead>
-          <tbody>
-            <tr>{headOP50Tds}</tr>
-          </tbody>
-        </table>
       </div>
     );
   //   break;
@@ -426,45 +459,49 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
   );
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     let result = decodeHead50(processNoFiltered[0][1]);
-    var headOP55Ths = [];
-    var headOP55Tds = [];
+    var headOP50Elements = [];
     if (result.length > 0) {
       for (let i = 22; i < 30; i++) {
-        headOP55Ths.push(<th key={i}>T{i - 21} (0.001g/s)</th>);
-        headOP55Tds.push(<td key={i}>{result[i]}</td>);
+        headOP50Elements.push(
+          <div className="d-flex flex-column dt3" key={i}>
+            <div className="bg-dark text-light">T{i - 21} (0.001g/sec)</div>
+            <div>{result[i]}</div>
+          </div>
+        );
       }
     }
   }
   display_H3_OP055 =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
-      <div className="d-flex flex-column my-2">
-        <div className="h6 mb-2">OP055 - Laser Cladding Details</div>
-        <div className="d-flex flex-row flex-wrap gap-2 mb-2">
-          <div className="d-flex flex-column dt3">
-            <div>Process Name</div> <div>{processNoFiltered[0][5]}</div>
-          </div>
+      <div>
+        <div className="h6 mb-2">OP055-Laser Clading Details</div>
+        <div className="d-flex flex-row gap-3">
+          <div className="d-flex flex-column">
+            <div className="d-flex flex-row flex-wrap">
+              <div className="d-flex flex-column flex-wrap dt3">
+                <div>Process Name</div> <div>{processNoFiltered[0][5]}</div>
+              </div>
 
-          <div className="d-flex flex-column dt3">
-            <div>Laser Cladding Date & Time</div>{" "}
-            <div>
-              {moment(processNoFiltered[0][8]).format(
-                "DD-MMMM-YYYY HH:mm:ss"
-              )}
+              <div className="d-flex flex-column flex-wrap dt3">
+                <div>Laser Clading</div>{" "}
+                <div>
+                  {moment(processNoFiltered[0][8]).format(
+                    "DD-MMMM-YYYY HH:mm:ss"
+                  )}
+                </div>
+              </div>
             </div>
           </div>
+          <div
+            className="gap-0 d-flex flex-column  "
+            style={{ width: "max-content" }}
+          >
+            <div className="border border-dark gap-0 font-weight-bold text-center p-1">
+              Laser clad powder flow rate
+            </div>
+            <div className="d-flex flex-row ">{headOP50Elements}</div>
+          </div>
         </div>
-
-        <div style={{ fontSize: "11.5px", fontWeight: 700, color: "#475569", marginBottom: "3px" }}>
-          Laser Clad Powder Flow Rate:
-        </div>
-        <table className="machining-compact-table" style={{ maxWidth: '800px' }}>
-          <thead>
-            <tr>{headOP55Ths}</tr>
-          </thead>
-          <tbody>
-            <tr>{headOP55Tds}</tr>
-          </tbody>
-        </table>
       </div>
     );
   //   break;
@@ -481,27 +518,17 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
       correctList = H_OP310_list.map((item) => parseFloat(item));
     }
 
-    const getJudgeText = (val) => {
-      const s = val ? val.toString() : "";
-      if (s === "1") return "LL NG";
-      if (s === "2") return "OK";
-      if (s === "4") return "UL NG";
-      if (s === "9") return "LL2 NG";
-      if (s === "D") return "ERR";
-      return s || "-";
-    };
-
     display_H5_OP310 =
       processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
         <div className="d-flex flex-column">
           <div className="h6 mb-2">OP310 - Leak Testing Details</div>
-          <div className="d-flex flex-row flex-wrap gap-2 mb-2">
-            <div className="d-flex flex-column dt3">
-              <div>Process Name</div> <div>Leak Test</div>
+          <div className="d-flex flex-row flex-wrap">
+            <div className="d-flex flex-column flex-wrap dt3">
+              <div>Process Name</div> <div>Leak Test Date & Time</div>
             </div>
 
-            <div className="d-flex flex-column dt3">
-              <div>Leak Test Date & Time</div>{" "}
+            <div className="d-flex flex-column flex-wrap dt3">
+              <div>Leak Test</div>{" "}
               <div>
                 {moment(processNoFiltered[0][8]).format(
                   "DD-MMMM-YYYY HH:mm:ss"
@@ -510,62 +537,203 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
             </div>
           </div>
 
-          <table className="machining-compact-table">
-            <thead>
-              <tr>
-                <th style={{ width: "120px" }}>Test Circuit</th>
-                <th>Judgement</th>
-                <th>Leak Value (mL / min)</th>
-                <th>STD (Upper Limit)</th>
-                <th>STD (Lower Limit)</th>
-                <th>Correction (mL / min)</th>
-                <th>Test pressure (kPa)</th>
-                <th>K (Ve) value (mL)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="row-tag-warning">Water Jacket</td>
-                <td>{getJudgeText(f1)}</td>
-                <td>{correctList[1]}</td>
-                <td>{correctList[2]}</td>
-                <td>{correctList[3]}</td>
-                <td>{correctList[4]}</td>
-                <td>{correctList[5]}</td>
-                <td>{correctList[6]}</td>
-              </tr>
-              <tr>
-                <td className="row-tag-warning">Oil Hole</td>
-                <td>{getJudgeText(correctList[7])}</td>
-                <td>{correctList[8]}</td>
-                <td>{correctList[9]}</td>
-                <td>{correctList[10]}</td>
-                <td>{correctList[11]}</td>
-                <td>{correctList[12]}</td>
-                <td>{correctList[13]}</td>
-              </tr>
-              <tr>
-                <td className="row-tag-warning">Cam Case</td>
-                <td>{getJudgeText(correctList[14])}</td>
-                <td>{correctList[15]}</td>
-                <td>{correctList[16]}</td>
-                <td>{correctList[17]}</td>
-                <td>{correctList[18]}</td>
-                <td>{correctList[19]}</td>
-                <td>{correctList[20]}</td>
-              </tr>
-              <tr>
-                <td className="row-tag-warning">EGR</td>
-                <td>{getJudgeText(correctList[21])}</td>
-                <td>{correctList[22]}</td>
-                <td>{correctList[23]}</td>
-                <td>{correctList[24]}</td>
-                <td>{correctList[25]}</td>
-                <td>{correctList[26]}</td>
-                <td>{correctList[27]}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="d-flex flex-row flex-wrap mt-2">
+            <div className="d-flex flex-column dt3">
+              <div className="bg-warning text-light" style={{ width: "120px" }}>
+                Water Jacket{" "}
+              </div>{" "}
+              {/* <div>{correctList[1]}</div> */}
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="d-flex flex-column dt3 bg-dark text-light">
+                Judgement
+              </div>{" "}
+              <div>
+                {f1 == "1"
+                  ? "LL NG"
+                  : f1 == "2"
+                  ? "OK"
+                  : f1 == "4"
+                  ? "UL NG"
+                  : f1 == "9"
+                  ? "LL2 NG"
+                  : f1 == "D"
+                  ? "ERR"
+                  : ""}
+              </div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Leak Value(mL / min)</div>{" "}
+              <div>{correctList[1]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">STD(Upper Limit)</div>{" "}
+              <div>{correctList[2]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">STD(Lower Limit)</div>{" "}
+              <div>{correctList[3]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Correction (mL / min)</div>{" "}
+              <div>{correctList[4]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
+              <div>{correctList[5]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
+              <div>{correctList[6]}</div>
+            </div>
+          </div>
+
+          <div className="d-flex flex-row flex-wrap mt-2">
+            <div className="d-flex flex-column dt3">
+              <div className="bg-warning text-light" style={{ width: "120px" }}>
+                Oil Hole
+              </div>{" "}
+              {/* <div>{correctList[1]}</div> */}
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Judgement</div>{" "}
+              <div>
+                {correctList[7].toString() == "1"
+                  ? "LL NG"
+                  : correctList[7].toString() == "2"
+                  ? "OK"
+                  : correctList[7].toString() == "4"
+                  ? "UL NG"
+                  : correctList[7].toString() == "9"
+                  ? "LL2 NG"
+                  : correctList[7].toString() == "D"
+                  ? "ERR"
+                  : ""}
+              </div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Leak Value(mL / min)</div>{" "}
+              <div>{correctList[8]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">STD(Upper Limit)</div>{" "}
+              <div>{correctList[9]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">STD(Lower Limit)</div>{" "}
+              <div>{correctList[10]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Correction (mL / min)</div>{" "}
+              <div>{correctList[11]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
+              <div>{correctList[12]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
+              <div>{correctList[13]}</div>
+            </div>
+          </div>
+
+          <div className="d-flex flex-row flex-wrap mt-2">
+            <div className="d-flex flex-column dt3">
+              <div className="bg-warning text-light" style={{ width: "120px" }}>
+                Cam Case{" "}
+              </div>{" "}
+              {/* <div>{correctList[1]}</div> */}
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Judgement</div>{" "}
+              <div>
+                {correctList[14].toString() == "1"
+                  ? "LL NG"
+                  : correctList[14].toString() == "2"
+                  ? "OK"
+                  : correctList[14].toString() == "4"
+                  ? "UL NG"
+                  : correctList[14].toString() == "9"
+                  ? "LL2 NG"
+                  : correctList[14].toString() == "D"
+                  ? "ERR"
+                  : ""}
+              </div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Leak Value(mL / min)</div>{" "}
+              <div>{correctList[15]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">STD(Upper Limit)</div>{" "}
+              <div>{correctList[16]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">STD(Lower Limit)</div>{" "}
+              <div>{correctList[17]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Correction (mL / min)</div>{" "}
+              <div>{correctList[18]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
+              <div>{correctList[19]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
+              <div>{correctList[20]}</div>
+            </div>
+          </div>
+
+          <div className="d-flex flex-row flex-wrap mt-2">
+            <div className="d-flex flex-column dt3">
+              <div className="bg-warning text-light" style={{ width: "120px" }}>
+                EGR
+              </div>{" "}
+              {/* <div>{correctList[1]}</div> */}
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Judgement</div>{" "}
+              <div>
+                {correctList[21].toString() == "1"
+                  ? "LL NG"
+                  : correctList[21].toString() == "2"
+                  ? "OK"
+                  : correctList[21].toString() == "4"
+                  ? "UL NG"
+                  : correctList[21].toString() == "9"
+                  ? "LL2 NG"
+                  : correctList[21].toString() == "D"
+                  ? "ERR"
+                  : ""}
+              </div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Leak Value(mL / min)</div>{" "}
+              <div>{correctList[22]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">STD(Upper Limit)</div>{" "}
+              <div>{correctList[23]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">STD(Lower Limit)</div>{" "}
+              <div>{correctList[24]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Correction (mL / min)</div>{" "}
+              <div>{correctList[25]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Test pressure(kPa)</div>{" "}
+              <div>{correctList[26]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">K (Ve) value (mL)</div>{" "}
+              <div>{correctList[27]}</div>
+            </div>
+          </div>
         </div>
       );
   }
@@ -682,8 +850,7 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
   if (processNoFiltered != undefined && processNoFiltered.length > 0) {
     var result = decode_C_150_170(processNoFiltered[0][1]);
 
-    var cwRows = [];
-    var measureRows = [];
+    var crankOP150_170_Elements = [];
     var PLabel = [
       "1st CW",
       "2nd CW",
@@ -697,54 +864,107 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
       "Final",
     ];
     for (let i = 0; i < 32; i += 4) {
-      cwRows.push(
-        <tr key={i}>
-          <td className="row-tag-warning">{PLabel[i / 4]}</td>
-          <td>{result[i + 3]}</td>
-          <td>{result[i + 4]}</td>
-          <td>{result[i + 5]}</td>
-          <td>{result[i + 6]}</td>
-        </tr>
+      let el = (
+        <div className="d-flex flex-row flex-wrap mt-2" key={i}>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-warning text-light" style={{ minWidth: "70px" }}>
+              {PLabel[i / 4]}
+            </div>{" "}
+            {/* <div>{correctList[1]}</div> */}
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              1st hole Hole angle (0.1 °)
+            </div>{" "}
+            <div>{result[i + 3]}</div>
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              1st hole Hole depth (0.1mm)
+            </div>{" "}
+            <div>{result[i + 4]}</div>
+          </div>
+
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              1st hole Hole depth (0.1mm)
+            </div>{" "}
+            <div>{result[i + 5]}</div>
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              2nd hole Hole depth (0.1mm)
+            </div>{" "}
+            <div>{result[i + 6]}</div>
+          </div>
+        </div>
       );
+      crankOP150_170_Elements.push(el);
     }
 
     for (let i = 32; i < 40; i += 4) {
-      measureRows.push(
-        <tr key={i}>
-          <td className="row-tag-warning">{PLabel[i / 4]}</td>
-          <td>{result[i + 3]}</td>
-          <td>{result[i + 4]}</td>
-          <td>{result[i + 5]}</td>
-          <td>{result[i + 6]}</td>
-        </tr>
+      let el = (
+        <div className="d-flex flex-row flex-wrap mt-2" key={i}>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-warning text-light" style={{ minWidth: "70px" }}>
+              {PLabel[i / 4]}
+            </div>{" "}
+            {/* <div>{correctList[1]}</div> */}
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">1-sided measure (0.1 gcm)</div>{" "}
+            <div>{result[i + 3]}</div>
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              two-sided measure (0.1 gcm)
+            </div>{" "}
+            <div>{result[i + 4]}</div>
+          </div>
+
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              1-sided measurement angle (0.1 °)
+            </div>{" "}
+            <div>{result[i + 5]}</div>
+          </div>
+          <div className="d-flex flex-column dt3">
+            <div className="bg-dark text-light">
+              two-sided measurement angle (0.1 °)
+            </div>{" "}
+            <div>{result[i + 6]}</div>
+          </div>
+        </div>
       );
+      crankOP150_170_Elements.push(el);
     }
   }
 
   display_C3_OP150_170 =
     processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
-      <div className="d-flex flex-column gap-2">
+      <div className="d-flex flex-column gap-3">
         <div className="d-flex flex-column">
           <div className="h6 mb-2">
             Crank OP 150 & 170 Final Balancing Details
           </div>
-          <div className="d-flex flex-row flex-wrap gap-2 mb-2">
-            <div className="d-flex flex-column dt3">
+          <div className="d-flex flex-row flex-wrap">
+            <div className="d-flex flex-column flex-wrap dt3">
               <div>Process Name</div> <div>Balancing</div>
             </div>
 
-            <div className="d-flex flex-column dt3">
+            <div className="d-flex flex-column flex-wrap dt3">
               <div>Date & Time</div>{" "}
               <div>
+                {" "}
                 {moment(processNoFiltered[0][8]).format(
                   "DD-MMMM-YYYY HH:mm:ss"
                 )}
               </div>
             </div>
-            <div className="d-flex flex-column dt3">
+            <div className="d-flex flex-column flex-wrap dt3">
               <div>Process No</div> <div>{result[1]}</div>
             </div>
-            <div className="d-flex flex-column dt3">
+            <div className="d-flex flex-column flex-wrap dt3">
               <div>Model</div>{" "}
               <div>
                 {result[2] == "Model3"
@@ -756,32 +976,11 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
             </div>
           </div>
         </div>
-        
-        <table className="machining-compact-table">
-          <thead>
-            <tr>
-              <th style={{ width: "100px" }}>Counterweight</th>
-              <th>1st hole Hole angle (0.1 °)</th>
-              <th>1st hole Hole depth (0.1mm)</th>
-              <th>1st hole Hole depth 2 (0.1mm)</th>
-              <th>2nd hole Hole depth (0.1mm)</th>
-            </tr>
-          </thead>
-          <tbody>{cwRows}</tbody>
-        </table>
-
-        <table className="machining-compact-table">
-          <thead>
-            <tr>
-              <th style={{ width: "100px" }}>Stage</th>
-              <th>1-sided measure (0.1 gcm)</th>
-              <th>two-sided measure (0.1 gcm)</th>
-              <th>1-sided measurement angle (0.1 °)</th>
-              <th>two-sided measurement angle (0.1 °)</th>
-            </tr>
-          </thead>
-          <tbody>{measureRows}</tbody>
-        </table>
+        <div className="gap-0 d-flex flex-column ">
+          {/* <div className="d-flex flex-row flex-wrap"> */}
+          {crankOP150_170_Elements}
+          {/* </div> */}
+        </div>
       </div>
     );
 
@@ -822,15 +1021,21 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
 
     display_C4_OP220 =
       processNoFiltered == undefined || processNoFiltered.length == 0 ? null : (
-        <div className="d-flex flex-column my-2">
+        <div className="d-flex flex-column">
           <div className="h6 mb-2">
-            OP220 Journal & Pin Diameter & Taper Details
+            OP220 Journal & Pin Diameter & Taper details
           </div>
-          <div className="d-flex flex-row flex-wrap gap-2 mb-2">
-            <div className="d-flex flex-column dt3">
+          <div className="d-flex flex-row flex-wrap">
+            <div className="d-flex flex-column flex-wrap dt3">
               <div>Process Name</div> <div>Diameter Measurement</div>
             </div>
-            <div className="d-flex flex-column dt3">
+            {/* <div className="d-flex gap-2">
+                  <div>Data</div> <div>{correctList}</div>
+                </div> */}
+            {/* <div className="d-flex gap-2">
+                  <div>Serial</div> <div>{correctList[0]}</div>
+                </div> */}
+            <div className="d-flex flex-column flex-wrap dt3">
               <div>Model</div>{" "}
               <div>
                 {correctList[1] === 11
@@ -841,9 +1046,10 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
                   ? "2 Lts."
                   : ""}
               </div>
+              {/* correctList[1]==="11"?"model 1" : (correctList[1]==="12"? "model 2": (correctList[1]==="13"? "model 3": ""))*/}
             </div>
 
-            <div className="d-flex flex-column dt3">
+            <div className="d-flex flex-column flex-wrap dt3">
               <div>Date & Time</div>{" "}
               <div>
                 {moment(processNoFiltered[0][8]).format(
@@ -853,126 +1059,168 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
             </div>
           </div>
 
-          <div className="d-flex flex-row flex-wrap gap-3">
-            {/* Journal Table */}
-            <div style={{ flex: 1, minWidth: "300px" }}>
-              <div style={{ fontSize: "11.5px", fontWeight: 700, color: "#475569", marginBottom: "3px" }}>
-                Journal Measurements (J1 ~ J5):
-              </div>
-              <table className="machining-compact-table">
-                <thead>
-                  <tr>
-                    <th>Journal</th>
-                    <th>⌀1</th>
-                    <th>⌀2</th>
-                    <th>⌀3</th>
-                    <th>Taper</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="row-tag-warning">J1</td>
-                    <td>{correctList[2]}</td>
-                    <td>{correctList[3]}</td>
-                    <td>{correctList[4]}</td>
-                    <td>{correctList[17]}</td>
-                  </tr>
-                  <tr>
-                    <td className="row-tag-warning">J2</td>
-                    <td>{correctList[5]}</td>
-                    <td>{correctList[6]}</td>
-                    <td>{correctList[7]}</td>
-                    <td>{correctList[18]}</td>
-                  </tr>
-                  <tr>
-                    <td className="row-tag-warning">J3</td>
-                    <td>{correctList[8]}</td>
-                    <td>{correctList[9]}</td>
-                    <td>{correctList[10]}</td>
-                    <td>{correctList[19]}</td>
-                  </tr>
-                  <tr>
-                    <td className="row-tag-warning">J4</td>
-                    <td>{correctList[11]}</td>
-                    <td>{correctList[12]}</td>
-                    <td>{correctList[13]}</td>
-                    <td>{correctList[20]}</td>
-                  </tr>
-                  <tr>
-                    <td className="row-tag-warning">J5</td>
-                    <td>{correctList[14]}</td>
-                    <td>{correctList[15]}</td>
-                    <td>{correctList[16]}</td>
-                    <td>{correctList[21]}</td>
-                  </tr>
-                </tbody>
-              </table>
+          <div className="d-flex flex-row flex-wrap mt-2">
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J1 - ⌀1</div>{" "}
+              <div>{correctList[2]}</div>
             </div>
-
-            {/* Pin Table */}
-            <div style={{ flex: 1, minWidth: "300px" }}>
-              <div style={{ fontSize: "11.5px", fontWeight: 700, color: "#475569", marginBottom: "3px" }}>
-                Pin Measurements (P1 ~ P4):
-              </div>
-              <table className="machining-compact-table">
-                <thead>
-                  <tr>
-                    <th>Pin</th>
-                    <th>⌀1</th>
-                    <th>⌀2</th>
-                    <th>⌀3</th>
-                    <th>Taper</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="row-tag-warning">P1</td>
-                    <td>{correctList[22]}</td>
-                    <td>{correctList[23]}</td>
-                    <td>{correctList[24]}</td>
-                    <td>{correctList[34]}</td>
-                  </tr>
-                  <tr>
-                    <td className="row-tag-warning">P2</td>
-                    <td>{correctList[25]}</td>
-                    <td>{correctList[26]}</td>
-                    <td>{correctList[27]}</td>
-                    <td>{correctList[35]}</td>
-                  </tr>
-                  <tr>
-                    <td className="row-tag-warning">P3</td>
-                    <td>{correctList[28]}</td>
-                    <td>{correctList[29]}</td>
-                    <td>{correctList[30]}</td>
-                    <td>{correctList[36]}</td>
-                  </tr>
-                  <tr>
-                    <td className="row-tag-warning">P4</td>
-                    <td>{correctList[31]}</td>
-                    <td>{correctList[32]}</td>
-                    <td>{correctList[33]}</td>
-                    <td>{correctList[37]}</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J1 - ⌀2</div>{" "}
+              <div className="text-center">{correctList[3]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J1 - ⌀3</div>{" "}
+              <div>{correctList[4]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J2 - ⌀1</div>{" "}
+              <div>{correctList[5]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J2 - ⌀2/</div>{" "}
+              <div>{correctList[6]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J2 - ⌀3</div>{" "}
+              <div>{correctList[7]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J3 - ⌀1</div>{" "}
+              <div>{correctList[8]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J3 - ⌀2</div>{" "}
+              <div>{correctList[9]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J3 - ⌀3</div>{" "}
+              <div>{correctList[10]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J4 - ⌀3</div>{" "}
+              <div>{correctList[11]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J4 - ⌀2</div>{" "}
+              <div>{correctList[12]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J4 - ⌀3</div>{" "}
+              <div>{correctList[13]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J5 - ⌀1</div>{" "}
+              <div>{correctList[14]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J5 - ⌀2</div>{" "}
+              <div>{correctList[15]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J5 - ⌀3</div>{" "}
+              <div>{correctList[16]}</div>
             </div>
           </div>
-
-          {/* Flange & Stamped Rank Summary */}
-          <table className="machining-compact-table" style={{ maxWidth: "500px", marginTop: "4px" }}>
-            <thead>
-              <tr>
-                <th>Rr Flange ⌀</th>
-                <th>J1～J5 Stamped Rank Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style={{ fontWeight: 600 }}>{correctList[38]}</td>
-                <td style={{ fontWeight: 700, color: "#1e40af", fontFamily: "monospace" }}>{tt}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="d-flex flex-row flex-wrap mt-2">
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J1 - Taper</div>{" "}
+              <div>{correctList[17]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J2 - Taper</div>{" "}
+              <div>{correctList[18]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J3 - Taper</div>{" "}
+              <div>{correctList[19]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J4 - Taper</div>{" "}
+              <div>{correctList[20]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">J5 - Taper</div>{" "}
+              <div>{correctList[21]}</div>
+            </div>
+          </div>
+          <div className="d-flex flex-row flex-wrap mt-2">
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P1 - ⌀1</div>{" "}
+              <div>{correctList[22]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P1 - ⌀2</div>{" "}
+              <div>{correctList[23]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P1 - ⌀3</div>{" "}
+              <div>{correctList[24]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P2 - ⌀1</div>{" "}
+              <div>{correctList[25]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P2 - ⌀2</div>{" "}
+              <div>{correctList[26]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P2 - ⌀3</div>{" "}
+              <div>{correctList[27]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P3 - ⌀1</div>{" "}
+              <div>{correctList[28]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P3 - ⌀2</div>{" "}
+              <div>{correctList[29]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P3 - ⌀3</div>{" "}
+              <div>{correctList[30]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P4 - ⌀1</div>{" "}
+              <div>{correctList[31]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P4 - ⌀2</div>{" "}
+              <div>{correctList[32]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P4 - ⌀3</div>{" "}
+              <div>{correctList[33]}</div>
+            </div>
+          </div>
+          <div className="d-flex flex-row flex-wrap mt-2">
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P1 - Taper</div>{" "}
+              <div>{correctList[34]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P2 - Taper</div>{" "}
+              <div>{correctList[35]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P3 - Taper</div>{" "}
+              <div>{correctList[36]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">P4 - Taper</div>{" "}
+              <div>{correctList[37]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">Rr Flange ⌀ </div>{" "}
+              <div>{correctList[38]}</div>
+            </div>
+            <div className="d-flex flex-column dt3">
+              <div className="bg-dark text-light">
+                J1～J5 stamped rank value
+              </div>{" "}
+              <div>{tt}</div>
+            </div>
+          </div>
         </div>
       );
   }
@@ -1802,147 +2050,23 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
     URL.revokeObjectURL(url);
   };
 
-  const hasMachiningData = Boolean(
-    display_B1_ENGRAVED ||
-    castingDetails_B1_ENGRAVED ||
-    display_B4_Finishing_gantry ||
-    display_B7_OP990 ||
-    display_B3_OP190 ||
-    display_B5_OP235 ||
-    display_H1_Material_input_engraving ||
-    castingDetails_H1_Material_input_engraving ||
-    display_H12_OP990 ||
-    display_H2_OP050 ||
-    display_H3_OP055 ||
-    display_H5_OP310 ||
-    display_C1_Comaterial ||
-    display_C7_Gantry_after_OP140 ||
-    display_C6_OP170_front_gantry ||
-    display_C8_OP990 ||
-    display_C3_OP150_170 ||
-    display_C4_OP220
-  );
-
-  const hasSubAssemblyData = Boolean(
-    display ||
-    display_FuelLeak ||
-    display_WalterLeak ||
-    display_OileLeak ||
-    display_Engine_quality_information ||
-    display_TEST_ON ||
-    display_MAIN_ON ||
-    display_CRANK_ON ||
-    display_BLOCKSUB_ON ||
-    display_HEADSUB_OFF ||
-    display_CAMHOUSINGSIB_OFF ||
-    display_EX_cam_S_N ||
-    display_IN_cam_S_N ||
-    display_CamHousing_S_N ||
-    display_Head_S_N ||
-    display_Crank_S_N ||
-    display_Block_S_N ||
-    display_HeadboltNR
-  );
-
   return (
-    <div className="d-flex flex-column gap-2 mt-2">
-      {/* 1. Machining Data Section (Only when data exists) */}
-      {/* 1. Machining Data Section (Only when data exists) */}
-      {hasMachiningData && (
-        <div className="d-flex flex-column gap-3">
-          <div className="h4 text-primary mb-0">Machining Data</div>
-
-          {/* Assembly 1: Cylinder Block Machining */}
-          {(display_B1_ENGRAVED || castingDetails_B1_ENGRAVED || display_B4_Finishing_gantry || display_B7_OP990 || display_B3_OP190 || display_B5_OP235) && (
-            <div className="machining-assembly-card">
-              <div className="machining-assembly-header">
-                <div className="machining-assembly-title">
-                  <span className="badge bg-primary" style={{ fontSize: "11.5px", padding: "4px 8px" }}>3C-1</span>
-                  Cylinder Block Machining Details
-                </div>
-              </div>
-
-              <div className="d-flex flex-row flex-wrap gap-3 mb-2">
-                <>{display_B1_ENGRAVED}</>
-                <>{castingDetails_B1_ENGRAVED}</>
-                <>{display_B4_Finishing_gantry}</>
-                <>{display_B7_OP990}</>
-              </div>
-
-              <>{display_B3_OP190}</>
-              <>{display_B5_OP235}</>
-            </div>
-          )}
-
-          {/* Assembly 2: Cylinder Head Machining */}
-          {(display_H1_Material_input_engraving || castingDetails_H1_Material_input_engraving || display_H12_OP990 || display_H2_OP050 || display_H3_OP055 || display_H5_OP310) && (
-            <div className="machining-assembly-card">
-              <div className="machining-assembly-header">
-                <div className="machining-assembly-title">
-                  <span className="badge bg-success" style={{ fontSize: "11.5px", padding: "4px 8px" }}>3C-2</span>
-                  Cylinder Head Machining Details
-                </div>
-              </div>
-
-              <div className="d-flex flex-row flex-wrap gap-3 mb-2">
-                <>{display_H1_Material_input_engraving}</>
-                <>{castingDetails_H1_Material_input_engraving}</>
-                <>{display_H12_OP990}</>
-              </div>
-
-              <>{display_H2_OP050}</>
-              <>{display_H3_OP055}</>
-              <>{display_H5_OP310}</>
-            </div>
-          )}
-
-          {/* Assembly 3: Crankshaft Machining */}
-          {(display_C1_Comaterial || display_C7_Gantry_after_OP140 || display_C6_OP170_front_gantry || display_C8_OP990 || display_C3_OP150_170 || display_C4_OP220) && (
-            <div className="machining-assembly-card">
-              <div className="machining-assembly-header">
-                <div className="machining-assembly-title">
-                  <span className="badge bg-warning text-dark" style={{ fontSize: "11.5px", padding: "4px 8px" }}>3C-3</span>
-                  Crank Shaft Machining Details
-                </div>
-              </div>
-
-              <div className="d-flex flex-row flex-wrap gap-3 mb-2">
-                <>{display_C1_Comaterial}</>
-                <>{display_C7_Gantry_after_OP140}</>
-                <>{display_C6_OP170_front_gantry}</>
-                <>{display_C8_OP990}</>
-              </div>
-
-              <>{display_C3_OP150_170}</>
-              <>{display_C4_OP220}</>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* 2. Impact Wrench Data Section */}
-      <div className="d-flex justify-content-between align-items-center mt-2 mb-1">
-        <div className="h4 text-primary mb-0">Impact Wrench Data</div>
-        <OverlayTrigger
-          placement="left"
-          overlay={<Tooltip id="export-excel-tooltip">Export tightening data to Excel (.xlsx)</Tooltip>}
-        >
-          <button
-            className="export-excel-btn"
-            onClick={exportToExcel}
-            aria-label="Export to Excel"
-          >
-            <TbFileSpreadsheet size={15} />
-            <span>Export to Excel</span>
-          </button>
-        </OverlayTrigger>
-      </div>
-
-      {/* URYU Impact Wrench Table */}
+    <div className="d-flex flex-column gap-3 mt-3">
+      <hr></hr>
+      <div className="h4 text-primary"> Assembly data</div>
+      
+      <button
+        className="btn btn-primary"
+        style={{ width: "150px" }}
+        onClick={exportToExcel}
+      >
+        Export to Excel
+      </button>
+      {/* Add ImpactWrenchTable in a container with some styling */}
       <div className="wrench-section" style={{ width: '100%' }}>
           <div className="card">
             <div className="card-body">
-              <h5 className="card-title">URYU Tightening Data</h5>
+              <h5 className="card-title">Impact Wrench Data</h5>
               <ImpactWrenchTable 
                 engineNo={engineNo}    
                 triggerSearch={triggerSearch}
@@ -1951,11 +2075,12 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
           </div>
       </div>
 
-      {/* Yokota Tool Table */}
+
+
       <div className="wrench-section" style={{ width: '100%' }}>
           <div className="card">
             <div className="card-body">
-              <h5 className="card-title">Yokota Nutrunner Data</h5>
+              <h5 className="card-title">Impact Wrench Data</h5>
               <YokotaToolTable
                 engineNo={engineNo}    
                 triggerSearch={triggerSearch}
@@ -1963,53 +2088,77 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
             </div>
           </div>
       </div>
+     
+      <>{display}</>
 
-      {/* 3. Sub-Assembly, Quality & Leak Tests (Only when data exists) */}
-      {hasSubAssemblyData && (
-        <div>
-          <>{display}</>
-
-          <div className="d-flex flex-row gap-3">
-            <>{display_FuelLeak}</>
-            <>{display_WalterLeak}</>
-            <>{display_OileLeak}</>
-          </div>
-          <>{display_Engine_quality_information}</>
-          <div className="d-flex flex-row gap-3">
-            <>{display_TEST_ON}</>
-            <>{display_MAIN_ON}</>
-            <>{display_CRANK_ON}</>
-          </div>
-          <div className="d-flex flex-row gap-3">
-            <>{display_BLOCKSUB_ON}</>
-            <>{display_HEADSUB_OFF}</>
-            <>{display_CAMHOUSINGSIB_OFF}</>
-          </div>
-          <div className="d-flex flex-row gap-3">
-            <>{display_EX_cam_S_N}</>
-            <>{display_IN_cam_S_N}</>
-            <>{display_CamHousing_S_N}</>
-          </div>
-          <div className="d-flex flex-row gap-3">
-            <>{display_Head_S_N}</>
-            <>{display_Crank_S_N}</>
-            <>{display_Block_S_N}</>
-          </div>
-          <>{display_HeadboltNR}</>
-        </div>
-      )}
-
-      {/* Crank Case Stiffner Section (Temporarily commented out) */}
-      {/* {crankinfo && <CrankInfo crankinfo={crankinfo}/>} */}
-
-      {/* 4. Part Traceability Table */}
-      <div className="mt-2">
-        <div className="h4 text-primary mb-2">Part Traceability</div>
-        <PTTable 
-          engineNo={engineNo}    
-          triggerSearch={triggerSearch}
-        /> 
+      <div className="d-flex flex-row gap-3">
+        <>{display_FuelLeak}</>
+        <>{display_WalterLeak}</>
+        <>{display_OileLeak}</>
       </div>
+      <>{display_Engine_quality_information}</>
+      <div className="d-flex flex-row gap-3">
+        <>{display_TEST_ON}</>
+        <>{display_MAIN_ON}</>
+        <>{display_CRANK_ON}</>
+      </div>
+      <div className="d-flex flex-row gap-3">
+        <>{display_BLOCKSUB_ON}</>
+        <>{display_HEADSUB_OFF}</>
+        <>{display_CAMHOUSINGSIB_OFF}</>
+      </div>
+      <div className="d-flex flex-row gap-3">
+        <>{display_EX_cam_S_N}</>
+        <>{display_IN_cam_S_N}</>
+        <>{display_CamHousing_S_N}</>
+      </div>
+      <div className="d-flex flex-row gap-3">
+        <>{display_Head_S_N}</>
+        <>{display_Crank_S_N}</>
+        <>{display_Block_S_N}</>
+      </div>
+      <>{display_HeadboltNR}</>
+
+      <CrankInfo crankinfo={crankinfo}/>
+
+      <div>
+        <div>
+              <PTTable 
+                engineNo={engineNo}    
+                triggerSearch={triggerSearch}
+              /> 
+        </div>
+      </div>
+
+           
+      <div className="h4 text-primary"> Machining Data</div>
+      <div className="d-flex flex-row gap-3">
+        <>{display_B1_ENGRAVED}</>
+        <>{castingDetails_B1_ENGRAVED}</>
+        <>{display_B4_Finishing_gantry}</>
+        <>{display_B7_OP990}</>
+      </div>
+      <>{display_B3_OP190}</>
+      <>{display_B5_OP235}</>
+
+      <div className="d-flex flex-row gap-3">
+        <>{display_H1_Material_input_engraving}</>
+        <>{castingDetails_H1_Material_input_engraving}</>
+        <>{display_H12_OP990}</>
+      </div>
+      <>{display_H2_OP050}</>
+      <>{display_H3_OP055}</>
+      <>{display_H5_OP310}</>
+
+      <div className="d-flex flex-row gap-3">
+        <>{display_C1_Comaterial}</>
+        <>{display_C7_Gantry_after_OP140}</>
+        <>{display_C6_OP170_front_gantry}</>
+        <>{display_C8_OP990}</>
+      </div>
+
+      <>{display_C3_OP150_170}</>
+      <>{display_C4_OP220}</>
     </div>
   );
 }
