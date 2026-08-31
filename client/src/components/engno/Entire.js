@@ -2053,42 +2053,8 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
   return (
     <div className="d-flex flex-column gap-3 mt-3">
       <hr></hr>
-      <div className="h4 text-primary"> Assembly data</div>
-      
-      <button
-        className="btn btn-primary"
-        style={{ width: "150px" }}
-        onClick={exportToExcel}
-      >
-        Export to Excel
-      </button>
-      {/* Add ImpactWrenchTable in a container with some styling */}
-      <div className="wrench-section" style={{ width: '100%' }}>
-          <div className="card">
-            <div className="card-body">
-              <h5 className="card-title">Impact Wrench Data</h5>
-              <ImpactWrenchTable 
-                engineNo={engineNo}    
-                triggerSearch={triggerSearch}
-              /> 
-            </div>
-          </div>
-      </div>
 
-
-
-      <div className="wrench-section" style={{ width: '100%' }}>
-          <div className="card">
-            <div className="card-body">
-              <h5 className="card-title">Impact Wrench Data</h5>
-              <YokotaToolTable
-                engineNo={engineNo}    
-                triggerSearch={triggerSearch}
-              /> 
-            </div>
-          </div>
-      </div>
-     
+      {/* ── Engine Quality Info, Leaks, Entry Times, Serial Nos, HeadboltNR ── */}
       <>{display}</>
 
       <div className="d-flex flex-row gap-3">
@@ -2119,7 +2085,19 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
       </div>
       <>{display_HeadboltNR}</>
 
+      {/* ── Assembly Data ── */}
+      <div className="h4 text-primary"> Assembly data</div>
+
+      <button
+        className="btn btn-primary"
+        style={{ width: "150px" }}
+        onClick={exportToExcel}
+      >
+        Export to Excel
+      </button>
+
       <CrankInfo crankinfo={crankinfo}/>
+
 
       <div>
         <div>
@@ -2130,7 +2108,7 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
         </div>
       </div>
 
-           
+      {/* ── Machining Data ── */}
       <div className="h4 text-primary"> Machining Data</div>
       <div className="d-flex flex-row gap-3">
         <>{display_B1_ENGRAVED}</>

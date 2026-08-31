@@ -22,6 +22,8 @@ import { getProcess3Details } from "../../redux/slices/processData/processAction
 import { CSVLink } from "react-csv";
 import { toast } from "react-toastify";
 import ReusageImageCards from "../reworkImage/ReusageImageCards.js";
+import ImpactWrenchTable from "../impact_wrench/ImpactWrenchData";
+import YokotaToolTable from "../yokota_tools/YokotaToolData";
 
 
 function EngNo() {
@@ -274,6 +276,30 @@ const fetchCrankData = async () => {
         </div>
       </fieldset>
 
+      {/* Impact Wrench Data Tables */}
+      <div className="wrench-section mt-3" style={{ width: '100%' }}>
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Impact Wrench Data</h5>
+            <ImpactWrenchTable
+              engineNo={searchEngineNo}
+              triggerSearch={searchTriggered}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="wrench-section mt-3" style={{ width: '100%' }}>
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Yokota Tool Data</h5>
+            <YokotaToolTable
+              engineNo={searchEngineNo}
+              triggerSearch={searchTriggered}
+            />
+          </div>
+        </div>
+      </div>
 
        {/* *****************Crank fieldset */}
        {/* <fieldset className="border p-3 mt-3 ">
