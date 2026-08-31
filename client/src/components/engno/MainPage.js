@@ -239,8 +239,6 @@ const fetchCrankData = async () => {
         triggerSearch={searchTriggered}
         />
       
-      {/* images display */}
-      <div className="d-flex flex-wrap my-3"> {images}</div>
 
       {/* *****************Assembly fieldset */}
       <fieldset className="border p-3 mt-3 ">
@@ -364,6 +362,14 @@ const fetchCrankData = async () => {
           <PartHistory />
         </div>
       </fieldset>
+
+      {/* Rework Images */}
+      <div className="mt-4">
+        <div className="h4 text-primary">Rework Images</div>
+        <hr />
+        <div className="d-flex flex-wrap gap-3 my-3">{images}</div>
+      </div>
+
     </div>
   );
 }
