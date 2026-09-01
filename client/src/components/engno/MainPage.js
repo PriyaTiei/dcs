@@ -82,17 +82,20 @@ function EngNo() {
   const [searchTriggered, setSearchTriggered] = useState(false);
 
   const getOracleData = () => {
-    setSearchEngineNo(engineNo); 
+    const trimmed = engineNo.trim();
+    setSearchEngineNo(trimmed); 
     setSearchTriggered(true);
     dispatch(processDataClear());
-    dispatch(getEngineData(engineNo));
-    fetchCrankData();
-    getImages();
+    dispatch(getEngineData(trimmed));
+    fetchCrankData(trimmed);
+    getImages(trimmed);
   };
-const fetchCrankData = async () => {
+const fetchCrankData = async (targetNo) => {
+    const searchNo = (targetNo !== undefined ? targetNo : engineNo).trim();
+    if (!searchNo) return;
     try {
       const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/crank/crankinformation/${engineNo}`);
+          `${process.env.REACT_APP_BACKEND_URL}/crank/crankinformation/${searchNo}`);
      
       setCrankInfo(response.data);
       setError(''); 
@@ -173,30 +176,26 @@ const fetchCrankData = async () => {
   ) : null;
 
   // list of image _  function
-  const getImages = () => {
-    // if (engineNo == "") {
-    //   toast.error(
-    //     `Engine no. input can not be blank, please enter the Engine no.`
-    //   );
-    // } else {
+  const getImages = (targetNo) => {
+    const searchNo = (targetNo !== undefined ? targetNo : engineNo || '').trim();
+    if (!searchNo) return;
     try {
       axios
         .get(
-          `${process.env.REACT_APP_BACKEND_URL}/dcs/reworkImagesListQuery?engineNo=${engineNo}`
+          `${process.env.REACT_APP_BACKEND_URL}/dcs/reworkImagesListQuery?engineNo=${searchNo}`
         )
         .then((result) => {
-          setListOfImages(result.data.result);
+          setListOfImages(result.data.result || []);
         })
         .catch((e) => {
           console.log(e);
           setListOfImages([]);
-          toast.error(`Images of engine number '${engineNo}' not available`);
         });
     } catch (e) {
       console.log(e);
+      setListOfImages([]);
       toast.error("Please check Network connection");
     }
-    // }
   };
 
   // card with all images
@@ -283,7 +282,15 @@ const fetchCrankData = async () => {
       <div className="mt-4">
         <div className="h4 text-primary">Rework Images</div>
         <hr />
-        <div className="d-flex flex-wrap gap-3 my-3">{images}</div>
+        {listOfImages && listOfImages.length > 0 ? (
+          <div className="d-flex flex-wrap gap-3 my-3">{images}</div>
+        ) : (
+          <div className="text-muted p-2" style={{ fontSize: '13.5px' }}>
+            {searchTriggered
+              ? `No rework images logged for engine number '${searchEngineNo || engineNo.trim()}'.`
+              : 'Enter an engine number and click Search to view rework images.'}
+          </div>
+        )}
       </div>
 
       {/* ************Machining Field set */}
