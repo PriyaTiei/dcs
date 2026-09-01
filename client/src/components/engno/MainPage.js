@@ -22,8 +22,6 @@ import { getProcess3Details } from "../../redux/slices/processData/processAction
 import { CSVLink } from "react-csv";
 import { toast } from "react-toastify";
 import ReusageImageCards from "../reworkImage/ReusageImageCards.js";
-import ImpactWrenchTable from "../impact_wrench/ImpactWrenchData";
-import YokotaToolTable from "../yokota_tools/YokotaToolData";
 
 
 function EngNo() {
@@ -237,46 +235,6 @@ const fetchCrankData = async (targetNo) => {
         engineNo={searchEngineNo}
         triggerSearch={searchTriggered}
         />
-      
-      {/* Impact Wrench Data Tables */}
-      <div className="wrench-section mt-3" style={{ width: '100%' }}>
-        <div className="card">
-          <div className="card-body">
-            <h5 className="card-title">Impact Wrench Data</h5>
-            <ImpactWrenchTable
-              engineNo={searchEngineNo}
-              triggerSearch={searchTriggered}
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="wrench-section mt-3" style={{ width: '100%' }}>
-        <div className="card">
-          <div className="card-body">
-            <h5 className="card-title">Yokota Tool Data</h5>
-            <YokotaToolTable
-              engineNo={searchEngineNo}
-              triggerSearch={searchTriggered}
-            />
-          </div>
-        </div>
-      </div>
-
-       {/* *****************Crank fieldset */}
-       {/* <fieldset className="border p-3 mt-3 ">
-        <legend
-          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-primary"
-          style={{ fontSize: "16px" }}
-        >
-         Crank Information
-        </legend>
-        <div className="d-flex gap-3 mt-0">
-         
-          <EntireResultProcess crankinfo = {crankinfo}/>
-          {/* <CrankDetails /> 
-        </div>
-      </fieldset> */}
 
       {/* Rework Images */}
       <div className="mt-4">
@@ -293,17 +251,6 @@ const fetchCrankData = async (targetNo) => {
         )}
       </div>
 
-      {/* ************Machining Field set */}
-      <fieldset className="border p-3 mt-3 ">
-        <legend
-          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-success"
-          style={{ fontSize: "16px" }}
-        >
-          Machining Data
-        </legend>
-        {/* Change point information for Machining */}
-        {/* <ChangePointMachining /> */}
-      </fieldset>
       {/* ****************Detail Traceability */}
       <div className="d-flex gap-3 mt-0">
         {/* Supplier details */}

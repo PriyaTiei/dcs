@@ -2149,9 +2149,33 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
         </div>
       </fieldset>
 
+      {/* Impact Wrench Data Tables */}
+      <div className="wrench-section mt-3" style={{ width: '100%' }}>
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Impact Wrench Data</h5>
+            <ImpactWrenchTable
+              engineNo={engineNo}
+              triggerSearch={triggerSearch}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="wrench-section mt-3" style={{ width: '100%' }}>
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">Yokota Tool Data</h5>
+            <YokotaToolTable
+              engineNo={engineNo}
+              triggerSearch={triggerSearch}
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Crank Case Stiffner - commented out */}
       {/* <CrankInfo crankinfo={crankinfo}/> */}
-
 
       <div>
         <div>
