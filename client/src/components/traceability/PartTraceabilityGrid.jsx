@@ -300,8 +300,8 @@ export const PartTraceabilityGrid = ({ engineNo, triggerSearch, oracleData }) =>
           )}
         </div>
 
-        {/* 5. Fuel Delivery Pipe Card */}
-        <div className="dcs-card" style={{ marginBottom: 0 }}>
+        {/* 5. Fuel Delivery Pipe Card - commented out */}
+        {/* <div className="dcs-card" style={{ marginBottom: 0 }}>
           <div className="dcs-card-header" style={{ paddingBottom: '8px', marginBottom: '10px' }}>
             <h4 style={{ fontSize: '14px', margin: 0, color: 'var(--primary-800)' }}>5. Fuel Delivery Pipe</h4>
             {fuelPipeData && <span className="status-pill ok">Scanned</span>}
@@ -318,7 +318,7 @@ export const PartTraceabilityGrid = ({ engineNo, triggerSearch, oracleData }) =>
           ) : (
             <div style={{ fontSize: '13px', color: 'var(--slate-500)' }}>No Fuel Delivery Pipe data logged</div>
           )}
-        </div>
+        </div> */}
 
         {/* 6. Wire Harness Card */}
         <div className="dcs-card" style={{ marginBottom: 0 }}>
@@ -371,8 +371,8 @@ export const PartTraceabilityGrid = ({ engineNo, triggerSearch, oracleData }) =>
           )}
         </div>
 
-        {/* 8. Port Injector Card */}
-        <div className="dcs-card" style={{ marginBottom: 0 }}>
+        {/* 8. Port Injector Card - commented out */}
+        {/* <div className="dcs-card" style={{ marginBottom: 0 }}>
           <div className="dcs-card-header" style={{ paddingBottom: '8px', marginBottom: '10px' }}>
             <h4 style={{ fontSize: '14px', margin: 0, color: 'var(--primary-800)' }}>8. Port Injector</h4>
             {portInjectorData && <span className="status-pill ok">Linked</span>}
@@ -398,7 +398,7 @@ export const PartTraceabilityGrid = ({ engineNo, triggerSearch, oracleData }) =>
           ) : (
             <div style={{ fontSize: '13px', color: 'var(--slate-500)' }}>No Port Injector data linked</div>
           )}
-        </div>
+        </div> */}
 
       </div>
 
