@@ -300,8 +300,8 @@ export const PartTraceabilityGrid = ({ engineNo, triggerSearch, oracleData }) =>
           )}
         </div>
 
-        {/* 5. Fuel Delivery Pipe & PCV Card */}
-        <div className="dcs-card" style={{ marginBottom: 0 }}>
+        {/* 5. Fuel Delivery Pipe & PCV Card - commented out */}
+        {/* <div className="dcs-card" style={{ marginBottom: 0 }}>
           <div className="dcs-card-header" style={{ paddingBottom: '8px', marginBottom: '10px' }}>
             <h4 style={{ fontSize: '14px', margin: 0, color: 'var(--primary-800)' }}>5. Fuel Pipe & PCV</h4>
           </div>
@@ -319,7 +319,7 @@ export const PartTraceabilityGrid = ({ engineNo, triggerSearch, oracleData }) =>
               {pcvData?.scan_time ? format12HourTime(pcvData.scan_time) : 'No scan'}
             </div>
           </div>
-        </div>
+        </div> */
 
         {/* 6. Wire Harness Card */}
         <div className="dcs-card" style={{ marginBottom: 0 }}>

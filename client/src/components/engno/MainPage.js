@@ -314,6 +314,13 @@ const fetchCrankData = async () => {
         </div>
       </fieldset> */}
 
+      {/* Rework Images */}
+      <div className="mt-4">
+        <div className="h4 text-primary">Rework Images</div>
+        <hr />
+        <div className="d-flex flex-wrap gap-3 my-3">{images}</div>
+      </div>
+
       {/* ************Machining Field set */}
       <fieldset className="border p-3 mt-3 ">
         <legend
@@ -336,40 +343,6 @@ const fetchCrankData = async () => {
 
         {/* Part History */}
       </div>
-      {/* ***************** Supplier Field set */}
-      <fieldset className="border p-3 mt-3 ">
-        <legend
-          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-success"
-          style={{ fontSize: "16px" }}
-        >
-          Supplier Part traceability
-        </legend>
-        <div className="d-flex gap-3 mt-0">
-          {/* Supplier Part selection */}
-
-          <div>
-            <div className="h5">Supplier Part Name</div>
-            <Select
-              options={supplierPartOptions}
-              defaultValue={supplierPartOptions[0]}
-              onChange={(e) => setSupplierPart(e.value)}
-            />
-          </div>
-          {/* RM details */}
-          <RawMaterialDetails />
-
-          {/* Part History */}
-          <PartHistory />
-        </div>
-      </fieldset>
-
-      {/* Rework Images */}
-      <div className="mt-4">
-        <div className="h4 text-primary">Rework Images</div>
-        <hr />
-        <div className="d-flex flex-wrap gap-3 my-3">{images}</div>
-      </div>
-
     </div>
   );
 }
