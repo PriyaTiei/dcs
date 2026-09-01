@@ -2130,7 +2130,7 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
         </legend>
         <div className="d-flex gap-3 mt-0">
           {/* Shipping Detail */}
-          <ShippingDetails />
+          {shippingRow && <ShippingDetails />}
 
           {/* Engine History */}
           <div>
