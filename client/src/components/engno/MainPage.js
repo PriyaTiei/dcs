@@ -239,41 +239,6 @@ const fetchCrankData = async () => {
         triggerSearch={searchTriggered}
         />
       
-
-      {/* *****************Assembly fieldset */}
-      <fieldset className="border p-3 mt-3 ">
-        <legend
-          className="float-none  w-auto px-3  text-smfont-italic font-weight-normal text-primary"
-          style={{ fontSize: "16px" }}
-        >
-          Assembly Data
-        </legend>
-        <div className="d-flex gap-3 mt-0">
-          {/* Shipping Detail */}
-          <ShippingDetails />
-
-          {/* Engine History */}
-          <div>
-            <div className="h5">Engine history</div>
-
-            <div className="d-flex gap-0">
-              <div className="p-2 border hist h6 text-center bg-light">
-                EVENT
-              </div>
-              <div className="p-2 border histValue h6  text-center bg-light">
-                DATE & TIME
-              </div>
-            </div>
-            {loading ? <Loading /> : fullHistory}
-          </div>
-
-          {/*  */}
-
-          {/* Change point information  */}
-          {/* <ChangePointAssembly /> */}
-        </div>
-      </fieldset>
-
       {/* Impact Wrench Data Tables */}
       <div className="wrench-section mt-3" style={{ width: '100%' }}>
         <div className="card">

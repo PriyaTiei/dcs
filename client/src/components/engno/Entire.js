@@ -19,10 +19,16 @@ import CrankInfo from "../crank/CrankInfo";
 import ImpactWrenchTable from "../impact_wrench/ImpactWrenchData";
 import YokotaToolTable from "../yokota_tools/YokotaToolData";
 import PTTable from "../part_traceability/pt_table";
+import ShippingDetails from "./ShippingDetails.js";
+import DateTable from "./ReusableEngineHistoryValues.js";
+import Loading from "./Loading.js";
 
 function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
 
   const dispatch = useDispatch();
+  const loading = useSelector((state) => state.engine.loading);
+  const oracleData = useSelector((state) => state.engine.engineData);
+  const shippingRow = useSelector((state) => state.engine.shippingData);
   const data = useSelector((state) => state.engine.engineData.data);
   const section = useSelector((state) => state.engine.section);
   const subSection = useSelector((state) => state.engine.subSection);
@@ -30,6 +36,35 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
   const processName = useSelector((state) => state.process.processName);
   const processNoALCData = useSelector((state) => state.process.data3.data);
   const dataOneDay = useSelector((state) => state.process.dataOneDay.data);
+
+  const history = oracleData?.data?.map((item, index) =>
+    item[17] != "EGNO" ? (
+      <DateTable key={index} title={item[17]} date={item[21]} />
+    ) : null
+  );
+
+  const fullHistory = oracleData ? (
+    <>
+      <div className="d-flex gap-0">
+        <div className="p-2 border hist">SHIPMENT</div>
+        <div className="p-2 border histValue">
+          {shippingRow
+            ? shippingRow[3]
+              ? moment(shippingRow[3]).format("YYYY-MM-DD HH:mm:ss")
+              : null
+            : null}
+        </div>
+      </div>
+      <div className="d-flex gap-0">
+        <div className="p-2 border hist">MTB</div>
+        <div className="p-2 border histValue">
+          Under progress
+        </div>
+      </div>
+
+      {history}
+    </>
+  ) : null;
 
   var processNoFiltered = []; // contains only one element after filtering even thow it is list
   var processEngineData = useSelector(
@@ -2085,16 +2120,34 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
       </div>
       <>{display_HeadboltNR}</>
 
-      {/* ── Assembly Data heading & Export button - commented out */}
-      {/* <div className="h4 text-primary"> Assembly data</div>
+      {/* *****************Assembly fieldset */}
+      <fieldset className="border p-3 mt-3">
+        <legend
+          className="float-none w-auto px-3 text-smfont-italic font-weight-normal text-primary"
+          style={{ fontSize: "16px" }}
+        >
+          Assembly Data
+        </legend>
+        <div className="d-flex gap-3 mt-0">
+          {/* Shipping Detail */}
+          <ShippingDetails />
 
-      <button
-        className="btn btn-primary"
-        style={{ width: "150px" }}
-        onClick={exportToExcel}
-      >
-        Export to Excel
-      </button> */}
+          {/* Engine History */}
+          <div>
+            <div className="h5">Engine history</div>
+
+            <div className="d-flex gap-0">
+              <div className="p-2 border hist h6 text-center bg-light">
+                EVENT
+              </div>
+              <div className="p-2 border histValue h6 text-center bg-light">
+                DATE & TIME
+              </div>
+            </div>
+            {loading ? <Loading /> : fullHistory}
+          </div>
+        </div>
+      </fieldset>
 
       <CrankInfo crankinfo={crankinfo}/>
 

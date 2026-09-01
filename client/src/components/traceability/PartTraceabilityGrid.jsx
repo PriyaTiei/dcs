@@ -300,26 +300,25 @@ export const PartTraceabilityGrid = ({ engineNo, triggerSearch, oracleData }) =>
           )}
         </div>
 
-        {/* 5. Fuel Delivery Pipe & PCV Card - commented out */}
-        {/* <div className="dcs-card" style={{ marginBottom: 0 }}>
+        {/* 5. Fuel Delivery Pipe Card */}
+        <div className="dcs-card" style={{ marginBottom: 0 }}>
           <div className="dcs-card-header" style={{ paddingBottom: '8px', marginBottom: '10px' }}>
-            <h4 style={{ fontSize: '14px', margin: 0, color: 'var(--primary-800)' }}>5. Fuel Pipe & PCV</h4>
+            <h4 style={{ fontSize: '14px', margin: 0, color: 'var(--primary-800)' }}>5. Fuel Delivery Pipe</h4>
+            {fuelPipeData && <span className="status-pill ok">Scanned</span>}
           </div>
-          <div style={{ marginBottom: '10px' }}>
-            <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--slate-800)' }}>Fuel Delivery Pipe</div>
-            <div style={{ fontSize: '12.5px' }}>Part: {fuelPipeData?.part_number || '-'}</div>
-            <div style={{ fontSize: '12px', color: 'var(--slate-500)' }}>
-              {fuelPipeData?.scan_time ? format12HourTime(fuelPipeData.scan_time) : 'No scan'}
+          {fuelPipeData ? (
+            <div>
+              <div style={{ fontSize: '13px', marginBottom: '4px' }}>
+                <strong>Part Number:</strong> {fuelPipeData.part_number || '-'}
+              </div>
+              <div style={{ fontSize: '13px', marginBottom: '10px' }}>
+                <strong>Scan Time:</strong> {format12HourTime(fuelPipeData.scan_time)}
+              </div>
             </div>
-          </div>
-          <div>
-            <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--slate-800)' }}>PCV Valve</div>
-            <div style={{ fontSize: '12.5px' }}>Part: {pcvData?.part_number || '-'}</div>
-            <div style={{ fontSize: '12px', color: 'var(--slate-500)' }}>
-              {pcvData?.scan_time ? format12HourTime(pcvData.scan_time) : 'No scan'}
-            </div>
-          </div>
-        </div> */
+          ) : (
+            <div style={{ fontSize: '13px', color: 'var(--slate-500)' }}>No Fuel Delivery Pipe data logged</div>
+          )}
+        </div>
 
         {/* 6. Wire Harness Card */}
         <div className="dcs-card" style={{ marginBottom: 0 }}>
