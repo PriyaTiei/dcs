@@ -2085,8 +2085,8 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
       </div>
       <>{display_HeadboltNR}</>
 
-      {/* ── Assembly Data ── */}
-      <div className="h4 text-primary"> Assembly data</div>
+      {/* ── Assembly Data heading & Export button - commented out */}
+      {/* <div className="h4 text-primary"> Assembly data</div>
 
       <button
         className="btn btn-primary"
@@ -2094,7 +2094,7 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
         onClick={exportToExcel}
       >
         Export to Excel
-      </button>
+      </button> */}
 
       <CrankInfo crankinfo={crankinfo}/>
 
