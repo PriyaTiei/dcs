@@ -1078,8 +1078,8 @@ const PTTable = ({ engineNo, triggerSearch }) => {
           )}
         </div>
 
-        {/* Fuel Delivery Pipe Section */}
-        <div className="table-container">
+        {/* Fuel Delivery Pipe Section - commented out */}
+        {/* <div className="table-container">
           <h5>Fuel Delivery Pipe</h5>
           {loading ? (
             <div className="loading-state">Loading fuel delivery pipe data...</div>
@@ -1103,10 +1103,10 @@ const PTTable = ({ engineNo, triggerSearch }) => {
               </tbody>
             </table>
           )}
-        </div>
+        </div> */}
 
-        {/* PCV Section */}
-        <div className="table-container">
+        {/* PCV Section - commented out */}
+        {/* <div className="table-container">
           <h5>PCV</h5>
           {loading ? (
             <div className="loading-state">Loading PCV data...</div>
@@ -1130,7 +1130,7 @@ const PTTable = ({ engineNo, triggerSearch }) => {
               </tbody>
             </table>
           )}
-        </div>
+        </div> */}
 
         {/* Wire Harness Section */}
         <div className="table-container">
@@ -1312,8 +1312,8 @@ const PTTable = ({ engineNo, triggerSearch }) => {
           )}
         </div>
       
-        {/* Port Injector Section */}
-        <div className="table-container">
+        {/* Port Injector Section - commented out */}
+        {/* <div className="table-container">
           <h5>Port Injector Data</h5>
           {loading ? (
             <div className="loading-state">Loading port injector data...</div>
@@ -1358,7 +1358,7 @@ const PTTable = ({ engineNo, triggerSearch }) => {
               </tbody>
             </table>
           )}
-        </div>
+        </div> */}
       </div>
     </div>
   );

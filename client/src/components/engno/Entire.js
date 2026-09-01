@@ -2149,7 +2149,8 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
         </div>
       </fieldset>
 
-      <CrankInfo crankinfo={crankinfo}/>
+      {/* Crank Case Stiffner - commented out */}
+      {/* <CrankInfo crankinfo={crankinfo}/> */}
 
 
       <div>
