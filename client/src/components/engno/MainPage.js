@@ -234,22 +234,22 @@ const fetchCrankData = async (targetNo) => {
         crankinfo = {crankinfo} 
         engineNo={searchEngineNo}
         triggerSearch={searchTriggered}
-        />
-
-      {/* Rework Images */}
-      <div className="mt-4">
-        <div className="h4 text-primary">Rework Images</div>
-        <hr />
-        {listOfImages && listOfImages.length > 0 ? (
-          <div className="d-flex flex-wrap gap-3 my-3">{images}</div>
-        ) : (
-          <div className="text-muted p-2" style={{ fontSize: '13.5px' }}>
-            {searchTriggered
-              ? `No rework images logged for engine number '${searchEngineNo || engineNo.trim()}'.`
-              : 'Enter an engine number and click Search to view rework images.'}
-          </div>
-        )}
-      </div>
+      >
+        {/* Rework Images */}
+        <div className="mt-4">
+          <div className="h4 text-primary">Rework Images</div>
+          <hr />
+          {listOfImages && listOfImages.length > 0 ? (
+            <div className="d-flex flex-wrap gap-3 my-3">{images}</div>
+          ) : (
+            <div className="text-muted p-2" style={{ fontSize: '13.5px' }}>
+              {searchTriggered
+                ? `No rework images logged for engine number '${searchEngineNo || engineNo.trim()}'.`
+                : 'Enter an engine number and click Search to view rework images.'}
+            </div>
+          )}
+        </div>
+      </EntireResultProcess>
 
       {/* ****************Detail Traceability */}
       <div className="d-flex gap-3 mt-0">

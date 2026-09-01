@@ -23,7 +23,7 @@ import ShippingDetails from "./ShippingDetails.js";
 import DateTable from "./ReusableEngineHistoryValues.js";
 import Loading from "./Loading.js";
 
-function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
+function EntireResultProcess({crankinfo, engineNo, triggerSearch, children }) {
 
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.engine.loading);
@@ -2185,6 +2185,8 @@ function EntireResultProcess({crankinfo, engineNo, triggerSearch }) {
               /> 
         </div>
       </div>
+
+      {children}
 
       {/* ── Machining Data ── */}
       <div className="h4 text-primary"> Machining Data</div>
