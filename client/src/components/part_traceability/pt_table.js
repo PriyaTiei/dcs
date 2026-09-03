@@ -1233,11 +1233,11 @@ const PTTable = ({ engineNo, triggerSearch }) => {
                     <td className="info-value">{camHousingSN || '-'}</td>
                   </tr>
                   <tr>
-                    <td className="info-label">Cam Housing Exhaust:</td>
+                    <td className="info-label">Cam Shaft Exhaust:</td>
                     <td className="info-value">{camHousingExhaust || '-'}</td>
                   </tr>
                   <tr>
-                    <td className="info-label">Cam Housing Intake:</td>
+                    <td className="info-label">Cam Shaft Intake:</td>
                     <td className="info-value">{camHousingIntake || '-'}</td>
                   </tr>
                 </tbody>

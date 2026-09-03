@@ -121,7 +121,7 @@ function getYokotaToolsForStation(stationNumber, dbToolMap) {
 }
 
 // ---------------------------------------------------------------------------
-// Timezone-Immune Plant Time Matcher
+// Timezone-Immune Plant Time Matcherr
 //
 // Yokota controllers log timestamps in Indian plant local time (e.g. "08/19 08:45:17").
 // Converting both arrival_time and CSV records to plant seconds from midnight
@@ -239,13 +239,13 @@ function matchYokotaRecords(rawYokotaData, arrivalTime, nextArrivalTime) {
                     currentCluster.push({ item, itemSec });
                 } else {
                     const lastSec = currentCluster[currentCluster.length - 1].itemSec;
-                    if (itemSec - lastSec <= 15) {
+                    if (itemSec - lastSec <= 20) {
                         currentCluster.push({ item, itemSec });
                     } else {
                         clusters.push(currentCluster);
                         currentCluster = [{ item, itemSec }];
                     }
-                }
+                } 
             }
             if (currentCluster.length > 0) clusters.push(currentCluster);
 

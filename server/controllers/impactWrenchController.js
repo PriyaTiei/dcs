@@ -67,14 +67,14 @@ const MASTER_URYU_TOOL_MAP = [
     { contr_no: "47", station: "61", folder: "047", tool_name: "Intake manifold stay bolt M8", line: "MK3" },
     { contr_no: "48", station: "61", folder: "048", tool_name: "Intake manifold stay bolt M6", line: "MK3" },
     { contr_no: "49", station: "45", folder: "049", tool_name: "Throttle body bolt", line: "MK2" },
-    { contr_no: "50", station: "61", folder: "050", tool_name: "EGR pipe bolt", line: "MK3" },
+    { contr_no: "50", station: "61", folder: "020", tool_name: "EGR pipe bolt", line: "MK3" },
     { contr_no: "51", station: "60", folder: "051", tool_name: "EGR valve bolt", line: "MK3" },
     { contr_no: "52", station: "59", folder: "052", tool_name: "EGR adaptor bolt", line: "MK3" },
     { contr_no: "53", station: "59", folder: "053", tool_name: "EGR Cooler bolt", line: "MK3" },
     { contr_no: "54", station: "59", folder: "013", tool_name: "EGR cooler (SPS)", line: "SPS" },
     { contr_no: "56", station: "26", folder: "054", tool_name: "V-Rib Belt Tensioner", line: "MK1" },
     { contr_no: "57", station: "58", folder: "055", tool_name: "Engine hanger No.1 bolt", line: "MK3" },
-    { contr_no: "58", station: "61", folder: "056", tool_name: "Engine hanger No.2 bolt", line: "MK3" },
+    { contr_no: "58", station: "61", folder: "058", tool_name: "Engine hanger No.2 bolt", line: "MK3" },
     { contr_no: "59", station: "7", folder: "057", tool_name: "HV damper bolt", line: "MK1" },
     { contr_no: "60", station: "51", folder: "058", tool_name: "NE sensor", line: "MK3" },
     { contr_no: "62", station: "62", folder: "063", tool_name: "Wire hrns bkt (EGR cooler)", line: "MK3" },
@@ -89,7 +89,7 @@ const MASTER_URYU_TOOL_MAP = [
 // Helper to resolve all tools for a station, combining DB overrides with Master Dictionary
 function getToolsForStation(stationNumber, dbToolMap) {
     const stnStr = String(stationNumber).trim();
-    
+
     // 1. Find master tools configured for this station
     const masterTools = MASTER_URYU_TOOL_MAP.filter(tool => {
         const toolStn = String(tool.station).trim();
@@ -169,21 +169,51 @@ function matchToolRecords(rawTorqueData, tool, arrivalTime, nextArrivalTime) {
 
     // Base cycle window: engine arrives at startTime.
     // 60-second pre-arrival buffer for RFID scan jitter & controller clock drift
-    const cycleStartMs = startTime.getTime() - 60000;
+    const cycleStartMs =
+        startTime.getTime() - (10 * 60 * 1000);
 
-    let cycleEndMs;
-    if (nextArrivalTime) {
-        const nextTime = new Date(nextArrivalTime).getTime();
-        // Cap single-station window to at most 240s to prevent grabbing far-future engines
-        cycleEndMs = Math.min(nextTime + 30000, startTime.getTime() + 240000);
-    } else {
-        cycleEndMs = startTime.getTime() + 150000; // 2.5 minutes default single-station cycle
-    }
+    const cycleEndMs =
+        startTime.getTime() + (10 * 60 * 1000);
 
     // 1. Filter by folder match first
-    const folderMatches = rawTorqueData.filter(item => isFolderMatch(item.folder, tool.folder));
-    if (folderMatches.length === 0) return [];
+    const folderMatches = rawTorqueData.filter(item =>
+        isFolderMatch(item.folder, tool.folder)
+    );
 
+    console.log(
+        `[FOLDER-DEBUG] Tool=${tool.tool_name} ` +
+        `Station=${tool.station} ` +
+        `ExpectedFolder=${tool.folder}`
+    );
+
+    console.log(
+        `[FOLDER-DEBUG] Tool=${tool.tool_name} ` +
+        `AvailableFolders=${[...new Set(rawTorqueData.map(r => r.folder))].join(",")}`
+    );
+
+    if (tool.station === "61") {
+        console.log(
+            `[ST61] Tool=${tool.tool_name} ` +
+            `ExpectedFolder=${tool.folder}`
+        );
+
+        console.log(
+            `[ST61] AvailableFolders=${[...new Set(rawTorqueData.map(r => r.folder))].join(",")}`
+        );
+    }
+
+    if (folderMatches.length === 0) {
+        console.log(
+            `[ST61] NO MATCH Tool=${tool.tool_name} ExpectedFolder=${tool.folder}`
+        );
+        return [];
+    }
+
+    console.log(
+        `[MATCH-DEBUG] Tool=${tool.tool_name} ` +
+        `Folder=${tool.folder} ` +
+        `FolderMatches=${folderMatches.length}`
+    );
     // 2. Filter by date and time window
     // Prioritize "Tightening date/time", with fallback to "Reception date/time"
     const windowMatches = folderMatches.filter(item => {
@@ -203,8 +233,19 @@ function matchToolRecords(rawTorqueData, tool, arrivalTime, nextArrivalTime) {
 
         return matchesTightening || matchesReception;
     });
-
-    if (windowMatches.length === 0) return [];
+    console.log(
+        `[MATCH-DEBUG] Tool=${tool.tool_name} ` +
+        `WindowMatches=${windowMatches.length} ` +
+        `Arrival=${arrivalTime}`
+    );
+    if (windowMatches.length === 0) {
+        console.log(
+            `[MATCH-DEBUG] Tool=${tool.tool_name} ` +
+            `WindowMatches=0 ` +
+            `Arrival=${arrivalTime}`
+        );
+        return [];
+    }
 
     // 3. Deduplicate / isolate target engine's tightening sequence
     // Sort chronologically
@@ -224,7 +265,8 @@ function matchToolRecords(rawTorqueData, tool, arrivalTime, nextArrivalTime) {
 
         if (currentCluster.length === 0) {
             currentCluster.push({ item, itemTime });
-        } else {
+        }
+        else {
             const lastTime = currentCluster[currentCluster.length - 1].itemTime;
             if (itemTime - lastTime <= 45000) {
                 // Same cycle / multi-bolt count
@@ -240,6 +282,7 @@ function matchToolRecords(rawTorqueData, tool, arrivalTime, nextArrivalTime) {
         clusters.push(currentCluster);
     }
 
+    console.log(`[MATCH-DEBUG] Tool=${tool.tool_name} ` + `Clusters=${clusters.length}`);
     // Find the cluster closest to startTime
     let bestCluster = clusters[0];
     let minDiff = Math.abs(bestCluster[0].itemTime - startTime.getTime());
@@ -251,45 +294,92 @@ function matchToolRecords(rawTorqueData, tool, arrivalTime, nextArrivalTime) {
             bestCluster = clusters[i];
         }
     }
-
+    console.log(
+        `[MATCH-DEBUG] Tool=${tool.tool_name} ` +
+        `Returned=${bestCluster.length}`
+    );
     return bestCluster.map(c => c.item);
 }
 
-async function fetchStationTorqueData(stationNumber, formattedDate, arrivalTime, nextArrivalTime) {
-    const timeKey = arrivalTime ? new Date(arrivalTime).toISOString() : 'full';
+async function fetchStationTorqueData(
+    stationNumber,
+    formattedDate,
+    arrivalTime,
+    nextArrivalTime
+) {
+    const timeKey = arrivalTime
+        ? new Date(arrivalTime).toISOString()
+        : 'full';
+
     const cacheKey = `${stationNumber}_${formattedDate}_${timeKey}`;
+
     const cached = dcsTorqueApiCache.get(cacheKey);
 
-    if (cached && (Date.now() - cached.cachedAt < CACHE_TTL_MS)) {
+    if (
+        cached &&
+        (Date.now() - cached.cachedAt < CACHE_TTL_MS)
+    ) {
         return cached.data;
     }
 
-    let url = `http://10.82.126.73:8121/api/torque-data?station=${stationNumber}&date=${formattedDate}`;
+    let url =
+    `http://10.82.126.73:8121/api/torque-data` +
+    `?station=${stationNumber}` +
+    `&date=${formattedDate}`;
+
     if (arrivalTime) {
-        url += `&startTime=${encodeURIComponent(new Date(arrivalTime).toISOString())}`;
+        url += `&startTime=${encodeURIComponent(
+            new Date(arrivalTime).toISOString()
+        )}`;
+
         if (nextArrivalTime) {
-            url += `&nextTime=${encodeURIComponent(new Date(nextArrivalTime).toISOString())}`;
+            url += `&nextTime=${encodeURIComponent(
+                new Date(nextArrivalTime).toISOString()
+            )}`;
         }
     }
 
+    console.log("[TORQUE-URL]", url);
+
     try {
         const torqueResponse = await torqueClient.get(url);
-        const data = (torqueResponse.status === 404 || !torqueResponse.data || !Array.isArray(torqueResponse.data.data))
-            ? []
-            : torqueResponse.data.data;
+
+        const data =
+            torqueResponse.status === 404 ||
+                !torqueResponse.data ||
+                !Array.isArray(torqueResponse.data.data)
+                ? []
+                : torqueResponse.data.data;
+
+        console.log(
+            `[TORQUE API] Station=${stationNumber} Records=${data.length}`
+        );
+
+        console.log(
+            `[TORQUE API] Folders=${[
+                ...new Set(data.map(r => r.folder))
+            ].join(",")}`
+        );
 
         if (dcsTorqueApiCache.size > MAX_CACHE_ENTRIES) {
-            const oldestKey = dcsTorqueApiCache.keys().next().value;
+            const oldestKey =
+                dcsTorqueApiCache.keys().next().value;
+
             dcsTorqueApiCache.delete(oldestKey);
         }
 
         dcsTorqueApiCache.set(cacheKey, {
             cachedAt: Date.now(),
-            data: data
+            data
         });
 
         return data;
     } catch (err) {
+        console.error(
+            `[TORQUE API ERROR] Station=${stationNumber}`,
+            err.message
+        );
+
         return [];
     }
 }
@@ -371,11 +461,15 @@ const getImpactWrenchData = async (req, res) => {
                     if (!rawTorqueData || rawTorqueData.length === 0) {
                         return [];
                     }
-
+                    console.log(
+                        `[TORQUE] Station=${station_number} Date=${formattedDate}`
+                    );
                     // Match entries for each tool using robust matching & cycle deduplication
                     const toolDataEntries = stationTools.flatMap(tool => {
                         const matchedRecords = matchToolRecords(rawTorqueData, tool, arrival_time, next_arrival_time);
-
+                        console.log(
+                            `[MATCH] Tool=${tool.tool_name} Records=${matchedRecords.length}`
+                        );
                         if (matchedRecords.length > 0) {
                             return matchedRecords.map(item => ({
                                 station: station_number,
